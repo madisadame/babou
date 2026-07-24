@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -15,6 +15,15 @@ export default function BookDetailScreen() {
   const router = useRouter();
 
   const book = mockBooks.find((item) => item.id === id);
+
+  // Le contenu des chapitres viendra du backend (étape 6). En attendant, le
+  // bouton confirme l'action sans mener vers un écran vide.
+  const handleStartReading = () => {
+    Alert.alert(
+      'Bientôt disponible',
+      'La lecture des chapitres sera disponible une fois le backend connecté.',
+    );
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -35,6 +44,12 @@ export default function BookDetailScreen() {
             <ThemedText themeColor="textSecondary" style={styles.description}>
               {book.description}
             </ThemedText>
+
+            <Pressable
+              onPress={handleStartReading}
+              style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
+              <ThemedText style={styles.ctaLabel}>Commencer la lecture</ThemedText>
+            </Pressable>
 
             <ThemedView type="backgroundElement" style={styles.placeholder}>
               <ThemedText type="smallBold">Contenu du livre</ThemedText>
@@ -80,6 +95,21 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     lineHeight: 24,
+  },
+  cta: {
+    backgroundColor: '#3c87f7',
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
+    marginTop: Spacing.two,
+  },
+  ctaPressed: {
+    opacity: 0.8,
+  },
+  ctaLabel: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 600,
   },
   placeholder: {
     borderRadius: Spacing.three,
