@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { mockBooks } from '@/data/mock-books';
+import { useReadingProgress } from '@/hooks/use-reading-progress';
 
 // Écran de détail d'un livre. La route dynamique [id] reçoit l'identifiant
 // depuis la carte de la liste. Comme les écrans, il ne dépend que de la forme
@@ -17,7 +19,10 @@ export default function BookDetailScreen() {
   const router = useRouter();
   const [isCoverOpen, setIsCoverOpen] = useState(false);
 
+  const { getProgress } = useReadingProgress();
+
   const book = mockBooks.find((item) => item.id === id);
+  const progress = book ? getProgress(book.id) : 0;
 
   const openReader = () => {
     if (book) router.push({ pathname: '/read/[id]', params: { id: book.id } });
@@ -72,8 +77,13 @@ export default function BookDetailScreen() {
             <Pressable
               onPress={openReader}
               style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
-              <ThemedText style={styles.ctaLabel}>Commencer la lecture</ThemedText>
+              <ThemedText style={styles.ctaLabel}>
+                {progress > 0
+                  ? `Continuer la lecture (${Math.round(progress * 100)} %)`
+                  : 'Commencer la lecture'}
+              </ThemedText>
             </Pressable>
+            {progress > 0 ? <ProgressBar value={progress} /> : null}
 
             <ThemedView type="backgroundElement" style={styles.placeholder}>
               <ThemedText type="smallBold">Contenu du livre</ThemedText>

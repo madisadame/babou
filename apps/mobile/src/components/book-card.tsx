@@ -1,9 +1,11 @@
 import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 
+import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useReadingProgress } from '@/hooks/use-reading-progress';
 import type { Book } from '@/types/book';
 
 type BookCardProps = {
@@ -13,6 +15,9 @@ type BookCardProps = {
 // Carte réutilisable : ne dépend que de la forme des données (Book),
 // pas de leur origine (fictives aujourd'hui, backend demain).
 export function BookCard({ book }: BookCardProps) {
+  const { getProgress } = useReadingProgress();
+  const progress = getProgress(book.id);
+
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
       {book.coverUrl ? (
@@ -35,6 +40,17 @@ export function BookCard({ book }: BookCardProps) {
         <ThemedText themeColor="textSecondary" numberOfLines={2}>
           {book.description}
         </ThemedText>
+
+        {progress > 0 ? (
+          <View style={styles.progressRow}>
+            <View style={styles.progressBar}>
+              <ProgressBar value={progress} />
+            </View>
+            <ThemedText type="small" themeColor="textSecondary">
+              {Math.round(progress * 100)} %
+            </ThemedText>
+          </View>
+        ) : null}
       </View>
     </ThemedView>
   );
@@ -60,5 +76,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     lineHeight: 26,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    marginTop: Spacing.one,
+  },
+  progressBar: {
+    flex: 1,
   },
 });
