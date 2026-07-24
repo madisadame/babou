@@ -7,4 +7,6 @@ export interface Book {
   id: string;
   title: string;
   description: string;
+  /** URL de l'image de couverture. Optionnel : l'UI gère l'absence d'image. */
+  coverUrl?: string;
 }

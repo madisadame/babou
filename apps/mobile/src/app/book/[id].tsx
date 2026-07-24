@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -38,6 +39,15 @@ export default function BookDetailScreen() {
           <ScrollView
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}>
+            {book.coverUrl ? (
+              <Image
+                source={{ uri: book.coverUrl }}
+                style={styles.cover}
+                contentFit="cover"
+                transition={200}
+                accessibilityIgnoresInvertColors
+              />
+            ) : null}
             <ThemedText type="title" style={styles.title}>
               {book.title}
             </ThemedText>
@@ -87,6 +97,12 @@ const styles = StyleSheet.create({
   content: {
     gap: Spacing.three,
     paddingBottom: Spacing.six,
+  },
+  cover: {
+    width: 180,
+    height: 240,
+    borderRadius: Spacing.three,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 34,
