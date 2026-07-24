@@ -13,9 +13,12 @@ import {
 type ProgressMap = Record<string, number>;
 
 type ReadingProgressContextValue = {
+  /** Vrai si au moins un livre a une progression enregistrée. */
+  hasProgress: boolean;
   getProgress: (bookId: string) => number;
   setProgress: (bookId: string, value: number) => void;
   resetProgress: (bookId: string) => void;
+  resetAll: () => void;
 };
 
 const STORAGE_KEY = 'babou:reading-progress';
@@ -48,6 +51,7 @@ export function ReadingProgressProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<ReadingProgressContextValue>(
     () => ({
+      hasProgress: Object.keys(progress).length > 0,
       getProgress: (bookId) => progress[bookId] ?? 0,
       setProgress: (bookId, next) => {
         const clamped = Math.max(0, Math.min(1, next));
@@ -67,6 +71,7 @@ export function ReadingProgressProvider({ children }: { children: ReactNode }) {
           return next;
         });
       },
+      resetAll: () => setProgressState({}),
     }),
     [progress],
   );

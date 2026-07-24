@@ -1,6 +1,6 @@
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { Alert, FlatList, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { mockBooks } from '@/data/mock-books';
+import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useTheme } from '@/hooks/use-theme';
 import type { Book } from '@/types/book';
 
@@ -34,6 +35,7 @@ const ALL_CATEGORIES = 'Toutes';
 
 export default function HomeScreen() {
   const theme = useTheme();
+  const { hasProgress, resetAll } = useReadingProgress();
   // Catégorie passée en paramètre d'URL (ex. depuis le badge de l'écran détail).
   const { category: categoryParam } = useLocalSearchParams<{ category?: string }>();
   const [query, setQuery] = useState('');
@@ -72,6 +74,17 @@ export default function HomeScreen() {
 
     return sortAscending ? sorted : sorted.reverse();
   }, [query, sortAscending, selectedCategory]);
+
+  const handleResetAll = () => {
+    Alert.alert(
+      'Réinitialiser toute la progression',
+      'La progression de lecture de tous les livres sera effacée. Continuer ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        { text: 'Tout réinitialiser', style: 'destructive', onPress: resetAll },
+      ],
+    );
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -150,6 +163,15 @@ export default function HomeScreen() {
             </Link>
           )}
           contentContainerStyle={styles.list}
+          ListFooterComponent={
+            hasProgress ? (
+              <Pressable onPress={handleResetAll} hitSlop={Spacing.two} style={styles.resetAll}>
+                <ThemedText type="link" themeColor="textSecondary">
+                  Réinitialiser toute la progression
+                </ThemedText>
+              </Pressable>
+            ) : null
+          }
           ListEmptyComponent={
             <ThemedText themeColor="textSecondary" style={styles.empty}>
               {query.trim()
@@ -219,5 +241,9 @@ const styles = StyleSheet.create({
   empty: {
     textAlign: 'center',
     marginTop: Spacing.five,
+  },
+  resetAll: {
+    alignSelf: 'center',
+    marginTop: Spacing.four,
   },
 });
