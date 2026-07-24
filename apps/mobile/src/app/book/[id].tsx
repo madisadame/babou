@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ProgressBar } from '@/components/progress-bar';
@@ -19,13 +19,25 @@ export default function BookDetailScreen() {
   const router = useRouter();
   const [isCoverOpen, setIsCoverOpen] = useState(false);
 
-  const { getProgress } = useReadingProgress();
+  const { getProgress, resetProgress } = useReadingProgress();
 
   const book = mockBooks.find((item) => item.id === id);
   const progress = book ? getProgress(book.id) : 0;
 
   const openReader = () => {
     if (book) router.push({ pathname: '/read/[id]', params: { id: book.id } });
+  };
+
+  const handleResetProgress = () => {
+    if (!book) return;
+    Alert.alert(
+      'Réinitialiser la progression',
+      'Ta progression de lecture pour ce livre sera effacée. Continuer ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        { text: 'Réinitialiser', style: 'destructive', onPress: () => resetProgress(book.id) },
+      ],
+    );
   };
 
   return (
@@ -84,6 +96,16 @@ export default function BookDetailScreen() {
               </ThemedText>
             </Pressable>
             {progress > 0 ? <ProgressBar value={progress} /> : null}
+            {progress > 0 ? (
+              <Pressable
+                onPress={handleResetProgress}
+                hitSlop={Spacing.two}
+                style={styles.resetButton}>
+                <ThemedText type="link" themeColor="textSecondary">
+                  Réinitialiser la progression
+                </ThemedText>
+              </Pressable>
+            ) : null}
 
             <ThemedView type="backgroundElement" style={styles.placeholder}>
               <ThemedText type="smallBold">Contenu du livre</ThemedText>
@@ -197,6 +219,9 @@ const styles = StyleSheet.create({
   },
   ctaPressed: {
     opacity: 0.8,
+  },
+  resetButton: {
+    alignSelf: 'center',
   },
   ctaLabel: {
     color: '#ffffff',

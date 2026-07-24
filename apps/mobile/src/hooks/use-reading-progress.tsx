@@ -15,6 +15,7 @@ type ProgressMap = Record<string, number>;
 type ReadingProgressContextValue = {
   getProgress: (bookId: string) => number;
   setProgress: (bookId: string, value: number) => void;
+  resetProgress: (bookId: string) => void;
 };
 
 const STORAGE_KEY = 'babou:reading-progress';
@@ -56,6 +57,14 @@ export function ReadingProgressProvider({ children }: { children: ReactNode }) {
           // anti-churn : on ignore les micro-variations (< 1 %).
           if (clamped <= current + 0.01) return prev;
           return { ...prev, [bookId]: clamped };
+        });
+      },
+      resetProgress: (bookId) => {
+        setProgressState((prev) => {
+          if (!(bookId in prev)) return prev;
+          const next = { ...prev };
+          delete next[bookId];
+          return next;
         });
       },
     }),
