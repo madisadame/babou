@@ -7,10 +7,10 @@ import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { mockBooks } from '@/data/mock-books';
+import type { Book } from '@/domain/book';
+import { useBooks } from '@/hooks/use-content';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useTheme } from '@/hooks/use-theme';
-import type { Book } from '@/types/book';
 
 // Normalise pour une recherche insensible à la casse ET aux accents :
 // « priere » retrouve « Prière ». La décomposition NFD sépare chaque
@@ -35,6 +35,7 @@ const ALL_CATEGORIES = 'Toutes';
 
 export default function LibraryScreen() {
   const theme = useTheme();
+  const { books, loading } = useBooks();
   const { hasProgress, resetAll } = useReadingProgress();
   // Catégorie passée en paramètre d'URL (ex. depuis le badge de l'écran détail).
   const { category: categoryParam } = useLocalSearchParams<{ category?: string }>();
@@ -47,16 +48,16 @@ export default function LibraryScreen() {
     if (categoryParam) setSelectedCategory(categoryParam);
   }, [categoryParam]);
 
-  // Catégories dérivées des données : le backend pourra en ajouter sans
+  // Catégories dérivées des livres : le backend pourra en ajouter sans
   // toucher à cet écran. « Toutes » en tête pour retirer le filtre.
   const categories = useMemo(
-    () => [ALL_CATEGORIES, ...Array.from(new Set(mockBooks.map((book) => book.category)))],
-    [],
+    () => [ALL_CATEGORIES, ...Array.from(new Set(books.map((book) => book.category)))],
+    [books],
   );
 
   const visibleBooks = useMemo(() => {
     const q = normalize(query.trim());
-    const filtered = mockBooks.filter((book) => {
+    const filtered = books.filter((book) => {
       const matchesCategory =
         selectedCategory === ALL_CATEGORIES || book.category === selectedCategory;
       const matchesQuery = !q || normalize(`${book.title} ${book.description}`).includes(q);
@@ -73,12 +74,12 @@ export default function LibraryScreen() {
     });
 
     return sortAscending ? sorted : sorted.reverse();
-  }, [query, sortAscending, selectedCategory]);
+  }, [books, query, sortAscending, selectedCategory]);
 
   const handleResetAll = () => {
     Alert.alert(
       'Réinitialiser toute la progression',
-      'La progression de lecture de tous les livres sera effacée. Continuer ?',
+      'La progression de lecture de tous les chapitres sera effacée. Continuer ?',
       [
         { text: 'Annuler', style: 'cancel' },
         { text: 'Tout réinitialiser', style: 'destructive', onPress: resetAll },
@@ -174,9 +175,11 @@ export default function LibraryScreen() {
           }
           ListEmptyComponent={
             <ThemedText themeColor="textSecondary" style={styles.empty}>
-              {query.trim()
-                ? `Aucun livre ne correspond à « ${query.trim()} ».`
-                : 'Aucun livre dans cette catégorie.'}
+              {loading
+                ? 'Chargement…'
+                : query.trim()
+                  ? `Aucun livre ne correspond à « ${query.trim()} ».`
+                  : 'Aucun livre dans cette catégorie.'}
             </ThemedText>
           }
         />

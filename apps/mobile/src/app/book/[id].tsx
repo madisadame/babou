@@ -1,44 +1,70 @@
 import { Image } from 'expo-image';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ProgressBar } from '@/components/progress-bar';
+import { ChapterRow } from '@/components/chapter-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { mockBooks } from '@/data/mock-books';
-import { useReadingProgress } from '@/hooks/use-reading-progress';
+import type { Chapter } from '@/domain/chapter';
+import { useBook, useChapters } from '@/hooks/use-content';
 
-// Écran de détail d'un livre. La route dynamique [id] reçoit l'identifiant
-// depuis la carte de la liste. Comme les écrans, il ne dépend que de la forme
-// des données (Book) : brancher le backend (étape 6) suffira sans le modifier.
+// Fiche d'un livre : entête (couverture, catégorie, titre, description) puis
+// la liste de ses chapitres. Chaque chapitre mène à son écran de lecture.
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [isCoverOpen, setIsCoverOpen] = useState(false);
 
-  const { getProgress, resetProgress } = useReadingProgress();
+  const { book, loading: loadingBook } = useBook(id);
+  const { chapters, loading: loadingChapters } = useChapters(id);
 
-  const book = mockBooks.find((item) => item.id === id);
-  const progress = book ? getProgress(book.id) : 0;
+  const header = book ? (
+    <ThemedView style={styles.header}>
+      {book.coverUrl ? (
+        <Pressable
+          onPress={() => setIsCoverOpen(true)}
+          accessibilityRole="imagebutton"
+          accessibilityLabel="Agrandir la couverture"
+          style={({ pressed }) => (pressed ? styles.coverPressed : undefined)}>
+          <Image
+            source={{ uri: book.coverUrl }}
+            style={styles.cover}
+            contentFit="cover"
+            transition={200}
+            accessibilityIgnoresInvertColors
+          />
+        </Pressable>
+      ) : null}
 
-  const openReader = () => {
-    if (book) router.push({ pathname: '/read/[id]', params: { id: book.id } });
-  };
+      <Pressable
+        onPress={() =>
+          router.navigate({ pathname: '/library', params: { category: book.category } })
+        }
+        accessibilityRole="button"
+        accessibilityLabel={`Voir tous les livres de la catégorie ${book.category}`}
+        style={({ pressed }) => [styles.categoryButton, pressed && styles.categoryPressed]}>
+        <ThemedView type="backgroundElement" style={styles.categoryBadge}>
+          <ThemedText type="smallBold" themeColor="textSecondary">
+            {book.category} ›
+          </ThemedText>
+        </ThemedView>
+      </Pressable>
 
-  const handleResetProgress = () => {
-    if (!book) return;
-    Alert.alert(
-      'Réinitialiser la progression',
-      'Ta progression de lecture pour ce livre sera effacée. Continuer ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Réinitialiser', style: 'destructive', onPress: () => resetProgress(book.id) },
-      ],
-    );
-  };
+      <ThemedText type="title" style={styles.title}>
+        {book.title}
+      </ThemedText>
+      <ThemedText themeColor="textSecondary" style={styles.description}>
+        {book.description}
+      </ThemedText>
+
+      <ThemedText type="smallBold" themeColor="textSecondary" style={styles.chaptersLabel}>
+        {book.chapterCount} {book.chapterCount > 1 ? 'CHAPITRES' : 'CHAPITRE'}
+      </ThemedText>
+    </ThemedView>
+  ) : null;
 
   return (
     <ThemedView style={styles.container}>
@@ -49,74 +75,30 @@ export default function BookDetailScreen() {
           </ThemedText>
         </Pressable>
 
-        {book ? (
-          <ScrollView
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}>
-            {book.coverUrl ? (
-              <Pressable
-                onPress={() => setIsCoverOpen(true)}
-                accessibilityRole="imagebutton"
-                accessibilityLabel="Agrandir la couverture"
-                style={({ pressed }) => (pressed ? styles.coverPressed : undefined)}>
-                <Image
-                  source={{ uri: book.coverUrl }}
-                  style={styles.cover}
-                  contentFit="cover"
-                  transition={200}
-                  accessibilityIgnoresInvertColors
-                />
-              </Pressable>
-            ) : null}
-            <Pressable
-              onPress={() =>
-                router.navigate({ pathname: '/library', params: { category: book.category } })
-              }
-              accessibilityRole="button"
-              accessibilityLabel={`Voir tous les livres de la catégorie ${book.category}`}
-              style={({ pressed }) => [styles.categoryButton, pressed && styles.categoryPressed]}>
-              <ThemedView type="backgroundElement" style={styles.categoryBadge}>
-                <ThemedText type="smallBold" themeColor="textSecondary">
-                  {book.category} ›
-                </ThemedText>
-              </ThemedView>
-            </Pressable>
-            <ThemedText type="title" style={styles.title}>
-              {book.title}
-            </ThemedText>
-            <ThemedText themeColor="textSecondary" style={styles.description}>
-              {book.description}
-            </ThemedText>
-
-            <Pressable
-              onPress={openReader}
-              style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
-              <ThemedText style={styles.ctaLabel}>
-                {progress > 0
-                  ? `Continuer la lecture (${Math.round(progress * 100)} %)`
-                  : 'Commencer la lecture'}
+        {loadingBook ? (
+          <ThemedText themeColor="textSecondary" style={styles.centered}>
+            Chargement…
+          </ThemedText>
+        ) : book ? (
+          <FlatList
+            data={chapters}
+            keyExtractor={(chapter: Chapter) => chapter.id}
+            ListHeaderComponent={header}
+            renderItem={({ item }) => (
+              <Link href={{ pathname: '/chapter/[id]', params: { id: item.id } }} asChild>
+                <Pressable style={({ pressed }) => (pressed ? styles.pressed : undefined)}>
+                  <ChapterRow chapter={item} />
+                </Pressable>
+              </Link>
+            )}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <ThemedText themeColor="textSecondary" style={styles.centered}>
+                {loadingChapters ? 'Chargement…' : 'Aucun chapitre pour le moment.'}
               </ThemedText>
-            </Pressable>
-            {progress > 0 ? <ProgressBar value={progress} /> : null}
-            {progress > 0 ? (
-              <Pressable
-                onPress={handleResetProgress}
-                hitSlop={Spacing.two}
-                style={styles.resetButton}>
-                <ThemedText type="link" themeColor="textSecondary">
-                  Réinitialiser la progression
-                </ThemedText>
-              </Pressable>
-            ) : null}
-
-            <ThemedView type="backgroundElement" style={styles.placeholder}>
-              <ThemedText type="smallBold">Contenu du livre</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                Les chapitres seront disponibles une fois le backend connecté
-                (étape 6 de la feuille de route).
-              </ThemedText>
-            </ThemedView>
-          </ScrollView>
+            }
+          />
         ) : (
           <ThemedView style={styles.notFound}>
             <ThemedText type="subtitle">Livre introuvable</ThemedText>
@@ -164,9 +146,13 @@ const styles = StyleSheet.create({
   back: {
     marginBottom: Spacing.three,
   },
-  content: {
+  list: {
     gap: Spacing.three,
     paddingBottom: Spacing.six,
+  },
+  header: {
+    gap: Spacing.three,
+    marginBottom: Spacing.three,
   },
   cover: {
     width: 180,
@@ -176,22 +162,6 @@ const styles = StyleSheet.create({
   },
   coverPressed: {
     opacity: 0.85,
-  },
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.92)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing.four,
-    gap: Spacing.four,
-  },
-  fullCover: {
-    width: '100%',
-    height: '75%',
-  },
-  hint: {
-    color: '#ffffff',
-    opacity: 0.7,
   },
   categoryButton: {
     alignSelf: 'flex-start',
@@ -212,33 +182,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
-  cta: {
-    backgroundColor: '#3c87f7',
-    borderRadius: Spacing.three,
-    paddingVertical: Spacing.three,
-    alignItems: 'center',
+  chaptersLabel: {
     marginTop: Spacing.two,
+    letterSpacing: 1,
   },
-  ctaPressed: {
-    opacity: 0.8,
+  pressed: {
+    opacity: 0.6,
   },
-  resetButton: {
-    alignSelf: 'center',
-  },
-  ctaLabel: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  placeholder: {
-    borderRadius: Spacing.three,
-    padding: Spacing.four,
-    gap: Spacing.two,
-    marginTop: Spacing.two,
+  centered: {
+    textAlign: 'center',
+    marginTop: Spacing.five,
   },
   notFound: {
     flex: 1,
     justifyContent: 'center',
     gap: Spacing.two,
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.four,
+    gap: Spacing.four,
+  },
+  fullCover: {
+    width: '100%',
+    height: '75%',
+  },
+  hint: {
+    color: '#ffffff',
+    opacity: 0.7,
   },
 });
