@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Book } from '@/domain/book';
+import { useTranslation } from '@/hooks/use-translation';
 
 type BookCardProps = {
   book: Book;
@@ -13,6 +14,8 @@ type BookCardProps = {
 // Carte d'un livre dans la bibliothèque. Ne dépend que du type Book,
 // pas de l'origine des données (mock aujourd'hui, backend demain).
 export function BookCard({ book }: BookCardProps) {
+  const { t } = useTranslation();
+
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
       {book.coverUrl ? (
@@ -36,7 +39,9 @@ export function BookCard({ book }: BookCardProps) {
           {book.description}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {book.chapterCount} {book.chapterCount > 1 ? 'chapitres' : 'chapitre'}
+          {t(book.chapterCount > 1 ? 'book.chapterCountOther' : 'book.chapterCountOne', {
+            count: book.chapterCount,
+          })}
         </ThemedText>
       </View>
     </ThemedView>

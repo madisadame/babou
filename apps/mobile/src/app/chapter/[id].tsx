@@ -14,13 +14,15 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useChapter } from '@/hooks/use-content';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
+import { useTranslation } from '@/hooks/use-translation';
 
 // Lecture d'un chapitre. Le contenu réel (texte arabe + traduction + audio +
-// vidéo) viendra du backend (étape 7) et du lecteur pédagogique (étape 4) ; en
+// vidéo) viendra du lecteur pédagogique (étape 4) et du backend (étape 7) ; en
 // attendant, texte d'exemple neutre. La progression est calculée au défilement.
 export default function ChapterReadScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { chapter, loading } = useChapter(id);
   const { getProgress, setProgress, resetProgress } = useReadingProgress();
 
@@ -35,14 +37,10 @@ export default function ChapterReadScreen() {
 
   const handleResetProgress = () => {
     if (!chapter) return;
-    Alert.alert(
-      'Réinitialiser la progression',
-      'Ta progression de lecture pour ce chapitre sera effacée. Continuer ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Réinitialiser', style: 'destructive', onPress: () => resetProgress(chapter.id) },
-      ],
-    );
+    Alert.alert(t('chapter.resetTitle'), t('chapter.resetMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('chapter.resetConfirm'), style: 'destructive', onPress: () => resetProgress(chapter.id) },
+    ]);
   };
 
   const progress = chapter ? getProgress(chapter.id) : 0;
@@ -52,13 +50,13 @@ export default function ChapterReadScreen() {
       <SafeAreaView style={styles.safeArea}>
         <Pressable onPress={() => router.back()} hitSlop={Spacing.three} style={styles.back}>
           <ThemedText type="link" themeColor="textSecondary">
-            ← Retour
+            ← {t('common.back')}
           </ThemedText>
         </Pressable>
 
         {loading ? (
           <ThemedText themeColor="textSecondary" style={styles.centered}>
-            Chargement…
+            {t('common.loading')}
           </ThemedText>
         ) : chapter ? (
           <ScrollView
@@ -67,7 +65,7 @@ export default function ChapterReadScreen() {
             onScroll={handleScroll}
             scrollEventThrottle={50}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              Chapitre {chapter.order} · {Math.round(progress * 100)} % lu
+              {t('chapter.meta', { order: chapter.order, pct: Math.round(progress * 100) })}
             </ThemedText>
             <ThemedText type="title" style={styles.title}>
               {chapter.title}
@@ -75,33 +73,15 @@ export default function ChapterReadScreen() {
 
             <ThemedText style={styles.lead}>{chapter.description}</ThemedText>
 
-            <ThemedText style={styles.paragraph}>
-              Ce chapitre t&apos;accompagne pas à pas dans la découverte du sujet.
-              Prends ton temps : chaque notion est présentée simplement, pour être
-              comprise puis mise en pratique.
-            </ThemedText>
-            <ThemedText style={styles.paragraph}>
-              La lecture est pensée pour progresser sereinement, une idée après
-              l&apos;autre. Ta progression est enregistrée automatiquement à mesure
-              que tu avances.
-            </ThemedText>
-            <ThemedText style={styles.paragraph}>
-              Tu pourras revenir à tout moment sur les passages importants et
-              reprendre ta lecture là où tu t&apos;étais arrêté, d&apos;un appareil à
-              l&apos;autre une fois ton compte connecté.
-            </ThemedText>
-            <ThemedText style={styles.paragraph}>
-              Bientôt, ce chapitre proposera le texte en arabe, sa traduction, une
-              lecture audio et une vidéo où les mots seront suivis au fil de la
-              récitation.
-            </ThemedText>
+            <ThemedText style={styles.paragraph}>{t('chapter.sampleP1')}</ThemedText>
+            <ThemedText style={styles.paragraph}>{t('chapter.sampleP2')}</ThemedText>
+            <ThemedText style={styles.paragraph}>{t('chapter.sampleP3')}</ThemedText>
+            <ThemedText style={styles.paragraph}>{t('chapter.sampleP4')}</ThemedText>
 
             <ThemedView type="backgroundElement" style={styles.notice}>
-              <ThemedText type="smallBold">Texte d&apos;exemple</ThemedText>
+              <ThemedText type="smallBold">{t('chapter.sampleNoticeTitle')}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                Le contenu pédagogique complet de ce chapitre sera ajouté depuis
-                l&apos;espace d&apos;administration (étape 5) puis servi par le
-                backend (étape 7).
+                {t('chapter.sampleNoticeBody')}
               </ThemedText>
             </ThemedView>
 
@@ -111,17 +91,15 @@ export default function ChapterReadScreen() {
                 hitSlop={Spacing.two}
                 style={styles.resetButton}>
                 <ThemedText type="link" themeColor="textSecondary">
-                  Réinitialiser la progression
+                  {t('chapter.reset')}
                 </ThemedText>
               </Pressable>
             ) : null}
           </ScrollView>
         ) : (
           <ThemedView style={styles.notFound}>
-            <ThemedText type="subtitle">Chapitre introuvable</ThemedText>
-            <ThemedText themeColor="textSecondary">
-              Ce chapitre n&apos;existe pas ou n&apos;est plus disponible.
-            </ThemedText>
+            <ThemedText type="subtitle">{t('chapter.notFoundTitle')}</ThemedText>
+            <ThemedText themeColor="textSecondary">{t('chapter.notFoundMessage')}</ThemedText>
           </ThemedView>
         )}
       </SafeAreaView>

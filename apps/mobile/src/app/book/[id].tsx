@@ -10,12 +10,14 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Chapter } from '@/domain/chapter';
 import { useBook, useChapters } from '@/hooks/use-content';
+import { useTranslation } from '@/hooks/use-translation';
 
 // Fiche d'un livre : entête (couverture, catégorie, titre, description) puis
 // la liste de ses chapitres. Chaque chapitre mène à son écran de lecture.
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const [isCoverOpen, setIsCoverOpen] = useState(false);
 
   const { book, loading: loadingBook } = useBook(id);
@@ -27,7 +29,7 @@ export default function BookDetailScreen() {
         <Pressable
           onPress={() => setIsCoverOpen(true)}
           accessibilityRole="imagebutton"
-          accessibilityLabel="Agrandir la couverture"
+          accessibilityLabel={t('book.coverOpenA11y')}
           style={({ pressed }) => (pressed ? styles.coverPressed : undefined)}>
           <Image
             source={{ uri: book.coverUrl }}
@@ -44,7 +46,7 @@ export default function BookDetailScreen() {
           router.navigate({ pathname: '/library', params: { category: book.category } })
         }
         accessibilityRole="button"
-        accessibilityLabel={`Voir tous les livres de la catégorie ${book.category}`}
+        accessibilityLabel={t('book.categoryA11y', { category: book.category })}
         style={({ pressed }) => [styles.categoryButton, pressed && styles.categoryPressed]}>
         <ThemedView type="backgroundElement" style={styles.categoryBadge}>
           <ThemedText type="smallBold" themeColor="textSecondary">
@@ -61,7 +63,9 @@ export default function BookDetailScreen() {
       </ThemedText>
 
       <ThemedText type="smallBold" themeColor="textSecondary" style={styles.chaptersLabel}>
-        {book.chapterCount} {book.chapterCount > 1 ? 'CHAPITRES' : 'CHAPITRE'}
+        {t(book.chapterCount > 1 ? 'book.chapterLabelOther' : 'book.chapterLabelOne', {
+          count: book.chapterCount,
+        })}
       </ThemedText>
     </ThemedView>
   ) : null;
@@ -71,13 +75,13 @@ export default function BookDetailScreen() {
       <SafeAreaView style={styles.safeArea}>
         <Pressable onPress={() => router.back()} hitSlop={Spacing.three} style={styles.back}>
           <ThemedText type="link" themeColor="textSecondary">
-            ← Retour
+            ← {t('common.back')}
           </ThemedText>
         </Pressable>
 
         {loadingBook ? (
           <ThemedText themeColor="textSecondary" style={styles.centered}>
-            Chargement…
+            {t('common.loading')}
           </ThemedText>
         ) : book ? (
           <FlatList
@@ -95,16 +99,14 @@ export default function BookDetailScreen() {
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <ThemedText themeColor="textSecondary" style={styles.centered}>
-                {loadingChapters ? 'Chargement…' : 'Aucun chapitre pour le moment.'}
+                {loadingChapters ? t('common.loading') : t('book.chaptersEmpty')}
               </ThemedText>
             }
           />
         ) : (
           <ThemedView style={styles.notFound}>
-            <ThemedText type="subtitle">Livre introuvable</ThemedText>
-            <ThemedText themeColor="textSecondary">
-              Ce livre n&apos;existe pas ou n&apos;est plus disponible.
-            </ThemedText>
+            <ThemedText type="subtitle">{t('book.notFoundTitle')}</ThemedText>
+            <ThemedText themeColor="textSecondary">{t('book.notFoundMessage')}</ThemedText>
           </ThemedView>
         )}
 
@@ -125,7 +127,7 @@ export default function BookDetailScreen() {
               />
             ) : null}
             <ThemedText type="small" style={styles.hint}>
-              Toucher pour fermer
+              {t('book.coverClose')}
             </ThemedText>
           </Pressable>
         </Modal>

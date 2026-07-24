@@ -11,6 +11,7 @@ import type { Book } from '@/domain/book';
 import { useBooks } from '@/hooks/use-content';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useTheme } from '@/hooks/use-theme';
+import { useTranslation } from '@/hooks/use-translation';
 
 // Normalise pour une recherche insensible à la casse ET aux accents :
 // « priere » retrouve « Prière ». La décomposition NFD sépare chaque
@@ -30,11 +31,12 @@ function normalize(value: string) {
   return result.toLowerCase();
 }
 
-// Onglet « tout afficher » du filtre par catégorie.
-const ALL_CATEGORIES = 'Toutes';
+// Sentinelle interne « tout afficher » (valeur stable, libellé traduit à part).
+const ALL_CATEGORIES = '__all__';
 
 export default function LibraryScreen() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const { books, loading } = useBooks();
   const { hasProgress, resetAll } = useReadingProgress();
   // Catégorie passée en paramètre d'URL (ex. depuis le badge de l'écran détail).
@@ -49,7 +51,7 @@ export default function LibraryScreen() {
   }, [categoryParam]);
 
   // Catégories dérivées des livres : le backend pourra en ajouter sans
-  // toucher à cet écran. « Toutes » en tête pour retirer le filtre.
+  // toucher à cet écran. La sentinelle « toutes » en tête retire le filtre.
   const categories = useMemo(
     () => [ALL_CATEGORIES, ...Array.from(new Set(books.map((book) => book.category)))],
     [books],
@@ -77,35 +79,31 @@ export default function LibraryScreen() {
   }, [books, query, sortAscending, selectedCategory]);
 
   const handleResetAll = () => {
-    Alert.alert(
-      'Réinitialiser toute la progression',
-      'La progression de lecture de tous les chapitres sera effacée. Continuer ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Tout réinitialiser', style: 'destructive', onPress: resetAll },
-      ],
-    );
+    Alert.alert(t('library.resetAllTitle'), t('library.resetAllMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('library.resetAllConfirm'), style: 'destructive', onPress: resetAll },
+    ]);
   };
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedText type="title" style={styles.title}>
-          Bibliothèque
+          {t('library.title')}
         </ThemedText>
         <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-          Choisis un livre pour commencer à apprendre.
+          {t('library.subtitle')}
         </ThemedText>
 
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Rechercher un livre…"
+          placeholder={t('library.searchPlaceholder')}
           placeholderTextColor={theme.textSecondary}
           autoCorrect={false}
           returnKeyType="search"
           clearButtonMode="while-editing"
-          accessibilityLabel="Rechercher un livre"
+          accessibilityLabel={t('library.searchPlaceholder')}
           style={[styles.search, { backgroundColor: theme.backgroundElement, color: theme.text }]}
         />
 
@@ -116,20 +114,21 @@ export default function LibraryScreen() {
           contentContainerStyle={styles.categories}>
           {categories.map((category) => {
             const selected = category === selectedCategory;
+            const label = category === ALL_CATEGORIES ? t('library.categoryAll') : category;
             return (
               <Pressable
                 key={category}
                 onPress={() => setSelectedCategory(category)}
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
-                accessibilityLabel={`Filtrer par ${category}`}
+                accessibilityLabel={label}
                 style={({ pressed }) => [
                   styles.chip,
                   { backgroundColor: selected ? '#3c87f7' : theme.backgroundElement },
                   pressed && styles.pressed,
                 ]}>
                 <ThemedText type="smallBold" style={selected ? styles.chipTextSelected : undefined}>
-                  {category}
+                  {label}
                 </ThemedText>
               </Pressable>
             );
@@ -139,17 +138,15 @@ export default function LibraryScreen() {
         <Pressable
           onPress={() => setSortAscending((value) => !value)}
           accessibilityRole="button"
-          accessibilityLabel={
-            sortAscending
-              ? 'Trier les livres par titre, ordre décroissant'
-              : 'Trier les livres par titre, ordre croissant'
-          }
+          accessibilityLabel={sortAscending ? t('library.sortAsc') : t('library.sortDesc')}
           style={({ pressed }) => [
             styles.sortButton,
             { backgroundColor: theme.backgroundElement },
             pressed && styles.pressed,
           ]}>
-          <ThemedText type="smallBold">Titre {sortAscending ? 'A → Z' : 'Z → A'}</ThemedText>
+          <ThemedText type="smallBold">
+            {sortAscending ? t('library.sortAsc') : t('library.sortDesc')}
+          </ThemedText>
         </Pressable>
 
         <FlatList
@@ -168,7 +165,7 @@ export default function LibraryScreen() {
             hasProgress ? (
               <Pressable onPress={handleResetAll} hitSlop={Spacing.two} style={styles.resetAll}>
                 <ThemedText type="link" themeColor="textSecondary">
-                  Réinitialiser toute la progression
+                  {t('library.resetAll')}
                 </ThemedText>
               </Pressable>
             ) : null
@@ -176,10 +173,10 @@ export default function LibraryScreen() {
           ListEmptyComponent={
             <ThemedText themeColor="textSecondary" style={styles.empty}>
               {loading
-                ? 'Chargement…'
+                ? t('common.loading')
                 : query.trim()
-                  ? `Aucun livre ne correspond à « ${query.trim()} ».`
-                  : 'Aucun livre dans cette catégorie.'}
+                  ? t('library.emptySearch', { query: query.trim() })
+                  : t('library.emptyCategory')}
             </ThemedText>
           }
         />

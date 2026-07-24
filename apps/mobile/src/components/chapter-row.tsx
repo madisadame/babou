@@ -6,6 +6,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Chapter } from '@/domain/chapter';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
+import { useTranslation } from '@/hooks/use-translation';
 
 type ChapterRowProps = {
   chapter: Chapter;
@@ -14,6 +15,7 @@ type ChapterRowProps = {
 // Ligne d'un chapitre dans la fiche d'un livre. Présentationnel : la
 // navigation est gérée par le parent (Link + Pressable).
 export function ChapterRow({ chapter }: ChapterRowProps) {
+  const { t } = useTranslation();
   const { getProgress } = useReadingProgress();
   const progress = getProgress(chapter.id);
 
@@ -21,7 +23,7 @@ export function ChapterRow({ chapter }: ChapterRowProps) {
     <ThemedView type="backgroundElement" style={styles.row}>
       <View style={styles.info}>
         <ThemedText type="smallBold" themeColor="textSecondary">
-          Chapitre {chapter.order}
+          {t('chapter.label', { order: chapter.order })}
         </ThemedText>
         <ThemedText style={styles.title}>{chapter.title}</ThemedText>
         <ThemedText themeColor="textSecondary" numberOfLines={2}>
