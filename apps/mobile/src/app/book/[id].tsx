@@ -56,11 +56,17 @@ export default function BookDetailScreen() {
                 />
               </Pressable>
             ) : null}
-            <ThemedView type="backgroundElement" style={styles.categoryBadge}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
-                {book.category}
-              </ThemedText>
-            </ThemedView>
+            <Pressable
+              onPress={() => router.navigate({ pathname: '/', params: { category: book.category } })}
+              accessibilityRole="button"
+              accessibilityLabel={`Voir tous les livres de la catégorie ${book.category}`}
+              style={({ pressed }) => [styles.categoryButton, pressed && styles.categoryPressed]}>
+              <ThemedView type="backgroundElement" style={styles.categoryBadge}>
+                <ThemedText type="smallBold" themeColor="textSecondary">
+                  {book.category} ›
+                </ThemedText>
+              </ThemedView>
+            </Pressable>
             <ThemedText type="title" style={styles.title}>
               {book.title}
             </ThemedText>
@@ -158,8 +164,13 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     opacity: 0.7,
   },
-  categoryBadge: {
+  categoryButton: {
     alignSelf: 'flex-start',
+  },
+  categoryPressed: {
+    opacity: 0.6,
+  },
+  categoryBadge: {
     paddingVertical: Spacing.one,
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.five,

@@ -1,5 +1,5 @@
-import { Link } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -34,9 +34,16 @@ const ALL_CATEGORIES = 'Toutes';
 
 export default function HomeScreen() {
   const theme = useTheme();
+  // Catégorie passée en paramètre d'URL (ex. depuis le badge de l'écran détail).
+  const { category: categoryParam } = useLocalSearchParams<{ category?: string }>();
   const [query, setQuery] = useState('');
   const [sortAscending, setSortAscending] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam ?? ALL_CATEGORIES);
+
+  // Synchronise le filtre quand on arrive avec une catégorie en paramètre.
+  useEffect(() => {
+    if (categoryParam) setSelectedCategory(categoryParam);
+  }, [categoryParam]);
 
   // Catégories dérivées des données : le backend pourra en ajouter sans
   // toucher à cet écran. « Toutes » en tête pour retirer le filtre.
