@@ -1,185 +1,64 @@
-import { Link, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { mockBooks } from '@/data/mock-books';
-import { useReadingProgress } from '@/hooks/use-reading-progress';
-import { useTheme } from '@/hooks/use-theme';
-import type { Book } from '@/types/book';
 
-// Normalise pour une recherche insensible à la casse ET aux accents :
-// « priere » retrouve « Prière ». La décomposition NFD sépare chaque
-// lettre de ses signes diacritiques combinants (points de code
-// U+0300 à U+036F), qu'on retire ensuite.
-const DIACRITIC_START = 0x0300;
-const DIACRITIC_END = 0x036f;
-
-function normalize(value: string) {
-  let result = '';
-  for (const char of value.normalize('NFD')) {
-    const code = char.codePointAt(0) ?? 0;
-    if (code < DIACRITIC_START || code > DIACRITIC_END) {
-      result += char;
-    }
-  }
-  return result.toLowerCase();
-}
-
-// Onglet « tout afficher » du filtre par catégorie.
-const ALL_CATEGORIES = 'Toutes';
-
+// Écran d'accueil : message d'introduction présentant le cadre de Babou
+// (outil pédagogique de complément, méthodologie Shâfi'î annoncée) avant
+// d'accéder à la bibliothèque. Texte validé avec l'utilisateur.
 export default function HomeScreen() {
-  const theme = useTheme();
-  const { hasProgress, resetAll } = useReadingProgress();
-  // Catégorie passée en paramètre d'URL (ex. depuis le badge de l'écran détail).
-  const { category: categoryParam } = useLocalSearchParams<{ category?: string }>();
-  const [query, setQuery] = useState('');
-  const [sortAscending, setSortAscending] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState(categoryParam ?? ALL_CATEGORIES);
-
-  // Synchronise le filtre quand on arrive avec une catégorie en paramètre.
-  useEffect(() => {
-    if (categoryParam) setSelectedCategory(categoryParam);
-  }, [categoryParam]);
-
-  // Catégories dérivées des données : le backend pourra en ajouter sans
-  // toucher à cet écran. « Toutes » en tête pour retirer le filtre.
-  const categories = useMemo(
-    () => [ALL_CATEGORIES, ...Array.from(new Set(mockBooks.map((book) => book.category)))],
-    [],
-  );
-
-  const visibleBooks = useMemo(() => {
-    const q = normalize(query.trim());
-    const filtered = mockBooks.filter((book) => {
-      const matchesCategory =
-        selectedCategory === ALL_CATEGORIES || book.category === selectedCategory;
-      const matchesQuery = !q || normalize(`${book.title} ${book.description}`).includes(q);
-      return matchesCategory && matchesQuery;
-    });
-
-    // Tri alphabétique par titre, insensible aux accents (via normalize).
-    const sorted = [...filtered].sort((a, b) => {
-      const titleA = normalize(a.title);
-      const titleB = normalize(b.title);
-      if (titleA < titleB) return -1;
-      if (titleA > titleB) return 1;
-      return 0;
-    });
-
-    return sortAscending ? sorted : sorted.reverse();
-  }, [query, sortAscending, selectedCategory]);
-
-  const handleResetAll = () => {
-    Alert.alert(
-      'Réinitialiser toute la progression',
-      'La progression de lecture de tous les livres sera effacée. Continuer ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Tout réinitialiser', style: 'destructive', onPress: resetAll },
-      ],
-    );
-  };
+  const router = useRouter();
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title" style={styles.title}>
-          Babou
-        </ThemedText>
-        <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-          Choisis un livre pour commencer à apprendre.
-        </ThemedText>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <ThemedText type="title" style={styles.title}>
+            Bienvenue sur Babou
+          </ThemedText>
 
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Rechercher un livre…"
-          placeholderTextColor={theme.textSecondary}
-          autoCorrect={false}
-          returnKeyType="search"
-          clearButtonMode="while-editing"
-          accessibilityLabel="Rechercher un livre"
-          style={[styles.search, { backgroundColor: theme.backgroundElement, color: theme.text }]}
-        />
+          <ThemedText style={styles.paragraph}>
+            Babou est un outil pédagogique conçu pour t&apos;accompagner dans
+            l&apos;apprentissage et la révision de ta religion, en particulier lorsque
+            tu n&apos;as pas toujours la possibilité d&apos;assister à des cours.
+          </ThemedText>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesScroll}
-          contentContainerStyle={styles.categories}>
-          {categories.map((category) => {
-            const selected = category === selectedCategory;
-            return (
-              <Pressable
-                key={category}
-                onPress={() => setSelectedCategory(category)}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-                accessibilityLabel={`Filtrer par ${category}`}
-                style={({ pressed }) => [
-                  styles.chip,
-                  { backgroundColor: selected ? '#3c87f7' : theme.backgroundElement },
-                  pressed && styles.pressed,
-                ]}>
-                <ThemedText type="smallBold" style={selected ? styles.chipTextSelected : undefined}>
-                  {category}
-                </ThemedText>
-              </Pressable>
-            );
-          })}
+          <ThemedText style={styles.paragraph}>
+            Cette application <Text style={styles.bold}>ne remplace en aucun cas</Text> les
+            enseignants, les imams, les professeurs et les gens de science. Elle est pensée
+            comme un <Text style={styles.bold}>complément d&apos;apprentissage</Text>, et non
+            comme une référence unique : rien ne saurait se substituer à l&apos;enseignement
+            transmis par des personnes qualifiées.
+          </ThemedText>
+
+          <ThemedText style={styles.paragraph}>
+            Il existe plusieurs écoles juridiques (madhahib) reconnues, ainsi que des
+            personnes qui choisissent de ne suivre aucune école en particulier. Le contenu de
+            Babou s&apos;appuie principalement sur la méthodologie de
+            l&apos;<Text style={styles.bold}>école de l&apos;Imam Ash-Shâfi&apos;î</Text>, car
+            c&apos;est cet enseignement que l&apos;application a vocation à transmettre.
+          </ThemedText>
+
+          <ThemedText style={styles.paragraph}>
+            Ce choix n&apos;a pas pour but de critiquer les autres approches, toutes dignes de
+            respect, mais simplement d&apos;<Text style={styles.bold}>annoncer clairement le
+            cadre</Text> dans lequel Babou a été conçu, afin d&apos;éviter toute ambiguïté.
+          </ThemedText>
+
+          <ThemedText themeColor="textSecondary" style={styles.invocation}>
+            Qu&apos;Allah facilite ton apprentissage et t&apos;accorde la science utile.
+          </ThemedText>
+
+          <Pressable
+            onPress={() => router.push('/library')}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
+            <ThemedText style={styles.ctaLabel}>Accéder à la bibliothèque</ThemedText>
+          </Pressable>
         </ScrollView>
-
-        <Pressable
-          onPress={() => setSortAscending((value) => !value)}
-          accessibilityRole="button"
-          accessibilityLabel={
-            sortAscending
-              ? 'Trier les livres par titre, ordre décroissant'
-              : 'Trier les livres par titre, ordre croissant'
-          }
-          style={({ pressed }) => [
-            styles.sortButton,
-            { backgroundColor: theme.backgroundElement },
-            pressed && styles.pressed,
-          ]}>
-          <ThemedText type="smallBold">Titre {sortAscending ? 'A → Z' : 'Z → A'}</ThemedText>
-        </Pressable>
-
-        <FlatList
-          data={visibleBooks}
-          keyExtractor={(book: Book) => book.id}
-          keyboardShouldPersistTaps="handled"
-          renderItem={({ item }) => (
-            <Link href={{ pathname: '/book/[id]', params: { id: item.id } }} asChild>
-              <Pressable style={({ pressed }) => (pressed ? styles.pressed : undefined)}>
-                <BookCard book={item} />
-              </Pressable>
-            </Link>
-          )}
-          contentContainerStyle={styles.list}
-          ListFooterComponent={
-            hasProgress ? (
-              <Pressable onPress={handleResetAll} hitSlop={Spacing.two} style={styles.resetAll}>
-                <ThemedText type="link" themeColor="textSecondary">
-                  Réinitialiser toute la progression
-                </ThemedText>
-              </Pressable>
-            ) : null
-          }
-          ListEmptyComponent={
-            <ThemedText themeColor="textSecondary" style={styles.empty}>
-              {query.trim()
-                ? `Aucun livre ne correspond à « ${query.trim()} ».`
-                : 'Aucun livre dans cette catégorie.'}
-            </ThemedText>
-          }
-        />
       </SafeAreaView>
     </ThemedView>
   );
@@ -192,58 +71,43 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.four,
+  },
+  content: {
+    paddingTop: Spacing.five,
+    paddingBottom: Spacing.six,
+    gap: Spacing.three,
   },
   title: {
-    fontSize: 34,
+    fontSize: 32,
     lineHeight: 40,
+    marginBottom: Spacing.two,
   },
-  subtitle: {
-    marginTop: Spacing.one,
-    marginBottom: Spacing.three,
-  },
-  search: {
-    height: 44,
-    borderRadius: Spacing.three,
-    paddingHorizontal: Spacing.three,
+  paragraph: {
     fontSize: 16,
-    marginBottom: Spacing.three,
+    lineHeight: 26,
   },
-  categoriesScroll: {
-    flexGrow: 0,
+  bold: {
+    fontWeight: '700',
   },
-  categories: {
-    gap: Spacing.two,
-    paddingBottom: Spacing.three,
+  invocation: {
+    fontSize: 16,
+    lineHeight: 26,
+    fontStyle: 'italic',
+    marginTop: Spacing.two,
   },
-  chip: {
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.five,
-  },
-  chipTextSelected: {
-    color: '#ffffff',
-  },
-  sortButton: {
-    alignSelf: 'flex-end',
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
+  cta: {
+    backgroundColor: '#3c87f7',
     borderRadius: Spacing.three,
-    marginBottom: Spacing.three,
-  },
-  list: {
-    gap: Spacing.three,
-    paddingBottom: Spacing.six,
-  },
-  pressed: {
-    opacity: 0.6,
-  },
-  empty: {
-    textAlign: 'center',
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
     marginTop: Spacing.five,
   },
-  resetAll: {
-    alignSelf: 'center',
-    marginTop: Spacing.four,
+  ctaPressed: {
+    opacity: 0.8,
+  },
+  ctaLabel: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

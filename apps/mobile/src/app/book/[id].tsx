@@ -69,7 +69,9 @@ export default function BookDetailScreen() {
               </Pressable>
             ) : null}
             <Pressable
-              onPress={() => router.navigate({ pathname: '/', params: { category: book.category } })}
+              onPress={() =>
+                router.navigate({ pathname: '/library', params: { category: book.category } })
+              }
               accessibilityRole="button"
               accessibilityLabel={`Voir tous les livres de la catégorie ${book.category}`}
               style={({ pressed }) => [styles.categoryButton, pressed && styles.categoryPressed]}>
