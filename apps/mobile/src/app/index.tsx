@@ -32,14 +32,25 @@ function normalize(value: string) {
 export default function HomeScreen() {
   const theme = useTheme();
   const [query, setQuery] = useState('');
+  const [sortAscending, setSortAscending] = useState(true);
 
-  const filteredBooks = useMemo(() => {
+  const visibleBooks = useMemo(() => {
     const q = normalize(query.trim());
-    if (!q) return mockBooks;
-    return mockBooks.filter((book) =>
-      normalize(`${book.title} ${book.description}`).includes(q),
-    );
-  }, [query]);
+    const filtered = q
+      ? mockBooks.filter((book) => normalize(`${book.title} ${book.description}`).includes(q))
+      : mockBooks;
+
+    // Tri alphabétique par titre, insensible aux accents (via normalize).
+    const sorted = [...filtered].sort((a, b) => {
+      const titleA = normalize(a.title);
+      const titleB = normalize(b.title);
+      if (titleA < titleB) return -1;
+      if (titleA > titleB) return 1;
+      return 0;
+    });
+
+    return sortAscending ? sorted : sorted.reverse();
+  }, [query, sortAscending]);
 
   return (
     <ThemedView style={styles.container}>
@@ -63,8 +74,24 @@ export default function HomeScreen() {
           style={[styles.search, { backgroundColor: theme.backgroundElement, color: theme.text }]}
         />
 
+        <Pressable
+          onPress={() => setSortAscending((value) => !value)}
+          accessibilityRole="button"
+          accessibilityLabel={
+            sortAscending
+              ? 'Trier les livres par titre, ordre décroissant'
+              : 'Trier les livres par titre, ordre croissant'
+          }
+          style={({ pressed }) => [
+            styles.sortButton,
+            { backgroundColor: theme.backgroundElement },
+            pressed && styles.pressed,
+          ]}>
+          <ThemedText type="smallBold">Titre {sortAscending ? 'A → Z' : 'Z → A'}</ThemedText>
+        </Pressable>
+
         <FlatList
-          data={filteredBooks}
+          data={visibleBooks}
           keyExtractor={(book: Book) => book.id}
           keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
@@ -108,7 +135,14 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
     paddingHorizontal: Spacing.three,
     fontSize: 16,
-    marginBottom: Spacing.four,
+    marginBottom: Spacing.three,
+  },
+  sortButton: {
+    alignSelf: 'flex-end',
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.three,
+    marginBottom: Spacing.three,
   },
   list: {
     gap: Spacing.three,
