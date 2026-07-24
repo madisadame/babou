@@ -56,6 +56,11 @@ export default function BookDetailScreen() {
                 />
               </Pressable>
             ) : null}
+            <ThemedView type="backgroundElement" style={styles.categoryBadge}>
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                {book.category}
+              </ThemedText>
+            </ThemedView>
             <ThemedText type="title" style={styles.title}>
               {book.title}
             </ThemedText>
@@ -152,6 +157,12 @@ const styles = StyleSheet.create({
   hint: {
     color: '#ffffff',
     opacity: 0.7,
+  },
+  categoryBadge: {
+    alignSelf: 'flex-start',
+    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.five,
   },
   title: {
     fontSize: 34,
