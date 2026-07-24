@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -14,6 +15,7 @@ import { mockBooks } from '@/data/mock-books';
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const [isCoverOpen, setIsCoverOpen] = useState(false);
 
   const book = mockBooks.find((item) => item.id === id);
 
@@ -40,13 +42,19 @@ export default function BookDetailScreen() {
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}>
             {book.coverUrl ? (
-              <Image
-                source={{ uri: book.coverUrl }}
-                style={styles.cover}
-                contentFit="cover"
-                transition={200}
-                accessibilityIgnoresInvertColors
-              />
+              <Pressable
+                onPress={() => setIsCoverOpen(true)}
+                accessibilityRole="imagebutton"
+                accessibilityLabel="Agrandir la couverture"
+                style={({ pressed }) => (pressed ? styles.coverPressed : undefined)}>
+                <Image
+                  source={{ uri: book.coverUrl }}
+                  style={styles.cover}
+                  contentFit="cover"
+                  transition={200}
+                  accessibilityIgnoresInvertColors
+                />
+              </Pressable>
             ) : null}
             <ThemedText type="title" style={styles.title}>
               {book.title}
@@ -77,6 +85,28 @@ export default function BookDetailScreen() {
             </ThemedText>
           </ThemedView>
         )}
+
+        <Modal
+          visible={isCoverOpen}
+          transparent
+          animationType="fade"
+          statusBarTranslucent
+          onRequestClose={() => setIsCoverOpen(false)}>
+          <Pressable style={styles.backdrop} onPress={() => setIsCoverOpen(false)}>
+            {book?.coverUrl ? (
+              <Image
+                source={{ uri: book.coverUrl }}
+                style={styles.fullCover}
+                contentFit="contain"
+                transition={150}
+                accessibilityIgnoresInvertColors
+              />
+            ) : null}
+            <ThemedText type="small" style={styles.hint}>
+              Toucher pour fermer
+            </ThemedText>
+          </Pressable>
+        </Modal>
       </SafeAreaView>
     </ThemedView>
   );
@@ -103,6 +133,25 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: Spacing.three,
     alignSelf: 'center',
+  },
+  coverPressed: {
+    opacity: 0.85,
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.four,
+    gap: Spacing.four,
+  },
+  fullCover: {
+    width: '100%',
+    height: '75%',
+  },
+  hint: {
+    color: '#ffffff',
+    opacity: 0.7,
   },
   title: {
     fontSize: 34,
