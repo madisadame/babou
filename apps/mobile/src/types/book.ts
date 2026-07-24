@@ -7,6 +7,9 @@ export interface Book {
   id: string;
   title: string;
   description: string;
+  /** Catégorie de fiqh (ex. « Adorations »). Chaîne libre : le backend
+   *  pourra en fournir de nouvelles sans changer le code. */
+  category: string;
   /** URL de l'image de couverture. Optionnel : l'UI gère l'absence d'image. */
   coverUrl?: string;
 }

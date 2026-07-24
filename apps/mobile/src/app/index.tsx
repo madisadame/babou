@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, TextInput } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
@@ -29,16 +29,30 @@ function normalize(value: string) {
   return result.toLowerCase();
 }
 
+// Onglet « tout afficher » du filtre par catégorie.
+const ALL_CATEGORIES = 'Toutes';
+
 export default function HomeScreen() {
   const theme = useTheme();
   const [query, setQuery] = useState('');
   const [sortAscending, setSortAscending] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
+
+  // Catégories dérivées des données : le backend pourra en ajouter sans
+  // toucher à cet écran. « Toutes » en tête pour retirer le filtre.
+  const categories = useMemo(
+    () => [ALL_CATEGORIES, ...Array.from(new Set(mockBooks.map((book) => book.category)))],
+    [],
+  );
 
   const visibleBooks = useMemo(() => {
     const q = normalize(query.trim());
-    const filtered = q
-      ? mockBooks.filter((book) => normalize(`${book.title} ${book.description}`).includes(q))
-      : mockBooks;
+    const filtered = mockBooks.filter((book) => {
+      const matchesCategory =
+        selectedCategory === ALL_CATEGORIES || book.category === selectedCategory;
+      const matchesQuery = !q || normalize(`${book.title} ${book.description}`).includes(q);
+      return matchesCategory && matchesQuery;
+    });
 
     // Tri alphabétique par titre, insensible aux accents (via normalize).
     const sorted = [...filtered].sort((a, b) => {
@@ -50,7 +64,7 @@ export default function HomeScreen() {
     });
 
     return sortAscending ? sorted : sorted.reverse();
-  }, [query, sortAscending]);
+  }, [query, sortAscending, selectedCategory]);
 
   return (
     <ThemedView style={styles.container}>
@@ -73,6 +87,33 @@ export default function HomeScreen() {
           accessibilityLabel="Rechercher un livre"
           style={[styles.search, { backgroundColor: theme.backgroundElement, color: theme.text }]}
         />
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoriesScroll}
+          contentContainerStyle={styles.categories}>
+          {categories.map((category) => {
+            const selected = category === selectedCategory;
+            return (
+              <Pressable
+                key={category}
+                onPress={() => setSelectedCategory(category)}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                accessibilityLabel={`Filtrer par ${category}`}
+                style={({ pressed }) => [
+                  styles.chip,
+                  { backgroundColor: selected ? '#3c87f7' : theme.backgroundElement },
+                  pressed && styles.pressed,
+                ]}>
+                <ThemedText type="smallBold" style={selected ? styles.chipTextSelected : undefined}>
+                  {category}
+                </ThemedText>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
 
         <Pressable
           onPress={() => setSortAscending((value) => !value)}
@@ -104,7 +145,9 @@ export default function HomeScreen() {
           contentContainerStyle={styles.list}
           ListEmptyComponent={
             <ThemedText themeColor="textSecondary" style={styles.empty}>
-              Aucun livre ne correspond à « {query.trim()} ».
+              {query.trim()
+                ? `Aucun livre ne correspond à « ${query.trim()} ».`
+                : 'Aucun livre dans cette catégorie.'}
             </ThemedText>
           }
         />
@@ -136,6 +179,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     fontSize: 16,
     marginBottom: Spacing.three,
+  },
+  categoriesScroll: {
+    flexGrow: 0,
+  },
+  categories: {
+    gap: Spacing.two,
+    paddingBottom: Spacing.three,
+  },
+  chip: {
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.five,
+  },
+  chipTextSelected: {
+    color: '#ffffff',
   },
   sortButton: {
     alignSelf: 'flex-end',
