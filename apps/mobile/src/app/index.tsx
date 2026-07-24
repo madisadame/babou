@@ -1,4 +1,5 @@
-import { FlatList, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
@@ -22,7 +23,13 @@ export default function HomeScreen() {
         <FlatList
           data={mockBooks}
           keyExtractor={(book: Book) => book.id}
-          renderItem={({ item }) => <BookCard book={item} />}
+          renderItem={({ item }) => (
+            <Link href={{ pathname: '/book/[id]', params: { id: item.id } }} asChild>
+              <Pressable style={({ pressed }) => (pressed ? styles.pressed : undefined)}>
+                <BookCard book={item} />
+              </Pressable>
+            </Link>
+          )}
           contentContainerStyle={styles.list}
         />
       </SafeAreaView>
@@ -50,5 +57,8 @@ const styles = StyleSheet.create({
   list: {
     gap: Spacing.three,
     paddingBottom: Spacing.six,
+  },
+  pressed: {
+    opacity: 0.6,
   },
 });
