@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -19,13 +19,8 @@ export default function BookDetailScreen() {
 
   const book = mockBooks.find((item) => item.id === id);
 
-  // Le contenu des chapitres viendra du backend (étape 6). En attendant, le
-  // bouton confirme l'action sans mener vers un écran vide.
-  const handleStartReading = () => {
-    Alert.alert(
-      'Bientôt disponible',
-      'La lecture des chapitres sera disponible une fois le backend connecté.',
-    );
+  const openReader = () => {
+    if (book) router.push({ pathname: '/read/[id]', params: { id: book.id } });
   };
 
   return (
@@ -75,7 +70,7 @@ export default function BookDetailScreen() {
             </ThemedText>
 
             <Pressable
-              onPress={handleStartReading}
+              onPress={openReader}
               style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
               <ThemedText style={styles.ctaLabel}>Commencer la lecture</ThemedText>
             </Pressable>
