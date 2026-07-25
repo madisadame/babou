@@ -9,15 +9,24 @@ import {
   type ReactNode,
 } from 'react';
 
-// Progression de lecture par livre : fraction lue de 0 à 1, indexée par id.
+import { supabase } from '@/data/supabase/client';
+import {
+  clearReadingProgress,
+  deleteReadingProgress,
+  fetchReadingProgress,
+  pushReadingProgress,
+  upsertReadingProgress,
+} from '@/data/supabase/sync';
+import { useAuth } from '@/hooks/use-auth';
+
+// Progression de lecture par chapitre : fraction lue de 0 à 1, indexée par id.
 type ProgressMap = Record<string, number>;
 
 type ReadingProgressContextValue = {
-  /** Vrai si au moins un livre a une progression enregistrée. */
   hasProgress: boolean;
-  getProgress: (bookId: string) => number;
-  setProgress: (bookId: string, value: number) => void;
-  resetProgress: (bookId: string) => void;
+  getProgress: (chapterId: string) => number;
+  setProgress: (chapterId: string, value: number) => void;
+  resetProgress: (chapterId: string) => void;
   resetAll: () => void;
 };
 
@@ -26,10 +35,17 @@ const STORAGE_KEY = 'babou:reading-progress';
 const ReadingProgressContext = createContext<ReadingProgressContextValue | null>(null);
 
 export function ReadingProgressProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [progress, setProgressState] = useState<ProgressMap>({});
   const hydrated = useRef(false);
+  const progressRef = useRef(progress);
+  const syncedUserId = useRef<string | null>(null);
 
-  // Chargement initial depuis le stockage persistant.
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  // Chargement initial depuis le cache local.
   useEffect(() => {
     (async () => {
       try {
@@ -43,37 +59,64 @@ export function ReadingProgressProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
-  // Sauvegarde à chaque changement (une fois l'état initial chargé).
+  // Sauvegarde locale à chaque changement (une fois hydraté).
   useEffect(() => {
     if (!hydrated.current) return;
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(progress)).catch(() => {});
   }, [progress]);
 
+  // À la connexion : fusionner le distant avec le local (on garde le max par
+  // chapitre), appliquer, puis repousser la fusion sur le serveur.
+  useEffect(() => {
+    if (!user || !supabase) {
+      syncedUserId.current = null;
+      return;
+    }
+    if (syncedUserId.current === user.id) return;
+    syncedUserId.current = user.id;
+    let active = true;
+    (async () => {
+      const remote = await fetchReadingProgress(user.id);
+      if (!active) return;
+      const merged: ProgressMap = { ...progressRef.current };
+      for (const [chapterId, value] of Object.entries(remote)) {
+        merged[chapterId] = Math.max(merged[chapterId] ?? 0, value);
+      }
+      setProgressState(merged);
+      pushReadingProgress(user.id, merged).catch(() => {});
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   const value = useMemo<ReadingProgressContextValue>(
     () => ({
       hasProgress: Object.keys(progress).length > 0,
-      getProgress: (bookId) => progress[bookId] ?? 0,
-      setProgress: (bookId, next) => {
+      getProgress: (chapterId) => progress[chapterId] ?? 0,
+      setProgress: (chapterId, next) => {
         const clamped = Math.max(0, Math.min(1, next));
-        setProgressState((prev) => {
-          const current = prev[bookId] ?? 0;
-          // Progression monotone (on garde le point le plus loin atteint) et
-          // anti-churn : on ignore les micro-variations (< 1 %).
-          if (clamped <= current + 0.01) return prev;
-          return { ...prev, [bookId]: clamped };
-        });
+        const current = progressRef.current[chapterId] ?? 0;
+        // Progression monotone + anti-churn (< 1 %).
+        if (clamped <= current + 0.01) return;
+        setProgressState((prev) => ({ ...prev, [chapterId]: clamped }));
+        if (user && supabase) upsertReadingProgress(user.id, chapterId, clamped).catch(() => {});
       },
-      resetProgress: (bookId) => {
+      resetProgress: (chapterId) => {
         setProgressState((prev) => {
-          if (!(bookId in prev)) return prev;
-          const next = { ...prev };
-          delete next[bookId];
-          return next;
+          if (!(chapterId in prev)) return prev;
+          const nextState = { ...prev };
+          delete nextState[chapterId];
+          return nextState;
         });
+        if (user && supabase) deleteReadingProgress(user.id, chapterId).catch(() => {});
       },
-      resetAll: () => setProgressState({}),
+      resetAll: () => {
+        setProgressState({});
+        if (user && supabase) clearReadingProgress(user.id).catch(() => {});
+      },
     }),
-    [progress],
+    [progress, user],
   );
 
   return (
