@@ -1,6 +1,6 @@
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { Alert, FlatList, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
@@ -88,9 +88,21 @@ export default function LibraryScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title" style={styles.title}>
-          {t('library.title')}
-        </ThemedText>
+        <View style={styles.header}>
+          <ThemedText type="title" style={styles.title}>
+            {t('library.title')}
+          </ThemedText>
+          <Link href="/settings" asChild>
+            <Pressable
+              hitSlop={Spacing.two}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.a11y')}>
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                {t('settings.title')}
+              </ThemedText>
+            </Pressable>
+          </Link>
+        </View>
         <ThemedText themeColor="textSecondary" style={styles.subtitle}>
           {t('library.subtitle')}
         </ThemedText>
@@ -193,6 +205,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.four,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 34,

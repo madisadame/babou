@@ -13,7 +13,7 @@ import { LessonView } from '@/components/lesson-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useChapter, useLesson } from '@/hooks/use-content';
+import { useChapter, useLesson, useQuestions } from '@/hooks/use-content';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useTranslation } from '@/hooks/use-translation';
 
@@ -26,6 +26,7 @@ export default function ChapterReadScreen() {
   const { t } = useTranslation();
   const { chapter, loading } = useChapter(id);
   const { lesson, loading: loadingLesson } = useLesson(id);
+  const { questions } = useQuestions(id);
   const { getProgress, setProgress, resetProgress } = useReadingProgress();
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -100,6 +101,14 @@ export default function ChapterReadScreen() {
               </ThemedView>
             )}
 
+            {questions.length > 0 ? (
+              <Pressable
+                onPress={() => router.push({ pathname: '/quiz/[id]', params: { id: chapter.id } })}
+                style={({ pressed }) => [styles.quizButton, pressed && styles.quizButtonPressed]}>
+                <ThemedText style={styles.quizButtonLabel}>{t('chapter.startQuiz')}</ThemedText>
+              </Pressable>
+            ) : null}
+
             {progress > 0 ? (
               <Pressable
                 onPress={handleResetProgress}
@@ -154,6 +163,21 @@ const styles = StyleSheet.create({
   },
   mediaSoon: {
     textAlign: 'center',
+  },
+  quizButton: {
+    backgroundColor: '#3c87f7',
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
+    marginTop: Spacing.two,
+  },
+  quizButtonPressed: {
+    opacity: 0.8,
+  },
+  quizButtonLabel: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   resetButton: {
     alignSelf: 'center',

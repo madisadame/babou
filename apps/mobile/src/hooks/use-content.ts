@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import type { Book } from '@/domain/book';
 import type { Chapter } from '@/domain/chapter';
 import type { Lesson } from '@/domain/lesson';
+import type { Question } from '@/domain/quiz';
 import { contentRepository } from '@/data/content-repository';
 
 type AsyncState<T> = { data: T | null; loading: boolean };
@@ -57,4 +58,9 @@ export function useLesson(chapterId: string) {
   return { lesson: data, loading };
 }
 
-export type { Book, Chapter, Lesson };
+export function useQuestions(chapterId: string) {
+  const { data, loading } = useAsync(() => contentRepository.getQuestions(chapterId), [chapterId]);
+  return { questions: data ?? [], loading };
+}
+
+export type { Book, Chapter, Lesson, Question };

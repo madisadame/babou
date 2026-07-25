@@ -66,4 +66,31 @@ export const fr = {
   'chapter.resetConfirm': 'Réinitialiser',
   'chapter.notFoundTitle': 'Chapitre introuvable',
   'chapter.notFoundMessage': "Ce chapitre n'existe pas ou n'est plus disponible.",
+  'chapter.startQuiz': 'Passer le quiz',
+
+  // Réglages
+  'settings.title': 'Réglages',
+  'settings.a11y': 'Ouvrir les réglages',
+  'settings.languageSection': 'Langue',
+  'settings.correctionSection': 'Correction des quiz',
+  'settings.correctionImmediate': 'Après chaque question',
+  'settings.correctionEnd': 'À la fin du questionnaire',
+
+  // Quiz
+  'quiz.progress': 'Question {{current}} / {{total}}',
+  'quiz.next': 'Question suivante',
+  'quiz.seeResults': 'Voir les résultats',
+  'quiz.correct': 'Bonne réponse',
+  'quiz.incorrect': 'Mauvaise réponse',
+  'quiz.correctionLabel': 'Correction',
+  'quiz.empty': 'Aucune question pour ce chapitre pour le moment.',
+  'quiz.resultsTitle': 'Résultats',
+  'quiz.resultsScore': '{{correct}} / {{total}} bonnes réponses',
+  'quiz.resultsRate': 'Taux de réussite : {{pct}} %',
+  'quiz.resultsMastered': 'Questions réussies : {{count}}',
+  'quiz.resultsToReview': 'Questions à revoir : {{count}}',
+  'quiz.reviewTitle': 'Corrections',
+  'quiz.correctAnswer': 'Bonne réponse : {{answer}}',
+  'quiz.retry': 'Recommencer',
+  'quiz.backToChapter': 'Retour au chapitre',
 } as const;

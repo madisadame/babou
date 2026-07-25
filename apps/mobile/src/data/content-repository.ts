@@ -1,6 +1,7 @@
 import type { Book } from '@/domain/book';
 import type { Chapter } from '@/domain/chapter';
 import type { Lesson } from '@/domain/lesson';
+import type { Question } from '@/domain/quiz';
 
 import { mockContentRepository } from './mock/mock-content-repository';
 import { isSupabaseConfigured } from './supabase/client';
@@ -14,6 +15,7 @@ export interface ContentRepository {
   getChapters(bookId: string): Promise<Chapter[]>;
   getChapter(id: string): Promise<Chapter | null>;
   getLesson(chapterId: string): Promise<Lesson | null>;
+  getQuestions(chapterId: string): Promise<Question[]>;
 }
 
 // Sélection automatique : Supabase si les identifiants sont présents (voir

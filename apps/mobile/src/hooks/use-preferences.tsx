@@ -2,18 +2,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { DEFAULT_LOCALE, type Locale } from '@/domain/locale';
+import type { CorrectionMode } from '@/domain/quiz';
 
-// Préférences utilisateur persistées. Contient la langue aujourd'hui ;
-// accueillera le mode de correction des quiz (étape 7) sans changer d'API.
+// Préférences utilisateur persistées : langue et mode de correction des quiz.
 type Preferences = {
   language: Locale;
+  correctionMode: CorrectionMode;
 };
 
 type PreferencesContextValue = Preferences & {
   setLanguage: (language: Locale) => void;
+  setCorrectionMode: (mode: CorrectionMode) => void;
 };
 
-const DEFAULT_PREFERENCES: Preferences = { language: DEFAULT_LOCALE };
+const DEFAULT_PREFERENCES: Preferences = { language: DEFAULT_LOCALE, correctionMode: 'immediate' };
 const STORAGE_KEY = 'babou:preferences';
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
@@ -46,6 +48,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     () => ({
       ...preferences,
       setLanguage: (language) => setPreferences((prev) => ({ ...prev, language })),
+      setCorrectionMode: (correctionMode) =>
+        setPreferences((prev) => ({ ...prev, correctionMode })),
     }),
     [preferences],
   );

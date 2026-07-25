@@ -35,3 +35,28 @@ insert into public.chapter_segments (id, chapter_id, position, arabic, translati
   ('salat-1', 'salat', 1, 'هٰذِهِ مُعَايَنَةٌ لِلْقَارِئِ الثُّنَائِيِّ اللُّغَةِ.', 'Ceci est un aperçu du lecteur bilingue.'),
   ('salat-2', 'salat', 2, 'النَّصُّ الْعَرَبِيُّ فِي الْأَعْلَى وَالتَّرْجَمَةُ تَحْتَهُ.', 'Le texte arabe en haut et la traduction en dessous.')
 on conflict (id) do nothing;
+
+-- Questions d'exemple NEUTRES (démontrent le mécanisme du quiz)
+insert into public.questions (id, chapter_id, position, prompt_fr, correct_choice_key, explanation_fr) values
+  ('quiz-tahara-1', 'tahara', 1, 'Question d''exemple : quelle option est la bonne réponse ?', 'b', 'Correction d''exemple : la bonne réponse était « Option B ».'),
+  ('quiz-tahara-2', 'tahara', 2, 'Question d''exemple : combien font 2 + 3 ?', 'b', '2 + 3 = 5.'),
+  ('quiz-tahara-3', 'tahara', 3, 'Vrai ou faux (exemple) : Babou est un outil de complément.', 'a', 'Babou est bien un outil pédagogique de complément.'),
+  ('quiz-salat-1', 'salat', 1, 'Question d''exemple : que montre le lecteur d''un chapitre ?', 'a', 'Le lecteur affiche le texte arabe et sa traduction.'),
+  ('quiz-salat-2', 'salat', 2, 'Question d''exemple : combien font 10 − 4 ?', 'b', '10 − 4 = 6.')
+on conflict (id) do nothing;
+
+insert into public.question_choices (id, question_id, position, choice_key, text_fr) values
+  ('quiz-tahara-1-a', 'quiz-tahara-1', 1, 'a', 'Option A'),
+  ('quiz-tahara-1-b', 'quiz-tahara-1', 2, 'b', 'Option B'),
+  ('quiz-tahara-1-c', 'quiz-tahara-1', 3, 'c', 'Option C'),
+  ('quiz-tahara-2-a', 'quiz-tahara-2', 1, 'a', '4'),
+  ('quiz-tahara-2-b', 'quiz-tahara-2', 2, 'b', '5'),
+  ('quiz-tahara-2-c', 'quiz-tahara-2', 3, 'c', '6'),
+  ('quiz-tahara-3-a', 'quiz-tahara-3', 1, 'a', 'Vrai'),
+  ('quiz-tahara-3-b', 'quiz-tahara-3', 2, 'b', 'Faux'),
+  ('quiz-salat-1-a', 'quiz-salat-1', 1, 'a', 'Le texte arabe et sa traduction'),
+  ('quiz-salat-1-b', 'quiz-salat-1', 2, 'b', 'Uniquement une image'),
+  ('quiz-salat-2-a', 'quiz-salat-2', 1, 'a', '5'),
+  ('quiz-salat-2-b', 'quiz-salat-2', 2, 'b', '6'),
+  ('quiz-salat-2-c', 'quiz-salat-2', 3, 'c', '7')
+on conflict (id) do nothing;

@@ -43,10 +43,20 @@ et la vidéo karaoké à venir.
 ```
 books (id, title, description, category, cover_url, position)
   └─ chapters (id, book_id, position, title, description, audio_url)
-       └─ chapter_segments (id, chapter_id, position, arabic,
-                            translation_fr, translation_shimaore,
-                            audio_url, words)
+       ├─ chapter_segments (id, chapter_id, position, arabic,
+       │                    translation_fr, translation_shimaore,
+       │                    audio_url, words)
+       └─ questions (id, chapter_id, position, prompt_fr, prompt_shimaore,
+            │        correct_choice_key, explanation_fr, explanation_shimaore)
+            └─ question_choices (id, question_id, position, choice_key,
+                                 text_fr, text_shimaore)
 ```
+
+Un **quiz** = les `questions` d'un chapitre, chacune avec ses `question_choices`.
+`correct_choice_key` pointe vers le `choice_key` (« a », « b »…) de la bonne
+réponse. Les résultats de l'utilisateur (scores, questions maîtrisées) sont
+stockés sur l'appareil pour l'instant ; ils seront rattachés à un compte lors
+de l'ajout de l'authentification.
 
 Lecture publique via la clé anon (politiques RLS `select`). Les écritures
 passent par le rôle service (Supabase Studio), qui contourne la RLS.

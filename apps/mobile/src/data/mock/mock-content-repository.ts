@@ -1,7 +1,7 @@
 import type { Book } from '@/domain/book';
 import type { ContentRepository } from '@/data/content-repository';
 
-import { mockBooks, mockChapters, mockLessons } from './mock-content';
+import { mockBooks, mockChapters, mockLessons, mockQuestions } from './mock-content';
 
 function chapterCountOf(bookId: string): number {
   return mockChapters.filter((chapter) => chapter.bookId === bookId).length;
@@ -35,5 +35,11 @@ export const mockContentRepository: ContentRepository = {
 
   async getLesson(chapterId) {
     return mockLessons.find((lesson) => lesson.chapterId === chapterId) ?? null;
+  },
+
+  async getQuestions(chapterId) {
+    return mockQuestions
+      .filter((question) => question.chapterId === chapterId)
+      .sort((a, b) => a.order - b.order);
   },
 };

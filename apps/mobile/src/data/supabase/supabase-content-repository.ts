@@ -1,6 +1,7 @@
 import type { Book } from '@/domain/book';
 import type { Chapter } from '@/domain/chapter';
 import type { Lesson, LessonSegment, LessonWord, Translations } from '@/domain/lesson';
+import type { Question, QuestionChoice } from '@/domain/quiz';
 import type { ContentRepository } from '@/data/content-repository';
 
 import { supabase } from './client';
@@ -64,6 +65,52 @@ function mapSegment(row: SegmentRow): LessonSegment {
     translations,
     words: row.words ?? undefined,
     audioUrl: row.audio_url ?? undefined,
+  };
+}
+
+type ChoiceRow = {
+  choice_key: string;
+  position: number | null;
+  text_fr: string | null;
+  text_shimaore: string | null;
+};
+
+type QuestionRow = {
+  id: string;
+  chapter_id: string;
+  position: number | null;
+  prompt_fr: string | null;
+  prompt_shimaore: string | null;
+  correct_choice_key: string;
+  explanation_fr: string | null;
+  explanation_shimaore: string | null;
+  question_choices?: ChoiceRow[];
+};
+
+function localized(fr: string | null, shimaore: string | null): Translations {
+  const translations: Translations = {};
+  if (fr) translations.fr = fr;
+  if (shimaore) translations.shimaore = shimaore;
+  return translations;
+}
+
+function mapChoice(row: ChoiceRow): QuestionChoice {
+  return { id: row.choice_key, text: localized(row.text_fr, row.text_shimaore) };
+}
+
+function mapQuestion(row: QuestionRow): Question {
+  const choices = (row.question_choices ?? [])
+    .slice()
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    .map(mapChoice);
+  return {
+    id: row.id,
+    chapterId: row.chapter_id,
+    order: row.position ?? 0,
+    prompt: localized(row.prompt_fr, row.prompt_shimaore),
+    choices,
+    correctChoiceId: row.correct_choice_key,
+    explanation: localized(row.explanation_fr, row.explanation_shimaore),
   };
 }
 
@@ -133,5 +180,16 @@ export const supabaseContentRepository: ContentRepository = {
       audioUrl: (data as { audio_url: string | null }).audio_url ?? undefined,
     };
     return lesson;
+  },
+
+  async getQuestions(chapterId) {
+    if (!supabase) return [];
+    const { data, error } = await supabase
+      .from('questions')
+      .select('*, question_choices(*)')
+      .eq('chapter_id', chapterId)
+      .order('position');
+    if (error || !data) return [];
+    return (data as QuestionRow[]).map(mapQuestion);
   },
 };

@@ -1,6 +1,7 @@
 import type { Book } from '@/domain/book';
 import type { Chapter } from '@/domain/chapter';
 import type { Lesson } from '@/domain/lesson';
+import type { Question } from '@/domain/quiz';
 
 // Données fictives temporaires, en attendant l'espace d'administration (étape 5)
 // et le backend Supabase (étape 7). Elles ne sont consommées QUE par le
@@ -185,6 +186,74 @@ export const mockLessons: Lesson[] = [
         translations: { fr: "Le texte arabe en haut et la traduction en dessous." },
       },
     ],
+  },
+];
+
+// Questions d'exemple NEUTRES (aucune Q/R de fiqh inventée) : elles servent à
+// démontrer le mécanisme du quiz. Le vrai contenu viendra de l'admin.
+export const mockQuestions: Question[] = [
+  {
+    id: 'quiz-tahara-1',
+    chapterId: 'tahara',
+    order: 1,
+    prompt: { fr: "Question d'exemple : quelle option est la bonne réponse ?" },
+    choices: [
+      { id: 'a', text: { fr: 'Option A' } },
+      { id: 'b', text: { fr: 'Option B' } },
+      { id: 'c', text: { fr: 'Option C' } },
+    ],
+    correctChoiceId: 'b',
+    explanation: { fr: 'Correction d’exemple : la bonne réponse était « Option B ».' },
+  },
+  {
+    id: 'quiz-tahara-2',
+    chapterId: 'tahara',
+    order: 2,
+    prompt: { fr: 'Question d’exemple : combien font 2 + 3 ?' },
+    choices: [
+      { id: 'a', text: { fr: '4' } },
+      { id: 'b', text: { fr: '5' } },
+      { id: 'c', text: { fr: '6' } },
+    ],
+    correctChoiceId: 'b',
+    explanation: { fr: '2 + 3 = 5.' },
+  },
+  {
+    id: 'quiz-tahara-3',
+    chapterId: 'tahara',
+    order: 3,
+    prompt: { fr: 'Vrai ou faux (exemple) : Babou est un outil de complément.' },
+    choices: [
+      { id: 'a', text: { fr: 'Vrai' } },
+      { id: 'b', text: { fr: 'Faux' } },
+    ],
+    correctChoiceId: 'a',
+    explanation: { fr: 'Babou est bien un outil pédagogique de complément.' },
+  },
+  {
+    id: 'quiz-salat-1',
+    chapterId: 'salat',
+    order: 1,
+    prompt: { fr: 'Question d’exemple : que montre le lecteur d’un chapitre ?' },
+    choices: [
+      { id: 'a', text: { fr: 'Le texte arabe et sa traduction' } },
+      { id: 'b', text: { fr: 'Uniquement une image' } },
+    ],
+    correctChoiceId: 'a',
+    explanation: { fr: 'Le lecteur affiche le texte arabe et sa traduction.' },
+  },
+  {
+    id: 'quiz-salat-2',
+    chapterId: 'salat',
+    order: 2,
+    prompt: { fr: 'Question d’exemple : combien font 10 − 4 ?' },
+    choices: [
+      { id: 'a', text: { fr: '5' } },
+      { id: 'b', text: { fr: '6' } },
+      { id: 'c', text: { fr: '7' } },
+    ],
+    correctChoiceId: 'b',
+    explanation: { fr: '10 − 4 = 6.' },
   },
 ];
 
