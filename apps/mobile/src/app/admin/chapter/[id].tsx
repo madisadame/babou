@@ -10,9 +10,12 @@ import { contentRepository } from '@/data/content-repository';
 import {
   createChapter,
   deleteChapter,
+  deleteQuestion,
   deleteSegment,
+  getQuestions,
   getSegments,
   updateChapter,
+  type AdminQuestion,
   type AdminSegment,
 } from '@/data/supabase/admin-repository';
 import { useTheme } from '@/hooks/use-theme';
@@ -31,11 +34,15 @@ export default function AdminChapterScreen() {
   const [position, setPosition] = useState('0');
   const [saving, setSaving] = useState(false);
   const [segments, setSegments] = useState<AdminSegment[]>([]);
+  const [questions, setQuestions] = useState<AdminQuestion[]>([]);
 
-  // Segments : rechargés à chaque focus (après édition d'un segment).
+  // Segments + questions : rechargés à chaque focus (après édition).
   useFocusEffect(
     useCallback(() => {
-      if (!isNew) getSegments(params.id).then(setSegments);
+      if (!isNew) {
+        getSegments(params.id).then(setSegments);
+        getQuestions(params.id).then(setQuestions);
+      }
     }, [params.id, isNew]),
   );
 
@@ -48,6 +55,20 @@ export default function AdminChapterScreen() {
         onPress: async () => {
           await deleteSegment(segment.id);
           getSegments(params.id).then(setSegments);
+        },
+      },
+    ]);
+  };
+
+  const confirmDeleteQuestion = (question: AdminQuestion) => {
+    Alert.alert('', t('admin.deleteQuestionConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('admin.delete'),
+        style: 'destructive',
+        onPress: async () => {
+          await deleteQuestion(question.id);
+          getQuestions(params.id).then(setQuestions);
         },
       },
     ]);
@@ -204,6 +225,56 @@ export default function AdminChapterScreen() {
                     </Pressable>
                     <Pressable
                       onPress={() => confirmDeleteSegment(segment)}
+                      hitSlop={Spacing.two}
+                      accessibilityLabel={t('admin.delete')}>
+                      <ThemedText style={styles.deleteIcon}>🗑</ThemedText>
+                    </Pressable>
+                  </ThemedView>
+                ))
+              )}
+
+              <View style={styles.sectionHeader}>
+                <ThemedText type="smallBold" themeColor="textSecondary" style={styles.section}>
+                  {t('admin.quizSection')}
+                </ThemedText>
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: '/admin/question/[id]',
+                      params: { id: 'new', chapterId: params.id },
+                    })
+                  }
+                  hitSlop={Spacing.two}>
+                  <ThemedText type="smallBold" themeColor="textSecondary">
+                    + {t('admin.newQuestion')}
+                  </ThemedText>
+                </Pressable>
+              </View>
+
+              {questions.length === 0 ? (
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('admin.noQuestions')}
+                </ThemedText>
+              ) : (
+                questions.map((question) => (
+                  <ThemedView key={question.id} type="backgroundElement" style={styles.segmentRow}>
+                    <Pressable
+                      onPress={() =>
+                        router.push({
+                          pathname: '/admin/question/[id]',
+                          params: { id: question.id },
+                        })
+                      }
+                      style={styles.segmentInfo}>
+                      <ThemedText type="smallBold" numberOfLines={2}>
+                        {question.promptFr || '—'}
+                      </ThemedText>
+                      <ThemedText type="small" themeColor="textSecondary">
+                        {t('admin.choicesCount', { count: question.choices.length })}
+                      </ThemedText>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => confirmDeleteQuestion(question)}
                       hitSlop={Spacing.two}
                       accessibilityLabel={t('admin.delete')}>
                       <ThemedText style={styles.deleteIcon}>🗑</ThemedText>
