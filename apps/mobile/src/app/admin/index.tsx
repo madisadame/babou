@@ -68,11 +68,11 @@ export default function AdminBooksScreen() {
                 <ThemedText type="title" style={styles.title}>
                   {t('admin.title')}
                 </ThemedText>
-                <Link href="/admin/book/new" asChild>
-                  <Pressable style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}>
-                    <ThemedText style={styles.addLabel}>+ {t('admin.newBook')}</ThemedText>
-                  </Pressable>
-                </Link>
+                <Pressable
+                  onPress={() => router.push({ pathname: '/admin/book/[id]', params: { id: 'new' } })}
+                  style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}>
+                  <ThemedText style={styles.addLabel}>+ {t('admin.newBook')}</ThemedText>
+                </Pressable>
               </View>
             }
             renderItem={({ item }) => (
