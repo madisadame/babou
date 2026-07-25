@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AudioPlayer } from '@/components/audio-player';
 import { LessonView } from '@/components/lesson-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -79,6 +80,8 @@ export default function ChapterReadScreen() {
             {lesson ? (
               <>
                 <LessonView segments={lesson.segments} />
+
+                {lesson.audioUrl ? <AudioPlayer uri={lesson.audioUrl} /> : null}
 
                 <ThemedView type="backgroundElement" style={styles.notice}>
                   <ThemedText type="smallBold">{t('chapter.sampleNoticeTitle')}</ThemedText>

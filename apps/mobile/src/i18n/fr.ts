@@ -56,8 +56,10 @@ export const fr = {
   'chapter.label': 'Chapitre {{order}}',
   'chapter.meta': 'Chapitre {{order}} · {{pct}} % lu',
   'chapter.lessonPending': 'Le contenu de ce chapitre sera bientôt disponible.',
-  'chapter.mediaSoon': 'Lecture audio et vidéo : bientôt disponibles.',
+  'chapter.mediaSoon': 'Vidéo avec suivi des mots : bientôt disponible.',
   'chapter.sampleNoticeTitle': "Texte d'exemple",
+  'audio.play': "Lire l'audio",
+  'audio.pause': 'Mettre en pause',
   'chapter.sampleNoticeBody':
     "Le contenu pédagogique complet de ce chapitre sera ajouté depuis l'espace d'administration (étape 5) puis servi par le backend (étape 7).",
   'chapter.reset': 'Réinitialiser la progression',
