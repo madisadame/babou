@@ -149,6 +149,14 @@ export const fr = {
   'admin.correctAnswer': 'Bonne réponse',
   'admin.choicesCount': '{{count}} réponses',
   'admin.errorQuestion': 'Renseigne la question, au moins 2 réponses et la bonne réponse.',
+  'admin.editTimings': 'Éditer les timings (karaoké)',
+  'admin.timingsTitle': 'Timings karaoké',
+  'admin.timingsIntro':
+    'Joue l’audio et tape le gros bouton à chaque mot récité. Recommence si besoin, puis enregistre.',
+  'admin.timingsNoAudio': 'Ajoute d’abord un audio à ce segment (champ URL audio).',
+  'admin.timingsMark': 'Marquer « {{word}} »',
+  'admin.timingsDone': 'Tous les mots sont marqués ✓',
+  'admin.timingsReset': 'Recommencer',
 
   // Quiz
   'quiz.progress': 'Question {{current}} / {{total}}',

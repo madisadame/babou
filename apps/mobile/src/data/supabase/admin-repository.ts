@@ -209,6 +209,15 @@ export async function deleteSegment(id: string): Promise<Result> {
   return toError(error);
 }
 
+export type WordTiming = { text: string; startMs: number; endMs: number };
+
+// Enregistre les timings mot-à-mot (karaoké) dans la colonne words (jsonb).
+export async function updateSegmentWords(id: string, words: WordTiming[]): Promise<Result> {
+  if (!supabase) return { error: 'unavailable' };
+  const { error } = await supabase.from('chapter_segments').update({ words }).eq('id', id);
+  return toError(error);
+}
+
 // ---- Questions de quiz (avec leurs choix) ----
 
 export type AdminChoiceInput = { textFr: string; textShimaore: string };

@@ -151,11 +151,26 @@ export default function AdminSegmentScreen() {
           </Pressable>
 
           {!isNew ? (
-            <Pressable onPress={handleDelete} hitSlop={Spacing.two} style={styles.deleteRow}>
-              <ThemedText type="link" style={styles.deleteLabel}>
-                {t('admin.deleteSegment')}
-              </ThemedText>
-            </Pressable>
+            <>
+              {audioUrl.trim() ? (
+                <Pressable
+                  onPress={() =>
+                    router.push({ pathname: '/admin/timings/[id]', params: { id: params.id } })
+                  }
+                  style={({ pressed }) => [
+                    styles.timingsButton,
+                    { backgroundColor: theme.backgroundElement },
+                    pressed && styles.pressed,
+                  ]}>
+                  <ThemedText type="smallBold">{t('admin.editTimings')}</ThemedText>
+                </Pressable>
+              ) : null}
+              <Pressable onPress={handleDelete} hitSlop={Spacing.two} style={styles.deleteRow}>
+                <ThemedText type="link" style={styles.deleteLabel}>
+                  {t('admin.deleteSegment')}
+                </ThemedText>
+              </Pressable>
+            </>
           ) : null}
         </ScrollView>
       </SafeAreaView>
@@ -187,7 +202,13 @@ const styles = StyleSheet.create({
     marginTop: Spacing.two,
   },
   primaryLabel: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  timingsButton: {
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
+    marginTop: Spacing.three,
+  },
   pressed: { opacity: 0.6 },
-  deleteRow: { alignSelf: 'center', marginTop: Spacing.five },
+  deleteRow: { alignSelf: 'center', marginTop: Spacing.four },
   deleteLabel: { color: '#e5484d' },
 });
