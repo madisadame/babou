@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,7 +7,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { contentRepository } from '@/data/content-repository';
-import { createChapter, deleteChapter, updateChapter } from '@/data/supabase/admin-repository';
+import {
+  createChapter,
+  deleteChapter,
+  deleteSegment,
+  getSegments,
+  updateChapter,
+  type AdminSegment,
+} from '@/data/supabase/admin-repository';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
 
@@ -23,6 +30,28 @@ export default function AdminChapterScreen() {
   const [description, setDescription] = useState('');
   const [position, setPosition] = useState('0');
   const [saving, setSaving] = useState(false);
+  const [segments, setSegments] = useState<AdminSegment[]>([]);
+
+  // Segments : rechargés à chaque focus (après édition d'un segment).
+  useFocusEffect(
+    useCallback(() => {
+      if (!isNew) getSegments(params.id).then(setSegments);
+    }, [params.id, isNew]),
+  );
+
+  const confirmDeleteSegment = (segment: AdminSegment) => {
+    Alert.alert('', t('admin.deleteSegmentConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('admin.delete'),
+        style: 'destructive',
+        onPress: async () => {
+          await deleteSegment(segment.id);
+          getSegments(params.id).then(setSegments);
+        },
+      },
+    ]);
+  };
 
   useEffect(() => {
     (async () => {
@@ -135,11 +164,60 @@ export default function AdminChapterScreen() {
           </Pressable>
 
           {!isNew ? (
-            <Pressable onPress={handleDelete} hitSlop={Spacing.two} style={styles.deleteChapter}>
-              <ThemedText type="link" style={styles.deleteChapterLabel}>
-                {t('admin.deleteChapter')}
-              </ThemedText>
-            </Pressable>
+            <>
+              <View style={styles.sectionHeader}>
+                <ThemedText type="smallBold" themeColor="textSecondary" style={styles.section}>
+                  {t('admin.lessonSection')}
+                </ThemedText>
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: '/admin/segment/[id]',
+                      params: { id: 'new', chapterId: params.id },
+                    })
+                  }
+                  hitSlop={Spacing.two}>
+                  <ThemedText type="smallBold" themeColor="textSecondary">
+                    + {t('admin.newSegment')}
+                  </ThemedText>
+                </Pressable>
+              </View>
+
+              {segments.length === 0 ? (
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('admin.noSegments')}
+                </ThemedText>
+              ) : (
+                segments.map((segment) => (
+                  <ThemedView key={segment.id} type="backgroundElement" style={styles.segmentRow}>
+                    <Pressable
+                      onPress={() =>
+                        router.push({ pathname: '/admin/segment/[id]', params: { id: segment.id } })
+                      }
+                      style={styles.segmentInfo}>
+                      <ThemedText style={styles.segmentArabic} numberOfLines={1}>
+                        {segment.arabic || '—'}
+                      </ThemedText>
+                      <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
+                        {segment.translationFr || '—'}
+                      </ThemedText>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => confirmDeleteSegment(segment)}
+                      hitSlop={Spacing.two}
+                      accessibilityLabel={t('admin.delete')}>
+                      <ThemedText style={styles.deleteIcon}>🗑</ThemedText>
+                    </Pressable>
+                  </ThemedView>
+                ))
+              )}
+
+              <Pressable onPress={handleDelete} hitSlop={Spacing.two} style={styles.deleteChapter}>
+                <ThemedText type="link" style={styles.deleteChapterLabel}>
+                  {t('admin.deleteChapter')}
+                </ThemedText>
+              </Pressable>
+            </>
           ) : null}
         </ScrollView>
       </SafeAreaView>
@@ -171,6 +249,24 @@ const styles = StyleSheet.create({
   },
   primaryLabel: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
   pressed: { opacity: 0.6 },
+  section: { letterSpacing: 1 },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: Spacing.four,
+  },
+  segmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    borderRadius: Spacing.three,
+    padding: Spacing.three,
+  },
+  segmentInfo: { flex: 1, gap: Spacing.half },
+  segmentArabic: { fontSize: 18, textAlign: 'right', writingDirection: 'rtl' },
+  deleteIcon: { fontSize: 18 },
   deleteChapter: { alignSelf: 'center', marginTop: Spacing.five },
   deleteChapterLabel: { color: '#e5484d' },
 });
+

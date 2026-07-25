@@ -119,6 +119,18 @@ export const fr = {
   'admin.noChapters': 'Aucun chapitre.',
   'admin.errorSave': 'Enregistrement impossible.',
   'admin.errorTitle': 'Le titre est obligatoire.',
+  'admin.lessonSection': 'Leçon (segments)',
+  'admin.newSegment': 'Nouveau segment',
+  'admin.noSegments': 'Aucun segment.',
+  'admin.deleteSegment': 'Supprimer ce segment',
+  'admin.deleteSegmentConfirm': 'Supprimer ce segment ?',
+  'admin.newSegmentTitle': 'Nouveau segment',
+  'admin.editSegmentTitle': 'Modifier le segment',
+  'admin.fieldArabic': 'Texte arabe',
+  'admin.fieldTranslationFr': 'Traduction (français)',
+  'admin.fieldTranslationShimaore': 'Traduction (shimaoré)',
+  'admin.fieldAudioUrl': 'URL audio (optionnel)',
+  'admin.errorSegmentEmpty': 'Renseigne au moins le texte arabe ou la traduction.',
 
   // Quiz
   'quiz.progress': 'Question {{current}} / {{total}}',
