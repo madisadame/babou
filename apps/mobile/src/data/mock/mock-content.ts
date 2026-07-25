@@ -154,6 +154,10 @@ export const mockChapters: Chapter[] = [
 export const mockLessons: Lesson[] = [
   {
     chapterId: 'tahara',
+    // URL DE DÉMONSTRATION TEMPORAIRE (son neutre CC0, ni musique ni contenu
+    // religieux) — uniquement pour tester le lecteur audio. À remplacer par la
+    // vraie récitation via l'admin (Supabase, colonne audio_url).
+    audioUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3',
     segments: [
       {
         id: 'tahara-1',
