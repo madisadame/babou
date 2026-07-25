@@ -8,6 +8,8 @@ export interface Book {
   /** Type d'ouvrage (Fiqh, Invocations, Histoires…). Sert au filtre. */
   category: string;
   coverUrl?: string;
+  /** Ordre d'affichage dans la bibliothèque. */
+  position: number;
   /** Nombre de chapitres — dénormalisé pour l'affichage en liste. */
   chapterCount: number;
 }

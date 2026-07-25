@@ -18,6 +18,7 @@ export const mockBooks: MockBook[] = [
     description: "Traité classique de fiqh Shâfi'î sur les actes d'adoration.",
     category: 'Fiqh',
     coverUrl: 'https://picsum.photos/seed/babou-safina/480/640',
+    position: 1,
   },
   {
     id: 'fiqh-du-quotidien',
@@ -25,6 +26,7 @@ export const mockBooks: MockBook[] = [
     description: 'Les règles pratiques des transactions et du comportement.',
     category: 'Fiqh',
     coverUrl: 'https://picsum.photos/seed/babou-quotidien/480/640',
+    position: 2,
   },
   {
     id: 'invocations-du-croyant',
@@ -32,6 +34,7 @@ export const mockBooks: MockBook[] = [
     description: 'Un recueil d’invocations pour rythmer les journées.',
     category: 'Invocations',
     coverUrl: 'https://picsum.photos/seed/babou-invocations/480/640',
+    position: 3,
   },
   {
     id: 'histoires-des-prophetes',
@@ -39,6 +42,7 @@ export const mockBooks: MockBook[] = [
     description: 'Les récits des prophètes et les enseignements qu’on en tire.',
     category: 'Histoires',
     coverUrl: 'https://picsum.photos/seed/babou-prophetes/480/640',
+    position: 4,
   },
 ];
 

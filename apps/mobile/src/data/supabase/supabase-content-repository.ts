@@ -13,6 +13,7 @@ type BookRow = {
   description: string | null;
   category: string | null;
   cover_url: string | null;
+  position: number | null;
   chapters?: { count: number }[];
 };
 
@@ -41,6 +42,7 @@ function mapBook(row: BookRow): Book {
     description: row.description ?? '',
     category: row.category ?? '',
     coverUrl: row.cover_url ?? undefined,
+    position: row.position ?? 0,
     chapterCount: row.chapters?.[0]?.count ?? 0,
   };
 }

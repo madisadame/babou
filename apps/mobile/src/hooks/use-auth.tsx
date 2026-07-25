@@ -9,6 +9,7 @@ type AuthResult = { error: string | null; needsConfirmation?: boolean };
 
 type AuthContextValue = {
   user: AuthUser | null;
+  isAdmin: boolean;
   loading: boolean;
   available: boolean;
   signUp: (email: string, password: string) => Promise<AuthResult>;
@@ -24,6 +25,7 @@ function toUser(user: User | null | undefined): AuthUser | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,9 +48,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // Vérifie le rôle admin à chaque changement d'utilisateur.
+  useEffect(() => {
+    if (!supabase || !user) {
+      setIsAdmin(false);
+      return;
+    }
+    let active = true;
+    supabase
+      .from('admins')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active) setIsAdmin(Boolean(data));
+      });
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
+      isAdmin,
       loading,
       available: Boolean(supabase),
       signUp: async (email, password) => {
@@ -68,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
       },
     }),
-    [user, loading],
+    [user, isAdmin, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

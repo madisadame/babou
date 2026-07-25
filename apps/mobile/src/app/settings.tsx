@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,7 +18,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { language, setLanguage, correctionMode, setCorrectionMode } = usePreferences();
-  const { user, available, signIn, signUp, signOut } = useAuth();
+  const { user, isAdmin, available, signIn, signUp, signOut } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -95,6 +95,18 @@ export default function SettingsScreen() {
               {user ? (
                 <>
                   <ThemedText>{t('auth.signedInAs', { email: user.email })}</ThemedText>
+                  {isAdmin ? (
+                    <Link href="/admin" asChild>
+                      <Pressable
+                        style={({ pressed }) => [
+                          styles.secondaryButton,
+                          { backgroundColor: theme.backgroundElement },
+                          pressed && styles.pressed,
+                        ]}>
+                        <ThemedText type="smallBold">{t('admin.entry')}</ThemedText>
+                      </Pressable>
+                    </Link>
+                  ) : null}
                   <Pressable
                     onPress={signOut}
                     style={({ pressed }) => [
