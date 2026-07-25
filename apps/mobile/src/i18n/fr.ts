@@ -77,6 +77,20 @@ export const fr = {
   'settings.correctionSection': 'Correction des quiz',
   'settings.correctionImmediate': 'Après chaque question',
   'settings.correctionEnd': 'À la fin du questionnaire',
+  'settings.accountSection': 'Compte',
+
+  // Authentification
+  'auth.email': 'Email',
+  'auth.password': 'Mot de passe',
+  'auth.signIn': 'Se connecter',
+  'auth.signUp': "S'inscrire",
+  'auth.signOut': 'Se déconnecter',
+  'auth.signedInAs': 'Connecté : {{email}}',
+  'auth.intro': 'Connecte-toi pour retrouver ta progression sur tous tes appareils.',
+  'auth.errorFields': 'Renseigne un email et un mot de passe (6 caractères min.).',
+  'auth.errorSignIn': 'Email ou mot de passe incorrect.',
+  'auth.errorSignUp': 'Inscription impossible (email déjà utilisé ou mot de passe trop court ?).',
+  'auth.checkEmail': 'Vérifie ton email pour confirmer ton compte, puis connecte-toi.',
 
   // Quiz
   'quiz.progress': 'Question {{current}} / {{total}}',
