@@ -55,14 +55,8 @@ export const fr = {
   // Chapitre (lecture)
   'chapter.label': 'Chapitre {{order}}',
   'chapter.meta': 'Chapitre {{order}} · {{pct}} % lu',
-  'chapter.sampleP1':
-    "Ce chapitre t'accompagne pas à pas dans la découverte du sujet. Prends ton temps : chaque notion est présentée simplement, pour être comprise puis mise en pratique.",
-  'chapter.sampleP2':
-    "La lecture est pensée pour progresser sereinement, une idée après l'autre. Ta progression est enregistrée automatiquement à mesure que tu avances.",
-  'chapter.sampleP3':
-    "Tu pourras revenir à tout moment sur les passages importants et reprendre ta lecture là où tu t'étais arrêté, d'un appareil à l'autre une fois ton compte connecté.",
-  'chapter.sampleP4':
-    'Bientôt, ce chapitre proposera le texte en arabe, sa traduction, une lecture audio et une vidéo où les mots seront suivis au fil de la récitation.',
+  'chapter.lessonPending': 'Le contenu de ce chapitre sera bientôt disponible.',
+  'chapter.mediaSoon': 'Lecture audio et vidéo : bientôt disponibles.',
   'chapter.sampleNoticeTitle': "Texte d'exemple",
   'chapter.sampleNoticeBody':
     "Le contenu pédagogique complet de ce chapitre sera ajouté depuis l'espace d'administration (étape 5) puis servi par le backend (étape 7).",

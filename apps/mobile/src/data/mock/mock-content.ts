@@ -1,5 +1,6 @@
 import type { Book } from '@/domain/book';
 import type { Chapter } from '@/domain/chapter';
+import type { Lesson } from '@/domain/lesson';
 
 // Données fictives temporaires, en attendant l'espace d'administration (étape 5)
 // et le backend Supabase (étape 7). Elles ne sont consommées QUE par le
@@ -144,3 +145,46 @@ export const mockChapters: Chapter[] = [
     description: 'Le récit de la foi pure et de la construction de la Kaaba.',
   },
 ];
+
+// Leçons d'exemple. Texte arabe NEUTRE (aucun contenu religieux) clairement
+// signalé comme provisoire : le vrai contenu (avec audio et vidéo) viendra de
+// l'admin (étape 5) et du backend (étape 7). Les chapitres sans leçon ici
+// affichent un état « bientôt disponible ».
+export const mockLessons: Lesson[] = [
+  {
+    chapterId: 'tahara',
+    segments: [
+      {
+        id: 'tahara-1',
+        arabic: 'هٰذَا نَصٌّ تَجْرِيبِيٌّ لِلْقِرَاءَةِ.',
+        translations: { fr: "Ceci est un texte d'exemple pour la lecture." },
+      },
+      {
+        id: 'tahara-2',
+        arabic: 'سَيَحِلُّ مَحَلَّهُ الْمُحْتَوَى الْحَقِيقِيُّ قَرِيبًا.',
+        translations: { fr: 'Le contenu réel le remplacera prochainement.' },
+      },
+      {
+        id: 'tahara-3',
+        arabic: 'كُلُّ فَصْلٍ سَيَحْتَوِي عَلَى النَّصِّ وَتَرْجَمَتِهِ.',
+        translations: { fr: 'Chaque chapitre contiendra le texte et sa traduction.' },
+      },
+    ],
+  },
+  {
+    chapterId: 'salat',
+    segments: [
+      {
+        id: 'salat-1',
+        arabic: 'هٰذِهِ مُعَايَنَةٌ لِلْقَارِئِ الثُّنَائِيِّ اللُّغَةِ.',
+        translations: { fr: 'Ceci est un aperçu du lecteur bilingue.' },
+      },
+      {
+        id: 'salat-2',
+        arabic: 'النَّصُّ الْعَرَبِيُّ فِي الْأَعْلَى وَالتَّرْجَمَةُ تَحْتَهُ.',
+        translations: { fr: "Le texte arabe en haut et la traduction en dessous." },
+      },
+    ],
+  },
+];
+

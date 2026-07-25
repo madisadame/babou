@@ -9,21 +9,23 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LessonView } from '@/components/lesson-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useChapter } from '@/hooks/use-content';
+import { useChapter, useLesson } from '@/hooks/use-content';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useTranslation } from '@/hooks/use-translation';
 
-// Lecture d'un chapitre. Le contenu réel (texte arabe + traduction + audio +
-// vidéo) viendra du lecteur pédagogique (étape 4) et du backend (étape 7) ; en
-// attendant, texte d'exemple neutre. La progression est calculée au défilement.
+// Lecture d'un chapitre : le lecteur pédagogique affiche le texte arabe et sa
+// traduction dans la langue choisie. L'audio et la vidéo karaoké (déjà prévus
+// dans le modèle) s'ajouteront ensuite. La progression est calculée au défilement.
 export default function ChapterReadScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
   const { chapter, loading } = useChapter(id);
+  const { lesson, loading: loadingLesson } = useLesson(id);
   const { getProgress, setProgress, resetProgress } = useReadingProgress();
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -73,17 +75,30 @@ export default function ChapterReadScreen() {
 
             <ThemedText style={styles.lead}>{chapter.description}</ThemedText>
 
-            <ThemedText style={styles.paragraph}>{t('chapter.sampleP1')}</ThemedText>
-            <ThemedText style={styles.paragraph}>{t('chapter.sampleP2')}</ThemedText>
-            <ThemedText style={styles.paragraph}>{t('chapter.sampleP3')}</ThemedText>
-            <ThemedText style={styles.paragraph}>{t('chapter.sampleP4')}</ThemedText>
+            {lesson ? (
+              <>
+                <LessonView segments={lesson.segments} />
 
-            <ThemedView type="backgroundElement" style={styles.notice}>
-              <ThemedText type="smallBold">{t('chapter.sampleNoticeTitle')}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                {t('chapter.sampleNoticeBody')}
-              </ThemedText>
-            </ThemedView>
+                <ThemedView type="backgroundElement" style={styles.notice}>
+                  <ThemedText type="smallBold">{t('chapter.sampleNoticeTitle')}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {t('chapter.sampleNoticeBody')}
+                  </ThemedText>
+                </ThemedView>
+
+                <ThemedText type="small" themeColor="textSecondary" style={styles.mediaSoon}>
+                  {t('chapter.mediaSoon')}
+                </ThemedText>
+              </>
+            ) : loadingLesson ? (
+              <ThemedText themeColor="textSecondary">{t('common.loading')}</ThemedText>
+            ) : (
+              <ThemedView type="backgroundElement" style={styles.notice}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('chapter.lessonPending')}
+                </ThemedText>
+              </ThemedView>
+            )}
 
             {progress > 0 ? (
               <Pressable
@@ -131,15 +146,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 28,
   },
-  paragraph: {
-    fontSize: 16,
-    lineHeight: 26,
-  },
   notice: {
     borderRadius: Spacing.three,
     padding: Spacing.four,
     gap: Spacing.two,
     marginTop: Spacing.two,
+  },
+  mediaSoon: {
+    textAlign: 'center',
   },
   resetButton: {
     alignSelf: 'center',

@@ -1,7 +1,8 @@
 import type { Book } from '@/domain/book';
 import type { Chapter } from '@/domain/chapter';
+import type { Lesson } from '@/domain/lesson';
 
-import { mockBooks, mockChapters } from './mock/mock-content';
+import { mockBooks, mockChapters, mockLessons } from './mock/mock-content';
 
 // Contrat d'accès au contenu. Asynchrone volontairement : le jour du backend
 // (Supabase), seule l'implémentation change — l'interface et les écrans qui la
@@ -11,6 +12,7 @@ export interface ContentRepository {
   getBook(id: string): Promise<Book | null>;
   getChapters(bookId: string): Promise<Chapter[]>;
   getChapter(id: string): Promise<Chapter | null>;
+  getLesson(chapterId: string): Promise<Lesson | null>;
 }
 
 function chapterCountOf(bookId: string): number {
@@ -41,6 +43,10 @@ export const mockContentRepository: ContentRepository = {
 
   async getChapter(id) {
     return mockChapters.find((chapter) => chapter.id === id) ?? null;
+  },
+
+  async getLesson(chapterId) {
+    return mockLessons.find((lesson) => lesson.chapterId === chapterId) ?? null;
   },
 };
 
