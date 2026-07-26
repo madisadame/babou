@@ -8,9 +8,12 @@
     "scheme": "babou",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.madisadame.babou",
+      "supportsTablet": true
     },
     "android": {
+      "package": "com.madisadame.babou",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -35,7 +38,13 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "expo-audio"
+      "expo-audio",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Babou accède à tes photos pour choisir une image de couverture."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
