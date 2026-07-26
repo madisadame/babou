@@ -8,7 +8,7 @@ export const fr = {
   'common.cancel': 'Annuler',
 
   // Langues
-  'language.label': 'Langue',
+  'language.label': 'Langue des cours',
   'language.fr': 'Français',
   'language.shimaore': 'Shimaoré',
 
@@ -73,7 +73,7 @@ export const fr = {
   // Réglages
   'settings.title': 'Réglages',
   'settings.a11y': 'Ouvrir les réglages',
-  'settings.languageSection': 'Langue',
+  'settings.languageSection': 'Langue des cours',
   'settings.correctionSection': 'Correction des quiz',
   'settings.correctionImmediate': 'Après chaque question',
   'settings.correctionEnd': 'À la fin du questionnaire',
