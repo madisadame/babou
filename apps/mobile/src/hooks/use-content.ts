@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 
 import type { Book } from '@/domain/book';
 import type { Chapter } from '@/domain/chapter';
@@ -9,19 +10,21 @@ import { contentRepository } from '@/data/content-repository';
 type AsyncState<T> = { data: T | null; loading: boolean };
 
 // Petit utilitaire : exécute un chargement asynchrone et expose data + loading.
-// Ignore les résultats obsolètes si les dépendances changent (course évitée).
+// Recharge à chaque fois que l'écran (re)prend le focus (les modifications de
+// l'admin apparaissent au retour) ET quand les dépendances changent. Les
+// données déjà affichées restent visibles pendant le rechargement (pas de flash).
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): AsyncState<T> {
   const [state, setState] = useState<AsyncState<T>>({ data: null, loading: true });
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let active = true;
-    setState({ data: null, loading: true });
+    setState((prev) => ({ data: prev.data, loading: prev.data === null }));
     loader()
       .then((data) => {
         if (active) setState({ data, loading: false });
       })
       .catch(() => {
-        if (active) setState({ data: null, loading: false });
+        if (active) setState((prev) => ({ data: prev.data, loading: false }));
       });
     return () => {
       active = false;
@@ -29,6 +32,8 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): AsyncState<T> {
     // Les dépendances sont fournies par l'appelant.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
+
+  useFocusEffect(load);
 
   return state;
 }
