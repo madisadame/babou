@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { pickAudio, uploadMedia } from '@/data/media';
 import {
   createSegment,
   deleteSegment,
@@ -30,6 +31,20 @@ export default function AdminSegmentScreen() {
   const [audioUrl, setAudioUrl] = useState('');
   const [position, setPosition] = useState('0');
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUploadAudio = async () => {
+    const picked = await pickAudio();
+    if (!picked) return;
+    setUploading(true);
+    const { url, error } = await uploadMedia(picked, 'audio');
+    setUploading(false);
+    if (error || !url) {
+      Alert.alert(t('admin.uploadError'));
+      return;
+    }
+    setAudioUrl(url);
+  };
 
   useEffect(() => {
     (async () => {
@@ -139,6 +154,18 @@ export default function AdminSegmentScreen() {
             multiline: true,
           })}
           {field(t('admin.fieldAudioUrl'), audioUrl, setAudioUrl)}
+          <Pressable
+            onPress={handleUploadAudio}
+            disabled={uploading}
+            style={({ pressed }) => [
+              styles.uploadButton,
+              { backgroundColor: theme.backgroundElement },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold">
+              {uploading ? t('admin.uploading') : t('admin.uploadAudio')}
+            </ThemedText>
+          </Pressable>
           {field(t('admin.fieldPosition'), position, setPosition, { numeric: true })}
 
           <Pressable
@@ -202,6 +229,11 @@ const styles = StyleSheet.create({
     marginTop: Spacing.two,
   },
   primaryLabel: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  uploadButton: {
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.two,
+    alignItems: 'center',
+  },
   timingsButton: {
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,

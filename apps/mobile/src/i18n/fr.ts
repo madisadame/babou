@@ -157,6 +157,10 @@ export const fr = {
   'admin.timingsMark': 'Marquer « {{word}} »',
   'admin.timingsDone': 'Tous les mots sont marqués ✓',
   'admin.timingsReset': 'Recommencer',
+  'admin.uploadImage': 'Uploader une image',
+  'admin.uploadAudio': 'Uploader un audio',
+  'admin.uploading': 'Envoi en cours…',
+  'admin.uploadError': 'Échec de l’envoi du fichier.',
 
   // Quiz
   'quiz.progress': 'Question {{current}} / {{total}}',

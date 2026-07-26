@@ -8,6 +8,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Chapter } from '@/domain/chapter';
 import { contentRepository } from '@/data/content-repository';
+import { pickImage, uploadMedia } from '@/data/media';
 import { createBook, deleteBook, deleteChapter, updateBook } from '@/data/supabase/admin-repository';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
@@ -26,6 +27,20 @@ export default function AdminBookScreen() {
   const [position, setPosition] = useState('0');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUploadCover = async () => {
+    const picked = await pickImage();
+    if (!picked) return;
+    setUploading(true);
+    const { url, error } = await uploadMedia(picked, 'covers');
+    setUploading(false);
+    if (error || !url) {
+      Alert.alert(t('admin.uploadError'));
+      return;
+    }
+    setCoverUrl(url);
+  };
 
   // Champs du livre : chargés une fois (ne pas écraser les saisies au focus).
   useEffect(() => {
@@ -150,6 +165,18 @@ export default function AdminBookScreen() {
           {field(t('admin.fieldDescription'), description, setDescription, { multiline: true })}
           {field(t('admin.fieldCategory'), category, setCategory)}
           {field(t('admin.fieldCoverUrl'), coverUrl, setCoverUrl)}
+          <Pressable
+            onPress={handleUploadCover}
+            disabled={uploading}
+            style={({ pressed }) => [
+              styles.uploadButton,
+              { backgroundColor: theme.backgroundElement },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold">
+              {uploading ? t('admin.uploading') : t('admin.uploadImage')}
+            </ThemedText>
+          </Pressable>
           {field(t('admin.fieldPosition'), position, setPosition, { numeric: true })}
 
           <Pressable
@@ -238,6 +265,11 @@ const styles = StyleSheet.create({
     marginTop: Spacing.two,
   },
   primaryLabel: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  uploadButton: {
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.two,
+    alignItems: 'center',
+  },
   section: { letterSpacing: 1 },
   chaptersHeader: {
     flexDirection: 'row',
