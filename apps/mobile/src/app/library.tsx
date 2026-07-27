@@ -1,6 +1,6 @@
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
@@ -119,11 +119,7 @@ export default function LibraryScreen() {
           style={[styles.search, { backgroundColor: theme.backgroundElement, color: theme.text }]}
         />
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesScroll}
-          contentContainerStyle={styles.categories}>
+        <View style={styles.categories}>
           {categories.map((category) => {
             const selected = category === selectedCategory;
             const label = category === ALL_CATEGORIES ? t('library.categoryAll') : category;
@@ -139,13 +135,13 @@ export default function LibraryScreen() {
                   { backgroundColor: selected ? '#3c87f7' : theme.backgroundElement },
                   pressed && styles.pressed,
                 ]}>
-                <ThemedText type="smallBold" style={selected ? styles.chipTextSelected : undefined}>
+                <ThemedText type="smallBold" style={{ color: selected ? '#ffffff' : theme.text }}>
                   {label}
                 </ThemedText>
               </Pressable>
             );
           })}
-        </ScrollView>
+        </View>
 
         <Pressable
           onPress={() => setSortAscending((value) => !value)}
@@ -226,10 +222,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: Spacing.three,
   },
-  categoriesScroll: {
-    flexGrow: 0,
-  },
   categories: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.two,
     paddingBottom: Spacing.three,
   },
@@ -237,9 +232,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.five,
-  },
-  chipTextSelected: {
-    color: '#ffffff',
   },
   sortButton: {
     alignSelf: 'flex-end',
