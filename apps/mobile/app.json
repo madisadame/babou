@@ -8,14 +8,13 @@
     "scheme": "babou",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.madisadame.babou",
       "supportsTablet": true
     },
     "android": {
       "package": "com.madisadame.babou",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0C5A44",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -35,9 +34,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#0C5A44",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 300
         }
       ],
       "expo-font",
