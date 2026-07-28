@@ -54,6 +54,17 @@ export const fr = {
   'book.notFoundMessage': "Ce livre n'existe pas ou n'est plus disponible.",
   'book.chaptersEmpty': 'Aucun chapitre pour le moment.',
 
+  // Hors-ligne
+  'offline.download': 'Télécharger pour hors-ligne',
+  'offline.downloading': 'Téléchargement… {{pct}} %',
+  'offline.done': 'Disponible hors-ligne',
+  'offline.error': 'Échec du téléchargement — réessayer',
+  'offline.remove': 'Supprimer',
+  'offline.removeTitle': 'Supprimer le téléchargement',
+  'offline.removeMessage':
+    'Le contenu hors-ligne de ce livre sera supprimé de cet appareil. Continuer ?',
+  'offline.removeConfirm': 'Supprimer',
+
   // Chapitre (lecture)
   'chapter.label': 'Chapitre {{order}}',
   'chapter.meta': 'Chapitre {{order}} · {{pct}} % lu',

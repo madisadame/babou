@@ -3,6 +3,7 @@ import type { Chapter } from '@/domain/chapter';
 import type { Lesson } from '@/domain/lesson';
 import type { Question } from '@/domain/quiz';
 
+import { createCachingRepository } from './caching-content-repository';
 import { mockContentRepository } from './mock/mock-content-repository';
 import { isSupabaseConfigured } from './supabase/client';
 import { supabaseContentRepository } from './supabase/supabase-content-repository';
@@ -20,6 +21,12 @@ export interface ContentRepository {
 
 // Sélection automatique : Supabase si les identifiants sont présents (voir
 // .env), sinon le mock. Aucune interruption avant la configuration du backend.
-export const contentRepository: ContentRepository = isSupabaseConfigured
+export const baseContentRepository: ContentRepository = isSupabaseConfigured
   ? supabaseContentRepository
   : mockContentRepository;
+
+// Le repository exposé aux écrans ajoute le mode hors-ligne par-dessus la
+// source : contenu frais en ligne, lecture des livres téléchargés hors-ligne.
+// Le téléchargement, lui, lit directement `baseContentRepository` (le réseau).
+export const contentRepository: ContentRepository =
+  createCachingRepository(baseContentRepository);
