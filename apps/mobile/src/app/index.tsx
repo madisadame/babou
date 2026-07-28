@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { StarrySky } from '@/components/starry-sky';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { LOCALES } from '@/domain/locale';
@@ -22,7 +21,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <StarrySky />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <ThemedText type="title" style={styles.title}>

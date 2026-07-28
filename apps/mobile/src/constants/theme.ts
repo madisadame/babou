@@ -7,21 +7,21 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+// Palette « nuit » de Babou : toute l'app vit sur le ciel étoilé (voir
+// StarrySky). Les fonds sont transparents pour laisser passer le ciel, les
+// textes sont crème et les surfaces (cartes, champs) en blanc translucide.
+// Un seul thème : l'identité de Babou est nocturne (plus de mode clair/sombre).
+const night = {
+  text: '#F5EEDA',
+  background: 'transparent',
+  backgroundElement: 'rgba(255, 255, 255, 0.09)',
+  backgroundSelected: 'rgba(255, 255, 255, 0.17)',
+  textSecondary: 'rgba(245, 238, 218, 0.68)',
+} as const;
+
 export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
+  light: night,
+  dark: night,
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;

@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   linkPrimary: {
     lineHeight: 30,
     fontSize: 14,
-    color: '#0C5A44',
+    color: '#6FCBA6', // vert menthe clair, lisible sur le ciel nocturne
   },
   code: {
     fontFamily: Fonts.mono,

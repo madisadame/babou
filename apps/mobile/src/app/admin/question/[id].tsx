@@ -200,14 +200,14 @@ export default function AdminQuestionScreen() {
                 onChangeText={(v) => setChoiceField(index, 'textFr', v)}
                 placeholder={t('admin.choiceFr')}
                 placeholderTextColor={theme.textSecondary}
-                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
               />
               <TextInput
                 value={choice.textShimaore}
                 onChangeText={(v) => setChoiceField(index, 'textShimaore', v)}
                 placeholder={t('admin.choiceShimaore')}
                 placeholderTextColor={theme.textSecondary}
-                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
               />
             </ThemedView>
           ))}
