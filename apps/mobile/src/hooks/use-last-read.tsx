@@ -11,6 +11,7 @@ import {
 } from 'react';
 
 import type { Chapter } from '@/domain/chapter';
+import { useCloudSync } from '@/hooks/use-cloud-sync';
 
 // Mémorise le dernier chapitre ouvert, pour proposer « Reprendre la lecture »
 // sur l'accueil. Local (AsyncStorage) : léger et suffisant pour un rappel.
@@ -49,6 +50,19 @@ export function LastReadProvider({ children }: { children: ReactNode }) {
       }
     })();
   }, []);
+
+  // Synchro cloud : on garde la lecture la plus récente.
+  useCloudSync(
+    'last-read',
+    lastRead,
+    setLastRead,
+    (local, remote) => {
+      if (!remote) return local;
+      if (!local) return remote;
+      return remote.at > local.at ? remote : local;
+    },
+    hydrated.current,
+  );
 
   const recordRead = useCallback((chapter: Chapter) => {
     const entry: LastRead = {

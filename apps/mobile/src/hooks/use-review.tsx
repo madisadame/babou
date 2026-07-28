@@ -10,6 +10,8 @@ import {
   type ReactNode,
 } from 'react';
 
+import { useCloudSync } from '@/hooks/use-cloud-sync';
+
 // Révision espacée (façon Leitner). Chaque question a un « niveau » et une
 // date d'échéance. Réussie → elle remonte d'un niveau et revient plus tard ;
 // ratée → elle redevient due immédiatement (« à revoir »). Local (AsyncStorage).
@@ -55,6 +57,24 @@ export function ReviewProvider({ children }: { children: ReactNode }) {
     if (!hydrated.current) return;
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(schedule)).catch(() => {});
   }, [schedule]);
+
+  // Synchro cloud : par question, on garde le niveau le plus avancé.
+  useCloudSync(
+    'review',
+    schedule,
+    setSchedule,
+    (local, remote) => {
+      const merged: Schedule = { ...remote };
+      for (const [qid, item] of Object.entries(local)) {
+        const r = merged[qid];
+        if (!r || item.level > r.level || (item.level === r.level && item.dueAt > r.dueAt)) {
+          merged[qid] = item;
+        }
+      }
+      return merged;
+    },
+    hydrated.current,
+  );
 
   const recordOutcomes = useCallback((entries: ReviewOutcome[]) => {
     if (!entries.length) return;

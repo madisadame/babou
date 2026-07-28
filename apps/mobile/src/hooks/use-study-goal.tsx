@@ -10,6 +10,8 @@ import {
   type ReactNode,
 } from 'react';
 
+import { useCloudSync } from '@/hooks/use-cloud-sync';
+
 // Régularité douce : temps d'étude du jour, objectif quotidien (minutes) et
 // série de jours consécutifs. Esprit bienveillant : la série se maintient dès
 // qu'on étudie un peu dans la journée (pas besoin d'atteindre tout l'objectif),
@@ -91,6 +93,19 @@ export function StudyGoalProvider({ children }: { children: ReactNode }) {
     if (!hydrated.current) return;
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch(() => {});
   }, [state]);
+
+  // Synchro cloud : on prend les données du dernier appareil actif, en gardant
+  // la meilleure série (bestStreak).
+  useCloudSync(
+    'study-goal',
+    state,
+    setState,
+    (local, remote) => {
+      const base = (remote.lastActiveDay ?? '') > (local.lastActiveDay ?? '') ? remote : local;
+      return { ...base, bestStreak: Math.max(local.bestStreak, remote.bestStreak) };
+    },
+    hydrated.current,
+  );
 
   // Stable (mise à jour fonctionnelle) : lit toujours l'état le plus récent.
   const addStudySeconds = useCallback((seconds: number) => {

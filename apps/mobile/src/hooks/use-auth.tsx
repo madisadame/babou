@@ -1,4 +1,5 @@
 import type { User } from '@supabase/supabase-js';
+import * as Linking from 'expo-linking';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { supabase } from '@/data/supabase/client';
@@ -12,9 +13,14 @@ type AuthContextValue = {
   isAdmin: boolean;
   loading: boolean;
   available: boolean;
+  // Passe à true quand l'utilisateur ouvre l'app via un lien de
+  // réinitialisation : on lui propose alors de choisir un nouveau mot de passe.
+  recovering: boolean;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -27,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [recovering, setRecovering] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -39,8 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(toUser(data.session?.user));
       setLoading(false);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(toUser(session?.user));
+      if (event === 'PASSWORD_RECOVERY') setRecovering(true);
     });
     return () => {
       active = false;
@@ -74,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin,
       loading,
       available: Boolean(supabase),
+      recovering,
       signUp: async (email, password) => {
         if (!supabase) return { error: 'unavailable' };
         const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
@@ -90,8 +99,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!supabase) return;
         await supabase.auth.signOut();
       },
+      resetPassword: async (email) => {
+        if (!supabase) return { error: 'unavailable' };
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: Linking.createURL('reset-password'),
+        });
+        return { error: error ? error.message : null };
+      },
+      updatePassword: async (password) => {
+        if (!supabase) return { error: 'unavailable' };
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) return { error: error.message };
+        setRecovering(false);
+        return { error: null };
+      },
     }),
-    [user, isAdmin, loading],
+    [user, isAdmin, loading, recovering],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

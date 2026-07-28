@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 
 import { DEFAULT_LOCALE, type Locale } from '@/domain/locale';
 import type { CorrectionMode } from '@/domain/quiz';
+import { useCloudSync } from '@/hooks/use-cloud-sync';
 
 // Préférences utilisateur persistées : langue, mode de correction des quiz,
 // et affichage de chaque carte de progression sur la bibliothèque (choix
@@ -79,6 +80,16 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     if (!hydrated.current) return;
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(preferences)).catch(() => {});
   }, [preferences]);
+
+  // Synchro cloud : on adopte les préférences du compte (en gardant les clés
+  // récentes absentes du distant).
+  useCloudSync(
+    'preferences',
+    preferences,
+    setPreferences,
+    (local, remote) => ({ ...local, ...remote }),
+    hydrated.current,
+  );
 
   const value = useMemo<PreferencesContextValue>(
     () => ({

@@ -129,6 +129,15 @@ export const fr = {
   'auth.errorSignIn': 'Email ou mot de passe incorrect.',
   'auth.errorSignUp': 'Inscription impossible (email déjà utilisé ou mot de passe trop court ?).',
   'auth.checkEmail': 'Vérifie ton email pour confirmer ton compte, puis connecte-toi.',
+  'auth.forgot': 'Mot de passe oublié ?',
+  'auth.resetSent':
+    'E-mail de réinitialisation envoyé. Ouvre le lien pour choisir un nouveau mot de passe.',
+  'auth.resetError': "Impossible d'envoyer l'e-mail. Vérifie l'adresse.",
+  'auth.resetNeedEmail': "Entre d'abord ton adresse e-mail ci-dessus.",
+  'auth.newPasswordSection': 'Choisir un nouveau mot de passe',
+  'auth.newPassword': 'Nouveau mot de passe',
+  'auth.updatePassword': 'Enregistrer le mot de passe',
+  'auth.passwordUpdated': 'Mot de passe mis à jour. Tu peux te connecter.',
 
   // Administration
   'admin.title': 'Administration',

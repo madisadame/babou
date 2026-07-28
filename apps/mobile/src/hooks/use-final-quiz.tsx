@@ -10,6 +10,8 @@ import {
   type ReactNode,
 } from 'react';
 
+import { useCloudSync } from '@/hooks/use-cloud-sync';
+
 // Quiz final par livre : une progression persistante (0 → 100 %) qui se
 // remplit au fil des réponses. +2 % par bonne réponse, −5 % par erreur.
 // Validé à 100 %. Les questions sont tirées au hasard des quiz de chapitre
@@ -51,6 +53,21 @@ export function FinalQuizProvider({ children }: { children: ReactNode }) {
     if (!hydrated.current) return;
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(progress)).catch(() => {});
   }, [progress]);
+
+  // Synchro cloud : on garde la meilleure progression par livre.
+  useCloudSync(
+    'final-quiz',
+    progress,
+    setProgressState,
+    (local, remote) => {
+      const merged: ProgressMap = { ...remote };
+      for (const [bookId, val] of Object.entries(local)) {
+        merged[bookId] = Math.max(val, merged[bookId] ?? 0);
+      }
+      return merged;
+    },
+    hydrated.current,
+  );
 
   const setProgress = useCallback((bookId: string, value: number) => {
     const clamped = Math.max(0, Math.min(100, Math.round(value)));

@@ -11,6 +11,7 @@ import {
 } from 'react';
 
 import type { Chapter } from '@/domain/chapter';
+import { useCloudSync } from '@/hooks/use-cloud-sync';
 
 // Marque-pages : chapitres mis de côté par l'utilisateur pour les retrouver
 // rapidement. Local (AsyncStorage).
@@ -55,6 +56,15 @@ export function BookmarksProvider({ children }: { children: ReactNode }) {
     if (!hydrated.current) return;
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(map)).catch(() => {});
   }, [map]);
+
+  // Synchro cloud : union des marque-pages entre appareils.
+  useCloudSync(
+    'bookmarks',
+    map,
+    setMap,
+    (local, remote) => ({ ...remote, ...local }),
+    hydrated.current,
+  );
 
   const toggle = useCallback((chapter: Chapter) => {
     setMap((prev) => {

@@ -38,13 +38,34 @@ export default function SettingsScreen() {
     t('reading.sizeLarge'),
     t('reading.sizeXLarge'),
   ];
-  const { user, isAdmin, available, signIn, signUp, signOut } = useAuth();
+  const { user, isAdmin, available, recovering, signIn, signUp, signOut, resetPassword, updatePassword } =
+    useAuth();
   const { goalMinutes, setGoalMinutes } = useStudyGoal();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const handleForgot = async () => {
+    if (!email.trim()) {
+      setAuthMessage(t('auth.resetNeedEmail'));
+      return;
+    }
+    const { error } = await resetPassword(email);
+    setAuthMessage(error ? t('auth.resetError') : t('auth.resetSent'));
+  };
+
+  const handleUpdatePassword = async () => {
+    if (newPassword.length < 6) {
+      setAuthMessage(t('auth.errorFields'));
+      return;
+    }
+    const { error } = await updatePassword(newPassword);
+    setNewPassword('');
+    setAuthMessage(error ? t('auth.resetError') : t('auth.passwordUpdated'));
+  };
 
   const correctionOptions: { value: CorrectionMode; label: string }[] = [
     { value: 'immediate', label: t('settings.correctionImmediate') },
@@ -107,6 +128,26 @@ export default function SettingsScreen() {
           <ThemedText type="title" style={styles.title}>
             {t('settings.title')}
           </ThemedText>
+
+          {recovering ? (
+            <View style={styles.recoverBox}>
+              <ThemedText type="smallBold">{t('auth.newPasswordSection')}</ThemedText>
+              <TextInput
+                value={newPassword}
+                onChangeText={setNewPassword}
+                placeholder={t('auth.newPassword')}
+                placeholderTextColor={theme.textSecondary}
+                secureTextEntry
+                autoCapitalize="none"
+                style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
+              />
+              <Pressable
+                onPress={handleUpdatePassword}
+                style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}>
+                <ThemedText style={styles.primaryLabel}>{t('auth.updatePassword')}</ThemedText>
+              </Pressable>
+            </View>
+          ) : null}
 
           {available ? (
             <>
@@ -185,6 +226,11 @@ export default function SettingsScreen() {
                       <ThemedText type="smallBold">{t('auth.signUp')}</ThemedText>
                     </Pressable>
                   </View>
+                  <Pressable onPress={handleForgot} hitSlop={Spacing.two} style={styles.forgot}>
+                    <ThemedText type="link" themeColor="textSecondary">
+                      {t('auth.forgot')}
+                    </ThemedText>
+                  </Pressable>
                 </>
               )}
             </>
@@ -305,6 +351,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.two,
     marginTop: Spacing.one,
+  },
+  forgot: {
+    alignSelf: 'flex-start',
+    marginTop: Spacing.one,
+  },
+  recoverBox: {
+    gap: Spacing.two,
+    borderWidth: 1,
+    borderColor: 'rgba(224, 190, 109, 0.4)',
+    borderRadius: Spacing.three,
+    padding: Spacing.four,
+    marginTop: Spacing.two,
   },
   primaryButton: {
     flex: 1,
