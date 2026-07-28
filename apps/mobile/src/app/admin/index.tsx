@@ -64,14 +64,26 @@ export default function AdminBooksScreen() {
             data={books}
             keyExtractor={(book) => book.id}
             ListHeaderComponent={
-              <View style={styles.header}>
-                <ThemedText type="title" style={styles.title}>
-                  {t('admin.title')}
-                </ThemedText>
+              <View>
+                <View style={styles.header}>
+                  <ThemedText type="title" style={styles.title}>
+                    {t('admin.title')}
+                  </ThemedText>
+                  <Pressable
+                    onPress={() =>
+                      router.push({ pathname: '/admin/book/[id]', params: { id: 'new' } })
+                    }
+                    style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}>
+                    <ThemedText style={styles.addLabel}>+ {t('admin.newBook')}</ThemedText>
+                  </Pressable>
+                </View>
                 <Pressable
-                  onPress={() => router.push({ pathname: '/admin/book/[id]', params: { id: 'new' } })}
-                  style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}>
-                  <ThemedText style={styles.addLabel}>+ {t('admin.newBook')}</ThemedText>
+                  onPress={() => router.push('/admin/admins')}
+                  hitSlop={Spacing.two}
+                  style={styles.adminsLink}>
+                  <ThemedText type="smallBold" themeColor="textSecondary">
+                    👥 {t('admin.adminsTitle')}
+                  </ThemedText>
                 </Pressable>
               </View>
             }
@@ -131,6 +143,7 @@ const styles = StyleSheet.create({
   },
   rowInfo: { flex: 1, gap: Spacing.half },
   draftBadge: { color: '#E0BE6D' },
+  adminsLink: { alignSelf: 'flex-start', marginBottom: Spacing.three },
   deleteIcon: { fontSize: 18 },
   addButton: {
     backgroundColor: '#0C5A44',

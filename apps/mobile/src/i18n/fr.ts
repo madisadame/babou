@@ -219,6 +219,19 @@ export const fr = {
   'admin.uploading': 'Envoi en cours…',
   'admin.uploadError': 'Échec de l’envoi du fichier.',
 
+  // Administrateurs
+  'admin.adminsTitle': 'Administrateurs',
+  'admin.adminsHint':
+    "Ajoute une personne de confiance par son e-mail (elle doit déjà avoir un compte Babou).",
+  'admin.adminsListSection': 'Administrateurs actuels',
+  'admin.adminAdd': 'Ajouter comme administrateur',
+  'admin.adminNeedEmail': 'Entre une adresse e-mail.',
+  'admin.adminAdded': 'Administrateur ajouté.',
+  'admin.adminNotFound': 'Aucun compte Babou avec cet e-mail.',
+  'admin.adminRemoveConfirm': "Retirer les droits d'administrateur à cette personne ?",
+  'admin.adminYou': '(toi)',
+  'admin.adminsEmpty': 'Aucun administrateur.',
+
   // Quiz
   'quiz.progress': 'Question {{current}} / {{total}}',
   'quiz.next': 'Question suivante',

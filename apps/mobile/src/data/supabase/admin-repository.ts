@@ -225,6 +225,36 @@ export async function deleteSegment(id: string): Promise<Result> {
   return toError(error);
 }
 
+// ---- Administrateurs ----
+
+export type AdminUser = { userId: string; email: string };
+
+export async function listAdmins(): Promise<AdminUser[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase.rpc('list_admins');
+  if (error || !data) return [];
+  return (data as { user_id: string; email: string }[]).map((r) => ({
+    userId: r.user_id,
+    email: r.email,
+  }));
+}
+
+// Retourne 'ok' | 'not_found' | 'forbidden' | 'error'.
+export async function addAdminByEmail(email: string): Promise<string> {
+  if (!supabase) return 'error';
+  const { data, error } = await supabase.rpc('add_admin_by_email', {
+    target_email: email.trim(),
+  });
+  if (error) return 'error';
+  return (data as string) ?? 'error';
+}
+
+export async function removeAdmin(userId: string): Promise<Result> {
+  if (!supabase) return { error: 'unavailable' };
+  const { error } = await supabase.rpc('remove_admin', { target: userId });
+  return toError(error);
+}
+
 export type WordTiming = { text: string; startMs: number; endMs: number };
 
 // Enregistre les timings mot-à-mot (karaoké) dans la colonne words (jsonb).
