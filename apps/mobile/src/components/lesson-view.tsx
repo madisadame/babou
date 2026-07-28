@@ -59,6 +59,18 @@ export function LessonView({ segments, title }: LessonViewProps) {
   const queueRef = useRef<Track[]>([]);
   const queueIndexRef = useRef(0);
 
+  // Mode récitation : masque le texte arabe pour réciter de mémoire ; on touche
+  // un segment pour le révéler. La traduction reste visible comme indice.
+  const [recitation, setRecitation] = useState(false);
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const toggleRecitation = () => {
+    setRecitation((on) => {
+      if (on) setRevealed({});
+      return !on;
+    });
+  };
+  const reveal = (segmentId: string) => setRevealed((prev) => ({ ...prev, [segmentId]: true }));
+
   useEffect(() => {
     // Lecture en fond (écran verrouillé) + même en mode silencieux (iOS).
     setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true }).catch(() => {});
@@ -163,17 +175,31 @@ export function LessonView({ segments, title }: LessonViewProps) {
 
   return (
     <View style={styles.container}>
-      {hasArabic || hasTranslation ? (
-        <View style={styles.speedRow}>
+      {segments.length > 0 ? (
+        <View style={styles.controls}>
           <Pressable
-            onPress={cyclePlaybackRate}
+            onPress={toggleRecitation}
             accessibilityRole="button"
-            accessibilityLabel={t('reading.speed')}
-            style={({ pressed }) => [styles.speedPill, pressed && styles.pressed]}>
-            <ThemedText type="smallBold" style={styles.speedLabel}>
-              {formatRate(playbackRate)}
+            style={({ pressed }) => [
+              styles.recitBtn,
+              recitation && styles.recitBtnOn,
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold" style={recitation ? styles.recitLabelOn : styles.recitLabel}>
+              {recitation ? `👁  ${t('reading.showText')}` : `🙈  ${t('reading.reciteMode')}`}
             </ThemedText>
           </Pressable>
+          {hasArabic || hasTranslation ? (
+            <Pressable
+              onPress={cyclePlaybackRate}
+              accessibilityRole="button"
+              accessibilityLabel={t('reading.speed')}
+              style={({ pressed }) => [styles.speedPill, pressed && styles.pressed]}>
+              <ThemedText type="smallBold" style={styles.speedLabel}>
+                {formatRate(playbackRate)}
+              </ThemedText>
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
 
@@ -218,6 +244,7 @@ export function LessonView({ segments, title }: LessonViewProps) {
           ? currentWordIndex(segment, status.currentTime, status.duration)
           : -1;
         const hasTransAudio = !!uriFor(segment, 'translation');
+        const masked = recitation && !revealed[segment.id];
         return (
           <View key={segment.id} style={styles.segment}>
             <View style={styles.arabicRow}>
@@ -230,15 +257,31 @@ export function LessonView({ segments, title }: LessonViewProps) {
                   <ThemedText style={styles.playIcon}>{arabicPlaying ? '❚❚' : '▶'}</ThemedText>
                 </Pressable>
               ) : null}
-              <ThemedText
-                style={[styles.arabic, { fontSize: 26 * readingScale, lineHeight: 46 * readingScale }]}>
-                {words.map((word, index) => (
-                  <Text key={index} style={index === highlight ? styles.wordActive : undefined}>
-                    {word}
-                    {index < words.length - 1 ? ' ' : ''}
-                  </Text>
-                ))}
-              </ThemedText>
+              {masked ? (
+                <Pressable
+                  onPress={() => reveal(segment.id)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('reading.tapReveal')}
+                  style={({ pressed }) => [styles.masked, pressed && styles.pressed]}>
+                  <ThemedText style={styles.maskedDots}>••••••••</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {t('reading.tapReveal')}
+                  </ThemedText>
+                </Pressable>
+              ) : (
+                <ThemedText
+                  style={[
+                    styles.arabic,
+                    { fontSize: 26 * readingScale, lineHeight: 46 * readingScale },
+                  ]}>
+                  {words.map((word, index) => (
+                    <Text key={index} style={index === highlight ? styles.wordActive : undefined}>
+                      {word}
+                      {index < words.length - 1 ? ' ' : ''}
+                    </Text>
+                  ))}
+                </ThemedText>
+              )}
             </View>
             {translation ? (
               <View style={styles.translationRow}>
@@ -274,9 +317,45 @@ const styles = StyleSheet.create({
   container: {
     gap: 24,
   },
-  speedRow: {
+  controls: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 10,
+  },
+  recitBtn: {
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.3)',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  recitBtnOn: {
+    backgroundColor: '#0C5A44',
+    borderColor: '#0C5A44',
+  },
+  recitLabel: {
+    color: '#F5EEDA',
+  },
+  recitLabelOn: {
+    color: '#F5EEDA',
+  },
+  masked: {
+    flex: 1,
+    minHeight: 48,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    gap: 2,
+  },
+  maskedDots: {
+    fontSize: 22,
+    letterSpacing: 6,
+    color: 'rgba(245, 238, 218, 0.45)',
   },
   speedPill: {
     borderWidth: 1,
