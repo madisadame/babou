@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import {
   Alert,
   Pressable,
@@ -15,6 +16,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useChapter, useLesson, useQuestions } from '@/hooks/use-content';
+import { useLastRead } from '@/hooks/use-last-read';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useTranslation } from '@/hooks/use-translation';
 
@@ -29,6 +31,14 @@ export default function ChapterReadScreen() {
   const { lesson, loading: loadingLesson } = useLesson(id);
   const { questions } = useQuestions(id);
   const { getProgress, setProgress, resetProgress } = useReadingProgress();
+  const { recordRead } = useLastRead();
+
+  // Mémorise ce chapitre comme « dernier lu » pour la reprise sur l'accueil.
+  useEffect(() => {
+    if (chapter) recordRead(chapter);
+    // On enregistre au (re)chargement du chapitre ; recordRead est stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapter?.id]);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!chapter) return;

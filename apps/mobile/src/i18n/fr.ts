@@ -24,6 +24,8 @@ export const fr = {
     "Ce choix n'a pas pour but de critiquer les autres approches, toutes dignes de respect, mais simplement d'annoncer clairement le cadre dans lequel Babou a été conçu, afin d'éviter toute ambiguïté.",
   'home.invocation': "Qu'Allah facilite ton apprentissage et t'accorde la science utile.",
   'home.cta': 'Accéder à la bibliothèque',
+  'home.continue.eyebrow': 'Reprendre la lecture',
+  'home.continue.a11y': 'Reprendre : {{title}}',
 
   // Bibliothèque
   'library.title': 'Bibliothèque',

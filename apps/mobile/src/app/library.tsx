@@ -8,7 +8,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Book } from '@/domain/book';
-import { useBooks } from '@/hooks/use-content';
+import { useBook, useBooks } from '@/hooks/use-content';
+import { useLastRead, type LastRead } from '@/hooks/use-last-read';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
@@ -34,11 +35,44 @@ function normalize(value: string) {
 // Sentinelle interne « tout afficher » (valeur stable, libellé traduit à part).
 const ALL_CATEGORIES = '__all__';
 
+// Carte « Reprendre la lecture » : rouvre le dernier chapitre ouvert. Rendue
+// uniquement quand il existe un dernier chapitre (donc pas de requête inutile).
+function ContinueCard({ lastRead }: { lastRead: LastRead }) {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const { getProgress } = useReadingProgress();
+  const { book } = useBook(lastRead.bookId);
+  const pct = Math.round(getProgress(lastRead.chapterId) * 100);
+  const title = book?.title ? `${book.title} · ${lastRead.chapterTitle}` : lastRead.chapterTitle;
+
+  return (
+    <Pressable
+      onPress={() => router.push({ pathname: '/chapter/[id]', params: { id: lastRead.chapterId } })}
+      accessibilityRole="button"
+      accessibilityLabel={t('home.continue.a11y', { title })}
+      style={({ pressed }) => [styles.continueCard, pressed && styles.pressed]}>
+      <View style={styles.continueTextCol}>
+        <ThemedText type="smallBold" style={styles.continueEyebrow}>
+          {t('home.continue.eyebrow')}
+        </ThemedText>
+        <ThemedText style={styles.continueTitle} numberOfLines={2}>
+          {title}
+        </ThemedText>
+        <ThemedText style={styles.continueMeta}>
+          {t('chapter.meta', { order: lastRead.order, pct })}
+        </ThemedText>
+      </View>
+      <ThemedText style={styles.continueChevron}>›</ThemedText>
+    </Pressable>
+  );
+}
+
 export default function LibraryScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const { books, loading } = useBooks();
+  const { lastRead } = useLastRead();
   const { hasProgress, resetAll } = useReadingProgress();
   // Catégorie passée en paramètre d'URL (ex. depuis le badge de l'écran détail).
   const { category: categoryParam } = useLocalSearchParams<{ category?: string }>();
@@ -116,6 +150,8 @@ export default function LibraryScreen() {
         <ThemedText themeColor="textSecondary" style={styles.subtitle}>
           {t('library.subtitle')}
         </ThemedText>
+
+        {lastRead ? <ContinueCard lastRead={lastRead} /> : null}
 
         <TextInput
           value={query}
@@ -225,6 +261,42 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: Spacing.one,
     marginBottom: Spacing.three,
+  },
+  continueCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.22)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 14,
+    padding: Spacing.three,
+    marginBottom: Spacing.three,
+  },
+  continueTextCol: {
+    flex: 1,
+    gap: 3,
+  },
+  continueEyebrow: {
+    color: '#E0BE6D',
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  continueTitle: {
+    color: '#F5EEDA',
+    fontSize: 17,
+    fontWeight: '600',
+    lineHeight: 22,
+  },
+  continueMeta: {
+    color: 'rgba(245, 238, 218, 0.72)',
+    fontSize: 13,
+  },
+  continueChevron: {
+    color: 'rgba(245, 238, 218, 0.72)',
+    fontSize: 28,
+    lineHeight: 28,
   },
   search: {
     height: 44,
