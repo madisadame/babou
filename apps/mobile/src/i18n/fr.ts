@@ -232,6 +232,12 @@ export const fr = {
   'admin.adminYou': '(toi)',
   'admin.adminsEmpty': 'Aucun administrateur.',
 
+  // Statistiques de contenu
+  'admin.statsTitle': 'Statistiques',
+  'admin.statsHint': 'Progression des lecteurs, par chapitre.',
+  'admin.statsLine': '{{readers}} lecteurs · {{completed}} terminés · {{pct}} % en moyenne',
+  'admin.statsEmpty': 'Pas encore de données de lecture.',
+
   // Quiz
   'quiz.progress': 'Question {{current}} / {{total}}',
   'quiz.next': 'Question suivante',

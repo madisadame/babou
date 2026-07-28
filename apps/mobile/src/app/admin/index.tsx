@@ -77,14 +77,18 @@ export default function AdminBooksScreen() {
                     <ThemedText style={styles.addLabel}>+ {t('admin.newBook')}</ThemedText>
                   </Pressable>
                 </View>
-                <Pressable
-                  onPress={() => router.push('/admin/admins')}
-                  hitSlop={Spacing.two}
-                  style={styles.adminsLink}>
-                  <ThemedText type="smallBold" themeColor="textSecondary">
-                    👥 {t('admin.adminsTitle')}
-                  </ThemedText>
-                </Pressable>
+                <View style={styles.adminsRow}>
+                  <Pressable onPress={() => router.push('/admin/admins')} hitSlop={Spacing.two}>
+                    <ThemedText type="smallBold" themeColor="textSecondary">
+                      👥 {t('admin.adminsTitle')}
+                    </ThemedText>
+                  </Pressable>
+                  <Pressable onPress={() => router.push('/admin/stats')} hitSlop={Spacing.two}>
+                    <ThemedText type="smallBold" themeColor="textSecondary">
+                      📊 {t('admin.statsTitle')}
+                    </ThemedText>
+                  </Pressable>
+                </View>
               </View>
             }
             renderItem={({ item }) => (
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
   },
   rowInfo: { flex: 1, gap: Spacing.half },
   draftBadge: { color: '#E0BE6D' },
-  adminsLink: { alignSelf: 'flex-start', marginBottom: Spacing.three },
+  adminsRow: { flexDirection: 'row', gap: Spacing.four, marginBottom: Spacing.three },
   deleteIcon: { fontSize: 18 },
   addButton: {
     backgroundColor: '#0C5A44',

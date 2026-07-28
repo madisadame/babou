@@ -255,6 +255,31 @@ export async function removeAdmin(userId: string): Promise<Result> {
   return toError(error);
 }
 
+// ---- Statistiques de contenu ----
+
+export type ContentStat = {
+  chapterId: string;
+  chapterTitle: string;
+  bookTitle: string;
+  readers: number;
+  completed: number;
+  avgProgress: number; // 0..1
+};
+
+export async function getContentStats(): Promise<ContentStat[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase.rpc('content_stats');
+  if (error || !data) return [];
+  return (data as Record<string, unknown>[]).map((r) => ({
+    chapterId: String(r.chapter_id),
+    chapterTitle: String(r.chapter_title ?? ''),
+    bookTitle: String(r.book_title ?? ''),
+    readers: Number(r.readers) || 0,
+    completed: Number(r.completed) || 0,
+    avgProgress: Number(r.avg_progress) || 0,
+  }));
+}
+
 export type WordTiming = { text: string; startMs: number; endMs: number };
 
 // Enregistre les timings mot-à-mot (karaoké) dans la colonne words (jsonb).
