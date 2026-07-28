@@ -5,12 +5,14 @@ import { Alert, FlatList, Modal, Pressable, StyleSheet, View } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ChapterRow } from '@/components/chapter-row';
+import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Chapter } from '@/domain/chapter';
 import { useBook, useChapters } from '@/hooks/use-content';
 import { useDownloads } from '@/hooks/use-downloads';
+import { useFinalQuiz } from '@/hooks/use-final-quiz';
 import { useTranslation } from '@/hooks/use-translation';
 
 // Fiche d'un livre : entête (couverture, catégorie, titre, description) puis
@@ -25,6 +27,28 @@ export default function BookDetailScreen() {
   const { chapters, loading: loadingChapters } = useChapters(id);
   const { entryFor, download, remove } = useDownloads();
   const offline = entryFor(id);
+  const { getProgress, isValidated } = useFinalQuiz();
+  const finalPct = getProgress(id);
+
+  const finalQuizFooter = book ? (
+    <Pressable
+      onPress={() => router.push({ pathname: '/final-quiz/[id]', params: { id } })}
+      accessibilityRole="button"
+      style={({ pressed }) => [styles.finalQuiz, pressed && styles.pressed]}>
+      <View style={styles.finalQuizTop}>
+        <ThemedText type="smallBold" style={styles.finalQuizTitle}>
+          {isValidated(id) ? `✓ ${t('finalQuiz.title')}` : t('finalQuiz.title')}
+        </ThemedText>
+        <ThemedText type="smallBold" style={styles.finalQuizPct}>
+          {finalPct} %
+        </ThemedText>
+      </View>
+      <ProgressBar value={finalPct / 100} />
+      <ThemedText type="small" themeColor="textSecondary">
+        {t('finalQuiz.cardHint')}
+      </ThemedText>
+    </Pressable>
+  ) : null;
 
   const confirmRemove = () => {
     Alert.alert(t('offline.removeTitle'), t('offline.removeMessage'), [
@@ -139,6 +163,7 @@ export default function BookDetailScreen() {
             )}
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
+            ListFooterComponent={chapters.length > 0 ? finalQuizFooter : null}
             ListEmptyComponent={
               <ThemedText themeColor="textSecondary" style={styles.centered}>
                 {loadingChapters ? t('common.loading') : t('book.chaptersEmpty')}
@@ -248,6 +273,27 @@ const styles = StyleSheet.create({
   },
   offlineRemove: {
     color: '#e5484d',
+  },
+  finalQuiz: {
+    borderWidth: 1,
+    borderColor: 'rgba(224, 190, 109, 0.35)',
+    backgroundColor: 'rgba(224, 190, 109, 0.08)',
+    borderRadius: Spacing.three,
+    padding: Spacing.four,
+    gap: Spacing.two,
+    marginTop: Spacing.three,
+  },
+  finalQuizTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  finalQuizTitle: {
+    color: '#E0BE6D',
+  },
+  finalQuizPct: {
+    color: '#F5EEDA',
+    fontVariant: ['tabular-nums'],
   },
   pressed: {
     opacity: 0.6,

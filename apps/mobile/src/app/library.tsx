@@ -11,7 +11,9 @@ import { Spacing } from '@/constants/theme';
 import type { Book } from '@/domain/book';
 import { useBook, useBooks } from '@/hooks/use-content';
 import { useLastRead, type LastRead } from '@/hooks/use-last-read';
+import { usePreferences } from '@/hooks/use-preferences';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
+import { useReview } from '@/hooks/use-review';
 import { useStudyGoal } from '@/hooks/use-study-goal';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
@@ -37,8 +39,23 @@ function normalize(value: string) {
 // Sentinelle interne « tout afficher » (valeur stable, libellé traduit à part).
 const ALL_CATEGORIES = '__all__';
 
+// Petit bouton ✕ pour masquer une carte (chaque carte a le sien).
+function CardDismiss({ onPress }: { onPress: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={10}
+      accessibilityRole="button"
+      accessibilityLabel={t('library.hideCard')}
+      style={styles.cardDismiss}>
+      <ThemedText style={styles.cardDismissIcon}>✕</ThemedText>
+    </Pressable>
+  );
+}
+
 // Carte « régularité » : série de jours + progression de l'objectif du jour.
-function StudyStreakCard() {
+function StudyStreakCard({ onDismiss }: { onDismiss: () => void }) {
   const { t } = useTranslation();
   const { streak, todaySeconds, goalMinutes, goalMet } = useStudyGoal();
   const todayMin = Math.floor(todaySeconds / 60);
@@ -63,13 +80,42 @@ function StudyStreakCard() {
           {t('study.progress', { min: todayMin, goal: goalMinutes })}
         </ThemedText>
       </View>
+      <CardDismiss onPress={onDismiss} />
     </View>
   );
 }
 
-// Carte « Reprendre la lecture » : rouvre le dernier chapitre ouvert. Rendue
-// uniquement quand il existe un dernier chapitre (donc pas de requête inutile).
-function ContinueCard({ lastRead }: { lastRead: LastRead }) {
+// Carte « Réviser » : nombre de questions dues (révision espacée). Masquée
+// quand il n'y a rien à réviser.
+function ReviewCard({ onDismiss }: { onDismiss: () => void }) {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const { getDueItems } = useReview();
+  const count = getDueItems().length;
+  if (count === 0) return null;
+  return (
+    <View style={styles.reviewCard}>
+      <Pressable
+        onPress={() => router.push('/review')}
+        accessibilityRole="button"
+        style={({ pressed }) => [styles.cardMain, pressed && styles.pressed]}>
+        <ThemedText style={styles.reviewIcon}>📝</ThemedText>
+        <View style={styles.reviewTextCol}>
+          <ThemedText type="smallBold" style={styles.reviewEyebrow}>
+            {t('review.title')}
+          </ThemedText>
+          <ThemedText style={styles.reviewCount}>
+            {t(count > 1 ? 'review.dueOther' : 'review.dueOne', { count })}
+          </ThemedText>
+        </View>
+      </Pressable>
+      <CardDismiss onPress={onDismiss} />
+    </View>
+  );
+}
+
+// Carte « Reprendre la lecture » : rouvre le dernier chapitre ouvert.
+function ContinueCard({ lastRead, onDismiss }: { lastRead: LastRead; onDismiss: () => void }) {
   const router = useRouter();
   const { t } = useTranslation();
   const { getProgress } = useReadingProgress();
@@ -78,24 +124,28 @@ function ContinueCard({ lastRead }: { lastRead: LastRead }) {
   const title = book?.title ? `${book.title} · ${lastRead.chapterTitle}` : lastRead.chapterTitle;
 
   return (
-    <Pressable
-      onPress={() => router.push({ pathname: '/chapter/[id]', params: { id: lastRead.chapterId } })}
-      accessibilityRole="button"
-      accessibilityLabel={t('home.continue.a11y', { title })}
-      style={({ pressed }) => [styles.continueCard, pressed && styles.pressed]}>
-      <View style={styles.continueTextCol}>
-        <ThemedText type="smallBold" style={styles.continueEyebrow}>
-          {t('home.continue.eyebrow')}
-        </ThemedText>
-        <ThemedText style={styles.continueTitle} numberOfLines={2}>
-          {title}
-        </ThemedText>
-        <ThemedText style={styles.continueMeta}>
-          {t('chapter.meta', { order: lastRead.order, pct })}
-        </ThemedText>
-      </View>
-      <ThemedText style={styles.continueChevron}>›</ThemedText>
-    </Pressable>
+    <View style={styles.continueCard}>
+      <Pressable
+        onPress={() =>
+          router.push({ pathname: '/chapter/[id]', params: { id: lastRead.chapterId } })
+        }
+        accessibilityRole="button"
+        accessibilityLabel={t('home.continue.a11y', { title })}
+        style={({ pressed }) => [styles.cardMain, pressed && styles.pressed]}>
+        <View style={styles.continueTextCol}>
+          <ThemedText type="smallBold" style={styles.continueEyebrow}>
+            {t('home.continue.eyebrow')}
+          </ThemedText>
+          <ThemedText style={styles.continueTitle} numberOfLines={2}>
+            {title}
+          </ThemedText>
+          <ThemedText style={styles.continueMeta}>
+            {t('chapter.meta', { order: lastRead.order, pct })}
+          </ThemedText>
+        </View>
+      </Pressable>
+      <CardDismiss onPress={onDismiss} />
+    </View>
   );
 }
 
@@ -105,6 +155,7 @@ export default function LibraryScreen() {
   const { t } = useTranslation();
   const { books, loading } = useBooks();
   const { lastRead } = useLastRead();
+  const { showStudyCard, showReviewCard, showContinueCard, setShowCard } = usePreferences();
   const { hasProgress, resetAll } = useReadingProgress();
   // Catégorie passée en paramètre d'URL (ex. depuis le badge de l'écran détail).
   const { category: categoryParam } = useLocalSearchParams<{ category?: string }>();
@@ -152,6 +203,63 @@ export default function LibraryScreen() {
     ]);
   };
 
+  // En-tête défilant : titre, cartes, filtres et tri défilent avec les livres.
+  // Seules la barre (Accueil/Réglages) et la recherche restent figées en haut.
+  const listHeader = (
+    <View>
+      <ThemedText type="title" style={styles.title}>
+        {t('library.title')}
+      </ThemedText>
+      <ThemedText themeColor="textSecondary" style={styles.subtitle}>
+        {t('library.subtitle')}
+      </ThemedText>
+
+      {showStudyCard ? <StudyStreakCard onDismiss={() => setShowCard('study', false)} /> : null}
+      {showReviewCard ? <ReviewCard onDismiss={() => setShowCard('review', false)} /> : null}
+      {showContinueCard && lastRead ? (
+        <ContinueCard lastRead={lastRead} onDismiss={() => setShowCard('continue', false)} />
+      ) : null}
+
+      <View style={styles.categories}>
+        {categories.map((category) => {
+          const selected = category === selectedCategory;
+          const label = category === ALL_CATEGORIES ? t('library.categoryAll') : category;
+          return (
+            <Pressable
+              key={category}
+              onPress={() => setSelectedCategory(category)}
+              accessibilityRole="button"
+              accessibilityState={{ selected }}
+              accessibilityLabel={label}
+              style={({ pressed }) => [
+                styles.chip,
+                { backgroundColor: selected ? '#0C5A44' : theme.backgroundElement },
+                pressed && styles.pressed,
+              ]}>
+              <ThemedText type="smallBold" style={{ color: selected ? '#ffffff' : theme.text }}>
+                {label}
+              </ThemedText>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <Pressable
+        onPress={() => setSortAscending((value) => !value)}
+        accessibilityRole="button"
+        accessibilityLabel={sortAscending ? t('library.sortAsc') : t('library.sortDesc')}
+        style={({ pressed }) => [
+          styles.sortButton,
+          { backgroundColor: theme.backgroundElement },
+          pressed && styles.pressed,
+        ]}>
+        <ThemedText type="smallBold">
+          {sortAscending ? t('library.sortAsc') : t('library.sortDesc')}
+        </ThemedText>
+      </Pressable>
+    </View>
+  );
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -176,17 +284,6 @@ export default function LibraryScreen() {
             </Pressable>
           </Link>
         </View>
-        <ThemedText type="title" style={styles.title}>
-          {t('library.title')}
-        </ThemedText>
-        <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-          {t('library.subtitle')}
-        </ThemedText>
-
-        <StudyStreakCard />
-
-        {lastRead ? <ContinueCard lastRead={lastRead} /> : null}
-
         <TextInput
           value={query}
           onChangeText={setQuery}
@@ -199,48 +296,11 @@ export default function LibraryScreen() {
           style={[styles.search, { backgroundColor: theme.backgroundElement, color: theme.text }]}
         />
 
-        <View style={styles.categories}>
-          {categories.map((category) => {
-            const selected = category === selectedCategory;
-            const label = category === ALL_CATEGORIES ? t('library.categoryAll') : category;
-            return (
-              <Pressable
-                key={category}
-                onPress={() => setSelectedCategory(category)}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-                accessibilityLabel={label}
-                style={({ pressed }) => [
-                  styles.chip,
-                  { backgroundColor: selected ? '#0C5A44' : theme.backgroundElement },
-                  pressed && styles.pressed,
-                ]}>
-                <ThemedText type="smallBold" style={{ color: selected ? '#ffffff' : theme.text }}>
-                  {label}
-                </ThemedText>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <Pressable
-          onPress={() => setSortAscending((value) => !value)}
-          accessibilityRole="button"
-          accessibilityLabel={sortAscending ? t('library.sortAsc') : t('library.sortDesc')}
-          style={({ pressed }) => [
-            styles.sortButton,
-            { backgroundColor: theme.backgroundElement },
-            pressed && styles.pressed,
-          ]}>
-          <ThemedText type="smallBold">
-            {sortAscending ? t('library.sortAsc') : t('library.sortDesc')}
-          </ThemedText>
-        </Pressable>
-
         <FlatList
           data={visibleBooks}
           keyExtractor={(book: Book) => book.id}
           keyboardShouldPersistTaps="handled"
+          ListHeaderComponent={listHeader}
           renderItem={({ item }) => (
             <Link href={{ pathname: '/book/[id]', params: { id: item.id } }} asChild>
               <Pressable style={({ pressed }) => (pressed ? styles.pressed : undefined)}>
@@ -340,10 +400,55 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontVariant: ['tabular-nums'],
   },
-  continueCard: {
+  cardMain: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
+    paddingRight: Spacing.three,
+  },
+  cardDismiss: {
+    position: 'absolute',
+    top: 4,
+    right: 6,
+    padding: 6,
+  },
+  cardDismissIcon: {
+    color: 'rgba(245, 238, 218, 0.5)',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  reviewCard: {
+    borderWidth: 1,
+    borderColor: 'rgba(224, 190, 109, 0.35)',
+    backgroundColor: 'rgba(224, 190, 109, 0.08)',
+    borderRadius: 14,
+    padding: Spacing.three,
+    marginBottom: Spacing.two,
+  },
+  reviewIcon: {
+    fontSize: 22,
+  },
+  reviewTextCol: {
+    flex: 1,
+    gap: 2,
+  },
+  reviewEyebrow: {
+    color: '#E0BE6D',
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  reviewCount: {
+    color: '#F5EEDA',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  reviewChevron: {
+    color: 'rgba(245, 238, 218, 0.72)',
+    fontSize: 28,
+    lineHeight: 28,
+  },
+  continueCard: {
     borderWidth: 1,
     borderColor: 'rgba(245, 238, 218, 0.22)',
     backgroundColor: 'rgba(255, 255, 255, 0.06)',

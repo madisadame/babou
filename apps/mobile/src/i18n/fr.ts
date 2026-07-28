@@ -31,6 +31,7 @@ export const fr = {
   'library.title': 'Bibliothèque',
   'library.backHome': 'Accueil',
   'library.backHomeA11y': "Revenir à l'accueil",
+  'library.hideCard': 'Masquer cette carte',
   'library.subtitle': 'Choisis un livre pour commencer à apprendre.',
   'library.searchPlaceholder': 'Rechercher un livre…',
   'library.categoryAll': 'Toutes',
@@ -100,6 +101,11 @@ export const fr = {
   'settings.correctionEnd': 'À la fin du questionnaire',
   'settings.accountSection': 'Compte',
   'settings.goalSection': 'Objectif quotidien',
+  'settings.progressCardsSection': 'Cartes de progression (bibliothèque)',
+  'settings.progressCardsHint': 'Touche une carte pour l\'afficher ou la masquer.',
+  'settings.cardStudy': 'Série & objectif',
+  'settings.cardReview': 'Révision',
+  'settings.cardContinue': 'Reprise de lecture',
 
   // Régularité (série + objectif)
   'study.daysOne': 'jour',
@@ -215,4 +221,24 @@ export const fr = {
   'quiz.correctAnswer': 'Bonne réponse : {{answer}}',
   'quiz.retry': 'Recommencer',
   'quiz.backToChapter': 'Retour au chapitre',
+
+  // Révision (à revoir + révision espacée)
+  'review.title': 'Révision',
+  'review.dueOne': '{{count}} question à réviser',
+  'review.dueOther': '{{count}} questions à réviser',
+  'review.finish': 'Terminer la révision',
+  'review.empty': 'Rien à réviser pour le moment. Reviens plus tard, in châ Allah.',
+
+  // Quiz final du livre
+  'finalQuiz.title': 'Quiz final',
+  'finalQuiz.cardHint': 'Questions tirées au hasard de tes quiz de chapitre.',
+  'finalQuiz.locked':
+    "Fais d'abord les quiz de chapitre : le quiz final s'alimente automatiquement de leurs questions.",
+  'finalQuiz.progressLabel': 'Progression',
+  'finalQuiz.rules': '+2 % par bonne réponse · −5 % par erreur · validé à 100 %',
+  'finalQuiz.next': 'Question suivante',
+  'finalQuiz.seeResult': 'Voir le résultat',
+  'finalQuiz.validatedTitle': 'Quiz final validé !',
+  'finalQuiz.validatedBody': "Tu as atteint 100 %. Qu'Allah accroisse ta science.",
+  'finalQuiz.finish': 'Terminer',
 } as const;

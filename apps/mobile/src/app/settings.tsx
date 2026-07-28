@@ -18,7 +18,16 @@ export default function SettingsScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
-  const { language, setLanguage, correctionMode, setCorrectionMode } = usePreferences();
+  const {
+    language,
+    setLanguage,
+    correctionMode,
+    setCorrectionMode,
+    showStudyCard,
+    showReviewCard,
+    showContinueCard,
+    setShowCard,
+  } = usePreferences();
   const { user, isAdmin, available, signIn, signUp, signOut } = useAuth();
   const { goalMinutes, setGoalMinutes } = useStudyGoal();
 
@@ -199,6 +208,24 @@ export default function SettingsScreen() {
               renderChip(min === goalMinutes, t('study.goalMinutes', { count: min }), () =>
                 setGoalMinutes(min),
               ),
+            )}
+          </View>
+
+          <ThemedText type="smallBold" themeColor="textSecondary" style={styles.section}>
+            {t('settings.progressCardsSection')}
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.authIntro}>
+            {t('settings.progressCardsHint')}
+          </ThemedText>
+          <View style={styles.rowWrap}>
+            {renderChip(showStudyCard, t('settings.cardStudy'), () =>
+              setShowCard('study', !showStudyCard),
+            )}
+            {renderChip(showReviewCard, t('settings.cardReview'), () =>
+              setShowCard('review', !showReviewCard),
+            )}
+            {renderChip(showContinueCard, t('settings.cardContinue'), () =>
+              setShowCard('continue', !showContinueCard),
             )}
           </View>
         </ScrollView>

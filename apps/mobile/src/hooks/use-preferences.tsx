@@ -4,18 +4,38 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 import { DEFAULT_LOCALE, type Locale } from '@/domain/locale';
 import type { CorrectionMode } from '@/domain/quiz';
 
-// Préférences utilisateur persistées : langue et mode de correction des quiz.
+// Préférences utilisateur persistées : langue, mode de correction des quiz,
+// et affichage de chaque carte de progression sur la bibliothèque (choix
+// individuel de l'utilisateur).
+export type ProgressCard = 'study' | 'review' | 'continue';
+
 type Preferences = {
   language: Locale;
   correctionMode: CorrectionMode;
+  showStudyCard: boolean;
+  showReviewCard: boolean;
+  showContinueCard: boolean;
 };
 
 type PreferencesContextValue = Preferences & {
   setLanguage: (language: Locale) => void;
   setCorrectionMode: (mode: CorrectionMode) => void;
+  setShowCard: (card: ProgressCard, show: boolean) => void;
 };
 
-const DEFAULT_PREFERENCES: Preferences = { language: DEFAULT_LOCALE, correctionMode: 'immediate' };
+const DEFAULT_PREFERENCES: Preferences = {
+  language: DEFAULT_LOCALE,
+  correctionMode: 'immediate',
+  showStudyCard: true,
+  showReviewCard: true,
+  showContinueCard: true,
+};
+
+const CARD_KEY: Record<ProgressCard, keyof Preferences> = {
+  study: 'showStudyCard',
+  review: 'showReviewCard',
+  continue: 'showContinueCard',
+};
 const STORAGE_KEY = 'babou:preferences';
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
@@ -50,6 +70,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       setLanguage: (language) => setPreferences((prev) => ({ ...prev, language })),
       setCorrectionMode: (correctionMode) =>
         setPreferences((prev) => ({ ...prev, correctionMode })),
+      setShowCard: (card, show) =>
+        setPreferences((prev) => ({ ...prev, [CARD_KEY[card]]: show })),
     }),
     [preferences],
   );
