@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   wordActive: {
     color: '#ffffff',
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
   },
   translation: {
     fontSize: 16,

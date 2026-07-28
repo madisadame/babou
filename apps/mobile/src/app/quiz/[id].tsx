@@ -170,7 +170,7 @@ export default function QuizScreen() {
       if (selected) return WRONG;
       return theme.backgroundElement;
     }
-    return selected ? '#3c87f7' : theme.backgroundElement;
+    return selected ? '#0C5A44' : theme.backgroundElement;
   };
 
   const choiceTextSelected = (choiceId: string): boolean => {
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cta: {
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,
     alignItems: 'center',

@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   correctOff: { color: '#8a8f98', fontSize: 18 },
   deleteIcon: { fontSize: 18 },
   primaryButton: {
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,
     alignItems: 'center',

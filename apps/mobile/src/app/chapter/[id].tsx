@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   quizButton: {
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,
     alignItems: 'center',

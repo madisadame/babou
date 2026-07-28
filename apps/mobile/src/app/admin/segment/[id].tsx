@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   inputMultiline: { minHeight: 72, textAlignVertical: 'top' },
   inputRtl: { textAlign: 'right', writingDirection: 'rtl', fontSize: 22, lineHeight: 36 },
   primaryButton: {
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,
     alignItems: 'center',

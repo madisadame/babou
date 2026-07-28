@@ -132,7 +132,7 @@ export default function LibraryScreen() {
                 accessibilityLabel={label}
                 style={({ pressed }) => [
                   styles.chip,
-                  { backgroundColor: selected ? '#3c87f7' : theme.backgroundElement },
+                  { backgroundColor: selected ? '#0C5A44' : theme.backgroundElement },
                   pressed && styles.pressed,
                 ]}>
                 <ThemedText type="smallBold" style={{ color: selected ? '#ffffff' : theme.text }}>

@@ -61,7 +61,7 @@ export default function SettingsScreen() {
       accessibilityLabel={label}
       style={({ pressed }) => [
         styles.chip,
-        { backgroundColor: selected ? '#3c87f7' : theme.backgroundElement },
+        { backgroundColor: selected ? '#0C5A44' : theme.backgroundElement },
         pressed && styles.pressed,
       ]}>
       <ThemedText type="smallBold" style={selected ? styles.chipSelected : undefined}>
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,
     alignItems: 'center',

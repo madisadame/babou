@@ -30,6 +30,6 @@ const styles = StyleSheet.create({
   fill: {
     height: '100%',
     borderRadius: 3,
-    backgroundColor: '#3c87f7',
+    backgroundColor: '#0C5A44',
   },
 });
