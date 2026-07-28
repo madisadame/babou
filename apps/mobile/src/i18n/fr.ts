@@ -27,6 +27,8 @@ export const fr = {
 
   // Bibliothèque
   'library.title': 'Bibliothèque',
+  'library.backHome': 'Accueil',
+  'library.backHomeA11y': "Revenir à l'accueil",
   'library.subtitle': 'Choisis un livre pour commencer à apprendre.',
   'library.searchPlaceholder': 'Rechercher un livre…',
   'library.categoryAll': 'Toutes',

@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,6 +36,7 @@ const ALL_CATEGORIES = '__all__';
 
 export default function LibraryScreen() {
   const theme = useTheme();
+  const router = useRouter();
   const { t } = useTranslation();
   const { books, loading } = useBooks();
   const { hasProgress, resetAll } = useReadingProgress();
@@ -88,10 +89,16 @@ export default function LibraryScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <ThemedText type="title" style={styles.title}>
-            {t('library.title')}
-          </ThemedText>
+        <View style={styles.topBar}>
+          <Pressable
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+            hitSlop={Spacing.two}
+            accessibilityRole="button"
+            accessibilityLabel={t('library.backHomeA11y')}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              ‹ {t('library.backHome')}
+            </ThemedText>
+          </Pressable>
           <Link href="/settings" asChild>
             <Pressable
               hitSlop={Spacing.two}
@@ -103,6 +110,9 @@ export default function LibraryScreen() {
             </Pressable>
           </Link>
         </View>
+        <ThemedText type="title" style={styles.title}>
+          {t('library.title')}
+        </ThemedText>
         <ThemedText themeColor="textSecondary" style={styles.subtitle}>
           {t('library.subtitle')}
         </ThemedText>
@@ -202,10 +212,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.four,
   },
-  header: {
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: Spacing.two,
   },
   title: {
     fontSize: 34,
