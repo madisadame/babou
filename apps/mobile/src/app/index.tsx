@@ -1,10 +1,13 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { fetchSiteContent } from '@/data/supabase/site-content';
 import { LOCALES } from '@/domain/locale';
+import type { TranslationKey } from '@/i18n';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useTranslation } from '@/hooks/use-translation';
 
@@ -19,20 +22,29 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const { language, setLanguage } = usePreferences();
 
+  // Textes de l'accueil éditables depuis l'admin (repli sur le texte par défaut).
+  const [overrides, setOverrides] = useState<Record<string, string>>({});
+  useFocusEffect(
+    useCallback(() => {
+      fetchSiteContent().then(setOverrides);
+    }, []),
+  );
+  const hc = (key: TranslationKey) => overrides[key] || t(key);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <ThemedText type="title" style={styles.title}>
-            {t('home.title')}
+            {hc('home.title')}
           </ThemedText>
 
-          <ThemedText style={styles.paragraph}>{t('home.intro.p1')}</ThemedText>
-          <ThemedText style={styles.paragraph}>{t('home.intro.p2')}</ThemedText>
-          <ThemedText style={styles.paragraph}>{t('home.intro.p3')}</ThemedText>
-          <ThemedText style={styles.paragraph}>{t('home.intro.p4')}</ThemedText>
+          <ThemedText style={styles.paragraph}>{hc('home.intro.p1')}</ThemedText>
+          <ThemedText style={styles.paragraph}>{hc('home.intro.p2')}</ThemedText>
+          <ThemedText style={styles.paragraph}>{hc('home.intro.p3')}</ThemedText>
+          <ThemedText style={styles.paragraph}>{hc('home.intro.p4')}</ThemedText>
 
-          <ThemedText style={styles.invocation}>{t('home.invocation')}</ThemedText>
+          <ThemedText style={styles.invocation}>{hc('home.invocation')}</ThemedText>
 
           <ThemedText type="smallBold" style={styles.langLabel}>
             {t('language.label')}
@@ -66,7 +78,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/library')}
             accessibilityRole="button"
             style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
-            <ThemedText style={styles.ctaLabel}>{t('home.cta')}</ThemedText>
+            <ThemedText style={styles.ctaLabel}>{hc('home.cta')}</ThemedText>
           </Pressable>
         </ScrollView>
       </SafeAreaView>

@@ -266,6 +266,16 @@ export type ContentStat = {
   avgProgress: number; // 0..1
 };
 
+// ---- Contenu éditable (page d'accueil, etc.) ----
+
+export async function upsertSiteContent(key: string, value: string): Promise<Result> {
+  if (!supabase) return { error: 'unavailable' };
+  const { error } = await supabase
+    .from('site_content')
+    .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+  return toError(error);
+}
+
 export async function getContentStats(): Promise<ContentStat[]> {
   if (!supabase) return [];
   const { data, error } = await supabase.rpc('content_stats');

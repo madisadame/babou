@@ -78,6 +78,11 @@ export default function AdminBooksScreen() {
                   </Pressable>
                 </View>
                 <View style={styles.adminsRow}>
+                  <Pressable onPress={() => router.push('/admin/home')} hitSlop={Spacing.two}>
+                    <ThemedText type="smallBold" themeColor="textSecondary">
+                      📄 {t('admin.homeTitle')}
+                    </ThemedText>
+                  </Pressable>
                   <Pressable onPress={() => router.push('/admin/admins')} hitSlop={Spacing.two}>
                     <ThemedText type="smallBold" themeColor="textSecondary">
                       👥 {t('admin.adminsTitle')}
@@ -147,7 +152,12 @@ const styles = StyleSheet.create({
   },
   rowInfo: { flex: 1, gap: Spacing.half },
   draftBadge: { color: '#E0BE6D' },
-  adminsRow: { flexDirection: 'row', gap: Spacing.four, marginBottom: Spacing.three },
+  adminsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.three,
+    marginBottom: Spacing.three,
+  },
   deleteIcon: { fontSize: 18 },
   addButton: {
     backgroundColor: '#0C5A44',

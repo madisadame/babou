@@ -232,6 +232,10 @@ export const fr = {
   'admin.adminYou': '(toi)',
   'admin.adminsEmpty': 'Aucun administrateur.',
 
+  // Page d'accueil (éditable)
+  'admin.homeTitle': "Page d'accueil",
+  'admin.homeHint': 'Modifie les textes de la page d’accueil. Laisse un champ vide pour revenir au texte par défaut.',
+
   // Statistiques de contenu
   'admin.statsTitle': 'Statistiques',
   'admin.statsHint': 'Progression des lecteurs, par chapitre.',
