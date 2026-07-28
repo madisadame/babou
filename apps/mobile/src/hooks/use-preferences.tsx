@@ -12,6 +12,9 @@ export type ProgressCard = 'study' | 'review' | 'continue';
 // Échelles de taille de texte de lecture (facteur multiplicateur).
 export const READING_SCALES = [0.9, 1, 1.15, 1.3] as const;
 
+// Vitesses de lecture audio disponibles.
+export const PLAYBACK_RATES = [0.75, 1, 1.25, 1.5, 2] as const;
+
 type Preferences = {
   language: Locale;
   correctionMode: CorrectionMode;
@@ -19,6 +22,7 @@ type Preferences = {
   showReviewCard: boolean;
   showContinueCard: boolean;
   readingScale: number;
+  playbackRate: number;
 };
 
 type PreferencesContextValue = Preferences & {
@@ -28,6 +32,9 @@ type PreferencesContextValue = Preferences & {
   setReadingScale: (scale: number) => void;
   // Ajuste la taille d'un cran (+1 / -1) dans READING_SCALES.
   stepReadingScale: (direction: 1 | -1) => void;
+  setPlaybackRate: (rate: number) => void;
+  // Passe à la vitesse suivante (en boucle) dans PLAYBACK_RATES.
+  cyclePlaybackRate: () => void;
 };
 
 const DEFAULT_PREFERENCES: Preferences = {
@@ -37,6 +44,7 @@ const DEFAULT_PREFERENCES: Preferences = {
   showReviewCard: true,
   showContinueCard: true,
   readingScale: 1,
+  playbackRate: 1,
 };
 
 const CARD_KEY: Record<ProgressCard, keyof Preferences> = {
@@ -87,6 +95,13 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
           const base = index === -1 ? 1 : index;
           const next = Math.max(0, Math.min(READING_SCALES.length - 1, base + direction));
           return { ...prev, readingScale: READING_SCALES[next] };
+        }),
+      setPlaybackRate: (playbackRate) => setPreferences((prev) => ({ ...prev, playbackRate })),
+      cyclePlaybackRate: () =>
+        setPreferences((prev) => {
+          const index = PLAYBACK_RATES.indexOf(prev.playbackRate as (typeof PLAYBACK_RATES)[number]);
+          const next = (index === -1 ? 1 : index + 1) % PLAYBACK_RATES.length;
+          return { ...prev, playbackRate: PLAYBACK_RATES[next] };
         }),
     }),
     [preferences],

@@ -9,7 +9,7 @@ import { Spacing } from '@/constants/theme';
 import { LOCALES } from '@/domain/locale';
 import type { CorrectionMode } from '@/domain/quiz';
 import { useAuth } from '@/hooks/use-auth';
-import { READING_SCALES, usePreferences } from '@/hooks/use-preferences';
+import { PLAYBACK_RATES, READING_SCALES, usePreferences } from '@/hooks/use-preferences';
 import { GOAL_OPTIONS, useStudyGoal } from '@/hooks/use-study-goal';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
@@ -29,6 +29,8 @@ export default function SettingsScreen() {
     setShowCard,
     readingScale,
     setReadingScale,
+    playbackRate,
+    setPlaybackRate,
   } = usePreferences();
   const sizeLabels = [
     t('reading.sizeSmall'),
@@ -225,6 +227,19 @@ export default function SettingsScreen() {
           <View style={styles.rowWrap}>
             {READING_SCALES.map((scale, i) =>
               renderChip(readingScale === scale, sizeLabels[i], () => setReadingScale(scale)),
+            )}
+          </View>
+
+          <ThemedText type="smallBold" themeColor="textSecondary" style={styles.section}>
+            {t('settings.playbackRateSection')}
+          </ThemedText>
+          <View style={styles.rowWrap}>
+            {PLAYBACK_RATES.map((rate) =>
+              renderChip(
+                playbackRate === rate,
+                `${rate === 1 ? '1' : String(rate).replace('.', ',')}×`,
+                () => setPlaybackRate(rate),
+              ),
             )}
           </View>
 

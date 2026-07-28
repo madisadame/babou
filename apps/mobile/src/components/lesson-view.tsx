@@ -45,9 +45,13 @@ function currentWordIndex(
 // un bouton ▶ pour la récitation (surlignage karaoké), puis la traduction avec
 // son propre bouton ▶. En haut, deux boutons « Tout écouter » (récitation /
 // traduction) enchaînent automatiquement les segments. Un seul lecteur réutilisé.
+function formatRate(rate: number): string {
+  return `${rate === 1 ? '1' : String(rate).replace('.', ',')}×`;
+}
+
 export function LessonView({ segments, title }: LessonViewProps) {
   const { t, locale } = useTranslation();
-  const { readingScale } = usePreferences();
+  const { readingScale, playbackRate, cyclePlaybackRate } = usePreferences();
   const player = useAudioPlayer(undefined, { updateInterval: 100 });
   const status = useAudioPlayerStatus(player);
   const [active, setActive] = useState<Track | null>(null);
@@ -68,6 +72,16 @@ export function LessonView({ segments, title }: LessonViewProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Applique la vitesse (en gardant la tonalité) et la met à jour en direct.
+  useEffect(() => {
+    try {
+      player.shouldCorrectPitch = true;
+      player.setPlaybackRate(playbackRate, 'high');
+    } catch {
+      // pas de lecteur prêt
+    }
+  }, [playbackRate, player]);
+
   const uriFor = (segment: LessonSegment, kind: Kind): string | undefined =>
     kind === 'arabic'
       ? segment.audioUrl
@@ -79,6 +93,12 @@ export function LessonView({ segments, title }: LessonViewProps) {
     if (!uri) return;
     player.replace({ uri });
     player.play();
+    try {
+      player.shouldCorrectPitch = true;
+      player.setPlaybackRate(playbackRate, 'high');
+    } catch {
+      // pas de lecteur prêt
+    }
     setActive(track);
     // Contrôles + infos sur l'écran verrouillé (titre du chapitre + type).
     player.setActiveForLockScreen(true, {
@@ -143,6 +163,20 @@ export function LessonView({ segments, title }: LessonViewProps) {
 
   return (
     <View style={styles.container}>
+      {hasArabic || hasTranslation ? (
+        <View style={styles.speedRow}>
+          <Pressable
+            onPress={cyclePlaybackRate}
+            accessibilityRole="button"
+            accessibilityLabel={t('reading.speed')}
+            style={({ pressed }) => [styles.speedPill, pressed && styles.pressed]}>
+            <ThemedText type="smallBold" style={styles.speedLabel}>
+              {formatRate(playbackRate)}
+            </ThemedText>
+          </Pressable>
+        </View>
+      ) : null}
+
       {hasArabic || hasTranslation ? (
         <View style={styles.listenAll}>
           {hasArabic ? (
@@ -239,6 +273,20 @@ export function LessonView({ segments, title }: LessonViewProps) {
 const styles = StyleSheet.create({
   container: {
     gap: 24,
+  },
+  speedRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  speedPill: {
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.3)',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+  },
+  speedLabel: {
+    color: '#F5EEDA',
   },
   listenAll: {
     flexDirection: 'row',

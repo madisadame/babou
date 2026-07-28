@@ -102,6 +102,7 @@ export const fr = {
   'settings.accountSection': 'Compte',
   'settings.goalSection': 'Objectif quotidien',
   'settings.textSizeSection': 'Taille du texte de lecture',
+  'settings.playbackRateSection': 'Vitesse de lecture audio',
   'settings.progressCardsSection': 'Cartes de progression (bibliothèque)',
   'settings.progressCardsHint': 'Touche une carte pour l\'afficher ou la masquer.',
   'settings.cardStudy': 'Série & objectif',
@@ -246,6 +247,7 @@ export const fr = {
   // Confort de lecture (taille + marque-pages)
   'reading.smaller': 'Réduire la taille du texte',
   'reading.larger': 'Agrandir la taille du texte',
+  'reading.speed': 'Vitesse de lecture audio',
   'reading.sizeSmall': 'Petit',
   'reading.sizeNormal': 'Normal',
   'reading.sizeLarge': 'Grand',

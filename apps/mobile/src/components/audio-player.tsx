@@ -6,7 +6,12 @@ import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { usePreferences } from '@/hooks/use-preferences';
 import { useTranslation } from '@/hooks/use-translation';
+
+function formatRate(rate: number): string {
+  return `${rate === 1 ? '1' : String(rate).replace('.', ',')}×`;
+}
 
 type AudioPlayerProps = {
   uri: string;
@@ -27,8 +32,19 @@ function formatTime(seconds: number): string {
 // s'appuiera plus tard sur les timings du modèle (LessonWord).
 export function AudioPlayer({ uri, title }: AudioPlayerProps) {
   const { t } = useTranslation();
+  const { playbackRate, cyclePlaybackRate } = usePreferences();
   const player = useAudioPlayer({ uri });
   const status = useAudioPlayerStatus(player);
+
+  // Applique la vitesse (tonalité conservée) et la met à jour en direct.
+  useEffect(() => {
+    try {
+      player.shouldCorrectPitch = true;
+      player.setPlaybackRate(playbackRate, 'high');
+    } catch {
+      // pas de lecteur prêt
+    }
+  }, [playbackRate, player]);
 
   // Lecture en fond (écran verrouillé) + même en mode silencieux (iOS).
   useEffect(() => {
@@ -55,6 +71,12 @@ export function AudioPlayer({ uri, title }: AudioPlayerProps) {
       player.seekTo(0);
     }
     player.play();
+    try {
+      player.shouldCorrectPitch = true;
+      player.setPlaybackRate(playbackRate, 'high');
+    } catch {
+      // pas de lecteur prêt
+    }
     player.setActiveForLockScreen(true, { title: title ?? 'Babou', artist: 'Babou' });
   };
 
@@ -74,6 +96,16 @@ export function AudioPlayer({ uri, title }: AudioPlayerProps) {
           {formatTime(status.currentTime)} / {status.isLoaded ? formatTime(status.duration) : '—'}
         </ThemedText>
       </View>
+
+      <Pressable
+        onPress={cyclePlaybackRate}
+        accessibilityRole="button"
+        accessibilityLabel={t('reading.speed')}
+        style={({ pressed }) => [styles.speedPill, pressed && styles.pressed]}>
+        <ThemedText type="smallBold" style={styles.speedLabel}>
+          {formatRate(playbackRate)}
+        </ThemedText>
+      </Pressable>
     </ThemedView>
   );
 }
@@ -105,5 +137,17 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     gap: Spacing.two,
+  },
+  speedPill: {
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.3)',
+    borderRadius: 999,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
+    minWidth: 44,
+    alignItems: 'center',
+  },
+  speedLabel: {
+    color: '#F5EEDA',
   },
 });
