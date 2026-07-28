@@ -122,6 +122,8 @@ export type SegmentInput = {
   translationFr: string;
   translationShimaore: string;
   audioUrl: string;
+  translationAudioFr: string;
+  translationAudioShimaore: string;
 };
 
 export type AdminSegment = SegmentInput & { id: string };
@@ -134,6 +136,8 @@ type SegmentRow = {
   translation_fr: string | null;
   translation_shimaore: string | null;
   audio_url: string | null;
+  translation_audio_fr: string | null;
+  translation_audio_shimaore: string | null;
 };
 
 function toAdminSegment(row: SegmentRow): AdminSegment {
@@ -145,6 +149,8 @@ function toAdminSegment(row: SegmentRow): AdminSegment {
     translationFr: row.translation_fr ?? '',
     translationShimaore: row.translation_shimaore ?? '',
     audioUrl: row.audio_url ?? '',
+    translationAudioFr: row.translation_audio_fr ?? '',
+    translationAudioShimaore: row.translation_audio_shimaore ?? '',
   };
 }
 
@@ -156,6 +162,8 @@ function segmentColumns(input: SegmentInput) {
     translation_fr: input.translationFr || null,
     translation_shimaore: input.translationShimaore || null,
     audio_url: input.audioUrl || null,
+    translation_audio_fr: input.translationAudioFr || null,
+    translation_audio_shimaore: input.translationAudioShimaore || null,
   };
 }
 
@@ -198,6 +206,8 @@ export async function updateSegment(id: string, input: SegmentInput): Promise<Re
       translation_fr: input.translationFr || null,
       translation_shimaore: input.translationShimaore || null,
       audio_url: input.audioUrl || null,
+      translation_audio_fr: input.translationAudioFr || null,
+      translation_audio_shimaore: input.translationAudioShimaore || null,
     })
     .eq('id', id);
   return toError(error);

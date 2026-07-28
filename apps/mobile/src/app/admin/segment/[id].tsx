@@ -29,11 +29,13 @@ export default function AdminSegmentScreen() {
   const [translationFr, setTranslationFr] = useState('');
   const [translationShimaore, setTranslationShimaore] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
+  const [translationAudioFr, setTranslationAudioFr] = useState('');
+  const [translationAudioShimaore, setTranslationAudioShimaore] = useState('');
   const [position, setPosition] = useState('0');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const handleUploadAudio = async () => {
+  const uploadAudioTo = async (setter: (value: string) => void) => {
     const picked = await pickAudio();
     if (!picked) return;
     setUploading(true);
@@ -43,7 +45,7 @@ export default function AdminSegmentScreen() {
       Alert.alert(t('admin.uploadError'));
       return;
     }
-    setAudioUrl(url);
+    setter(url);
   };
 
   useEffect(() => {
@@ -62,6 +64,8 @@ export default function AdminSegmentScreen() {
       setTranslationFr(segment.translationFr);
       setTranslationShimaore(segment.translationShimaore);
       setAudioUrl(segment.audioUrl);
+      setTranslationAudioFr(segment.translationAudioFr);
+      setTranslationAudioShimaore(segment.translationAudioShimaore);
       setPosition(String(segment.position));
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,6 +84,8 @@ export default function AdminSegmentScreen() {
       translationFr: translationFr.trim(),
       translationShimaore: translationShimaore.trim(),
       audioUrl: audioUrl.trim(),
+      translationAudioFr: translationAudioFr.trim(),
+      translationAudioShimaore: translationAudioShimaore.trim(),
     };
     const { error } = isNew ? await createSegment(input) : await updateSegment(params.id, input);
     setSaving(false);
@@ -153,9 +159,9 @@ export default function AdminSegmentScreen() {
           {field(t('admin.fieldTranslationShimaore'), translationShimaore, setTranslationShimaore, {
             multiline: true,
           })}
-          {field(t('admin.fieldAudioUrl'), audioUrl, setAudioUrl)}
+          {field(t('admin.fieldAudioArabic'), audioUrl, setAudioUrl)}
           <Pressable
-            onPress={handleUploadAudio}
+            onPress={() => uploadAudioTo(setAudioUrl)}
             disabled={uploading}
             style={({ pressed }) => [
               styles.uploadButton,
@@ -163,7 +169,39 @@ export default function AdminSegmentScreen() {
               pressed && styles.pressed,
             ]}>
             <ThemedText type="smallBold">
-              {uploading ? t('admin.uploading') : t('admin.uploadAudio')}
+              {uploading ? t('admin.uploading') : t('admin.uploadAudioArabic')}
+            </ThemedText>
+          </Pressable>
+
+          {field(t('admin.fieldAudioTranslationFr'), translationAudioFr, setTranslationAudioFr)}
+          <Pressable
+            onPress={() => uploadAudioTo(setTranslationAudioFr)}
+            disabled={uploading}
+            style={({ pressed }) => [
+              styles.uploadButton,
+              { backgroundColor: theme.backgroundElement },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold">
+              {uploading ? t('admin.uploading') : t('admin.uploadAudioTranslationFr')}
+            </ThemedText>
+          </Pressable>
+
+          {field(
+            t('admin.fieldAudioTranslationShimaore'),
+            translationAudioShimaore,
+            setTranslationAudioShimaore,
+          )}
+          <Pressable
+            onPress={() => uploadAudioTo(setTranslationAudioShimaore)}
+            disabled={uploading}
+            style={({ pressed }) => [
+              styles.uploadButton,
+              { backgroundColor: theme.backgroundElement },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold">
+              {uploading ? t('admin.uploading') : t('admin.uploadAudioTranslationShimaore')}
             </ThemedText>
           </Pressable>
           {field(t('admin.fieldPosition'), position, setPosition, { numeric: true })}

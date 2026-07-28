@@ -154,7 +154,11 @@ export async function downloadBook(
   for (const ch of chapters) {
     const l = lessons[ch.id];
     if (l?.audioUrl) total++;
-    if (l) for (const s of l.segments) if (s.audioUrl) total++;
+    if (l)
+      for (const s of l.segments) {
+        if (s.audioUrl) total++;
+        if (s.translationAudio) total += Object.values(s.translationAudio).filter(Boolean).length;
+      }
   }
   let done = 0;
   const tick = () => {
@@ -193,13 +197,26 @@ export async function downloadBook(
       tick();
     }
     for (const s of l.segments) {
-      if (!s.audioUrl) continue;
-      try {
-        s.audioUrl = await downloadMedia(s.audioUrl, audioDir, `${safe(s.id)}.${extFromUrl(s.audioUrl, 'mp3')}`);
-      } catch {
-        /* garde l'URL distante */
+      if (s.audioUrl) {
+        try {
+          s.audioUrl = await downloadMedia(s.audioUrl, audioDir, `${safe(s.id)}.${extFromUrl(s.audioUrl, 'mp3')}`);
+        } catch {
+          /* garde l'URL distante */
+        }
+        tick();
       }
-      tick();
+      if (s.translationAudio) {
+        const map = s.translationAudio as Record<string, string>;
+        for (const [loc, url] of Object.entries(map)) {
+          if (!url) continue;
+          try {
+            map[loc] = await downloadMedia(url, audioDir, `${safe(s.id)}-${loc}.${extFromUrl(url, 'mp3')}`);
+          } catch {
+            /* garde l'URL distante */
+          }
+          tick();
+        }
+      }
     }
   }
 

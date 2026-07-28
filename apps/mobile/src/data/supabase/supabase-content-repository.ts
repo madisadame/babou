@@ -32,6 +32,8 @@ type SegmentRow = {
   translation_fr: string | null;
   translation_shimaore: string | null;
   audio_url: string | null;
+  translation_audio_fr: string | null;
+  translation_audio_shimaore: string | null;
   words: LessonWord[] | null;
 };
 
@@ -61,12 +63,16 @@ function mapSegment(row: SegmentRow): LessonSegment {
   const translations: Translations = {};
   if (row.translation_fr) translations.fr = row.translation_fr;
   if (row.translation_shimaore) translations.shimaore = row.translation_shimaore;
+  const translationAudio: Translations = {};
+  if (row.translation_audio_fr) translationAudio.fr = row.translation_audio_fr;
+  if (row.translation_audio_shimaore) translationAudio.shimaore = row.translation_audio_shimaore;
   return {
     id: row.id,
     arabic: row.arabic ?? '',
     translations,
     words: row.words ?? undefined,
     audioUrl: row.audio_url ?? undefined,
+    translationAudio: Object.keys(translationAudio).length ? translationAudio : undefined,
   };
 }
 

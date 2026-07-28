@@ -14,12 +14,15 @@ export interface LessonWord {
 
 // Un segment de leçon (une phrase / un verset) : le texte arabe, ses
 // traductions, et — à terme — son découpage mot-à-mot et son audio.
+// `audioUrl` = récitation coranique (arabe). `translationAudio` = audio de la
+// traduction, par langue (fr / shimaoré), pour la lecture en paire.
 export interface LessonSegment {
   id: string;
   arabic: string;
   translations: Translations;
   words?: LessonWord[];
   audioUrl?: string;
+  translationAudio?: Partial<Record<Locale, string>>;
 }
 
 // La leçon d'un chapitre : une suite de segments. L'audio complet du chapitre
