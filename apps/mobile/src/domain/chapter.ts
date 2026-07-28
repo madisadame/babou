@@ -8,4 +8,6 @@ export interface Chapter {
   order: number;
   title: string;
   description: string;
+  /** Publié (visible du public) ou brouillon (visible des seuls admins). */
+  published?: boolean;
 }

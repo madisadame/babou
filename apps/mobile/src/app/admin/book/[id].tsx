@@ -25,6 +25,7 @@ export default function AdminBookScreen() {
   const [category, setCategory] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
   const [position, setPosition] = useState('0');
+  const [published, setPublished] = useState(true);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -57,6 +58,7 @@ export default function AdminBookScreen() {
       setCategory(book.category);
       setCoverUrl(book.coverUrl ?? '');
       setPosition(String(book.position));
+      setPublished(book.published ?? true);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -80,6 +82,7 @@ export default function AdminBookScreen() {
       category: category.trim(),
       coverUrl: coverUrl.trim(),
       position: Number(position) || 0,
+      published,
     };
     const { error } = isNew ? await createBook(input) : await updateBook(id, input);
     setSaving(false);
@@ -179,6 +182,34 @@ export default function AdminBookScreen() {
           </Pressable>
           {field(t('admin.fieldPosition'), position, setPosition, { numeric: true })}
 
+          <View style={styles.field}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              {t('admin.statusLabel')}
+            </ThemedText>
+            <View style={styles.statusRow}>
+              <Pressable
+                onPress={() => setPublished(true)}
+                style={[
+                  styles.statusChip,
+                  published ? styles.statusPublishedOn : { backgroundColor: theme.backgroundElement },
+                ]}>
+                <ThemedText type="smallBold" style={{ color: published ? '#ffffff' : theme.text }}>
+                  {t('admin.statusPublished')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => setPublished(false)}
+                style={[
+                  styles.statusChip,
+                  !published ? styles.statusDraftOn : { backgroundColor: theme.backgroundElement },
+                ]}>
+                <ThemedText type="smallBold" style={{ color: !published ? '#08301F' : theme.text }}>
+                  {t('admin.statusDraft')}
+                </ThemedText>
+              </Pressable>
+            </View>
+          </View>
+
           <Pressable
             disabled={saving}
             onPress={handleSave}
@@ -216,6 +247,12 @@ export default function AdminBookScreen() {
                       <Pressable style={styles.chapterInfo}>
                         <ThemedText type="smallBold">
                           {chapter.order}. {chapter.title}
+                          {chapter.published === false ? (
+                            <ThemedText type="small" style={styles.draftBadge}>
+                              {'  '}
+                              {t('admin.draftBadge')}
+                            </ThemedText>
+                          ) : null}
                         </ThemedText>
                       </Pressable>
                     </Link>
@@ -249,6 +286,15 @@ const styles = StyleSheet.create({
   content: { paddingBottom: Spacing.six, gap: Spacing.two },
   title: { fontSize: 30, lineHeight: 36, marginBottom: Spacing.two },
   field: { gap: Spacing.one },
+  statusRow: { flexDirection: 'row', gap: Spacing.two },
+  statusChip: {
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.four,
+    borderRadius: Spacing.five,
+  },
+  statusPublishedOn: { backgroundColor: '#0C5A44' },
+  statusDraftOn: { backgroundColor: '#E0BE6D' },
+  draftBadge: { color: '#E0BE6D' },
   input: {
     minHeight: 44,
     borderRadius: Spacing.three,

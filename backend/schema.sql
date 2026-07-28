@@ -10,6 +10,7 @@ create table if not exists public.books (
   category text not null default '',
   cover_url text,
   position int not null default 0,
+  published boolean not null default true,
   created_at timestamptz not null default now()
 );
 
@@ -21,6 +22,7 @@ create table if not exists public.chapters (
   title text not null,
   description text not null default '',
   audio_url text,
+  published boolean not null default true,
   created_at timestamptz not null default now()
 );
 create index if not exists chapters_book_id_idx on public.chapters(book_id);

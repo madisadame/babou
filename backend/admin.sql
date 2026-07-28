@@ -49,3 +49,13 @@ create policy "admin write question_choices" on public.question_choices
 -- insert into public.admins (user_id)
 --   select id from auth.users where email = 'ton-email@exemple.com'
 --   on conflict do nothing;
+
+-- Lecture publique conditionnée : les brouillons (published = false) ne sont
+-- visibles que des admins (voir aussi 2026-07-29-draft-publish.sql).
+drop policy if exists "public read books" on public.books;
+create policy "public read books" on public.books
+  for select using (published = true or public.is_admin());
+
+drop policy if exists "public read chapters" on public.chapters;
+create policy "public read chapters" on public.chapters
+  for select using (published = true or public.is_admin());

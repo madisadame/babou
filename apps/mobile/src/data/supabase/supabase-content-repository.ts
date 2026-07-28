@@ -14,6 +14,7 @@ type BookRow = {
   category: string | null;
   cover_url: string | null;
   position: number | null;
+  published: boolean | null;
   chapters?: { count: number }[];
 };
 
@@ -23,6 +24,7 @@ type ChapterRow = {
   position: number | null;
   title: string;
   description: string | null;
+  published: boolean | null;
 };
 
 type SegmentRow = {
@@ -46,6 +48,7 @@ function mapBook(row: BookRow): Book {
     coverUrl: row.cover_url ?? undefined,
     position: row.position ?? 0,
     chapterCount: row.chapters?.[0]?.count ?? 0,
+    published: row.published ?? true,
   };
 }
 
@@ -56,6 +59,7 @@ function mapChapter(row: ChapterRow): Chapter {
     order: row.position ?? 0,
     title: row.title,
     description: row.description ?? '',
+    published: row.published ?? true,
   };
 }
 

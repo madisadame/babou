@@ -79,7 +79,15 @@ export default function AdminBooksScreen() {
               <ThemedView type="backgroundElement" style={styles.row}>
                 <Link href={{ pathname: '/admin/book/[id]', params: { id: item.id } }} asChild>
                   <Pressable style={styles.rowInfo}>
-                    <ThemedText type="smallBold">{item.title}</ThemedText>
+                    <ThemedText type="smallBold">
+                      {item.title}
+                      {item.published === false ? (
+                        <ThemedText type="small" style={styles.draftBadge}>
+                          {'  '}
+                          {t('admin.draftBadge')}
+                        </ThemedText>
+                      ) : null}
+                    </ThemedText>
                     <ThemedText type="small" themeColor="textSecondary">
                       {item.category} · {item.chapterCount}
                     </ThemedText>
@@ -122,6 +130,7 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
   },
   rowInfo: { flex: 1, gap: Spacing.half },
+  draftBadge: { color: '#E0BE6D' },
   deleteIcon: { fontSize: 18 },
   addButton: {
     backgroundColor: '#0C5A44',

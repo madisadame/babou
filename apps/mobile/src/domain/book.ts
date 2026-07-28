@@ -12,4 +12,6 @@ export interface Book {
   position: number;
   /** Nombre de chapitres — dénormalisé pour l'affichage en liste. */
   chapterCount: number;
+  /** Publié (visible du public) ou brouillon (visible des seuls admins). */
+  published?: boolean;
 }

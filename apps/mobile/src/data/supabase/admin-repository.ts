@@ -11,6 +11,7 @@ export type BookInput = {
   category: string;
   coverUrl: string;
   position: number;
+  published: boolean;
 };
 
 export type ChapterInput = {
@@ -18,6 +19,7 @@ export type ChapterInput = {
   title: string;
   description: string;
   position: number;
+  published: boolean;
 };
 
 // Génère un identifiant lisible et unique à partir d'un titre.
@@ -55,6 +57,7 @@ export async function createBook(input: BookInput): Promise<Result> {
     category: input.category,
     cover_url: input.coverUrl || null,
     position: input.position,
+    published: input.published,
   });
   return toError(error);
 }
@@ -69,6 +72,7 @@ export async function updateBook(id: string, input: BookInput): Promise<Result> 
       category: input.category,
       cover_url: input.coverUrl || null,
       position: input.position,
+      published: input.published,
     })
     .eq('id', id);
   return toError(error);
@@ -90,6 +94,7 @@ export async function createChapter(input: ChapterInput): Promise<Result> {
     title: input.title,
     description: input.description,
     position: input.position,
+    published: input.published,
   });
   return toError(error);
 }
@@ -102,6 +107,7 @@ export async function updateChapter(id: string, input: ChapterInput): Promise<Re
       title: input.title,
       description: input.description,
       position: input.position,
+      published: input.published,
     })
     .eq('id', id);
   return toError(error);

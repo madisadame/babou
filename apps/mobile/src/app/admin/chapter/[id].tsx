@@ -32,6 +32,7 @@ export default function AdminChapterScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [position, setPosition] = useState('0');
+  const [published, setPublished] = useState(true);
   const [saving, setSaving] = useState(false);
   const [segments, setSegments] = useState<AdminSegment[]>([]);
   const [questions, setQuestions] = useState<AdminQuestion[]>([]);
@@ -89,6 +90,7 @@ export default function AdminChapterScreen() {
       setTitle(chapter.title);
       setDescription(chapter.description);
       setPosition(String(chapter.order));
+      setPublished(chapter.published ?? true);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
@@ -104,6 +106,7 @@ export default function AdminChapterScreen() {
       title: title.trim(),
       description: description.trim(),
       position: Number(position) || 0,
+      published,
     };
     const { error } = isNew ? await createChapter(input) : await updateChapter(params.id, input);
     setSaving(false);
@@ -174,6 +177,34 @@ export default function AdminChapterScreen() {
           {field(t('admin.fieldTitle'), title, setTitle)}
           {field(t('admin.fieldDescription'), description, setDescription, { multiline: true })}
           {field(t('admin.fieldPosition'), position, setPosition, { numeric: true })}
+
+          <View style={styles.field}>
+            <ThemedText type="smallBold" themeColor="textSecondary">
+              {t('admin.statusLabel')}
+            </ThemedText>
+            <View style={styles.statusRow}>
+              <Pressable
+                onPress={() => setPublished(true)}
+                style={[
+                  styles.statusChip,
+                  published ? styles.statusPublishedOn : { backgroundColor: theme.backgroundElement },
+                ]}>
+                <ThemedText type="smallBold" style={{ color: published ? '#ffffff' : theme.text }}>
+                  {t('admin.statusPublished')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => setPublished(false)}
+                style={[
+                  styles.statusChip,
+                  !published ? styles.statusDraftOn : { backgroundColor: theme.backgroundElement },
+                ]}>
+                <ThemedText type="smallBold" style={{ color: !published ? '#08301F' : theme.text }}>
+                  {t('admin.statusDraft')}
+                </ThemedText>
+              </Pressable>
+            </View>
+          </View>
 
           <Pressable
             disabled={saving}
@@ -303,6 +334,14 @@ const styles = StyleSheet.create({
   content: { paddingBottom: Spacing.six, gap: Spacing.two },
   title: { fontSize: 30, lineHeight: 36, marginBottom: Spacing.two },
   field: { gap: Spacing.one },
+  statusRow: { flexDirection: 'row', gap: Spacing.two },
+  statusChip: {
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.four,
+    borderRadius: Spacing.five,
+  },
+  statusPublishedOn: { backgroundColor: '#0C5A44' },
+  statusDraftOn: { backgroundColor: '#E0BE6D' },
   input: {
     minHeight: 44,
     borderRadius: Spacing.three,
