@@ -77,6 +77,8 @@ export const fr = {
   'audio.pause': 'Mettre en pause',
   'audio.playArabicA11y': 'Écouter la récitation',
   'audio.playTranslationA11y': 'Écouter la traduction',
+  'audio.nowArabic': 'Récitation (arabe)',
+  'audio.nowTranslation': 'Traduction',
   'lesson.listenAllArabic': 'Tout écouter · récitation',
   'lesson.listenAllTranslation': 'Tout écouter · traduction',
   'chapter.sampleNoticeBody':

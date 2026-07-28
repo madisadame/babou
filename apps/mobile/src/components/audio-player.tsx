@@ -10,6 +10,8 @@ import { useTranslation } from '@/hooks/use-translation';
 
 type AudioPlayerProps = {
   uri: string;
+  // Titre affiché sur l'écran verrouillé (généralement le titre du chapitre).
+  title?: string;
 };
 
 function formatTime(seconds: number): string {
@@ -23,14 +25,22 @@ function formatTime(seconds: number): string {
 // Lecteur audio d'une leçon : lecture / pause + barre de progression + temps.
 // Piloté par une URL (fournie par le contenu). Le suivi mot-à-mot (karaoké)
 // s'appuiera plus tard sur les timings du modèle (LessonWord).
-export function AudioPlayer({ uri }: AudioPlayerProps) {
+export function AudioPlayer({ uri, title }: AudioPlayerProps) {
   const { t } = useTranslation();
   const player = useAudioPlayer({ uri });
   const status = useAudioPlayerStatus(player);
 
-  // Jouer même si le téléphone est en mode silencieux (iOS).
+  // Lecture en fond (écran verrouillé) + même en mode silencieux (iOS).
   useEffect(() => {
-    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+    setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true }).catch(() => {});
+    return () => {
+      try {
+        player.clearLockScreenControls();
+      } catch {
+        // lecteur déjà libéré
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const progress = status.duration > 0 ? status.currentTime / status.duration : 0;
@@ -45,6 +55,7 @@ export function AudioPlayer({ uri }: AudioPlayerProps) {
       player.seekTo(0);
     }
     player.play();
+    player.setActiveForLockScreen(true, { title: title ?? 'Babou', artist: 'Babou' });
   };
 
   return (

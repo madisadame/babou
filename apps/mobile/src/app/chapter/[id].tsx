@@ -89,9 +89,9 @@ export default function ChapterReadScreen() {
 
             {lesson ? (
               <>
-                <LessonView segments={lesson.segments} />
+                <LessonView segments={lesson.segments} title={chapter.title} />
 
-                {lesson.audioUrl ? <AudioPlayer uri={lesson.audioUrl} /> : null}
+                {lesson.audioUrl ? <AudioPlayer uri={lesson.audioUrl} title={chapter.title} /> : null}
 
                 <ThemedView type="backgroundElement" style={styles.notice}>
                   <ThemedText type="smallBold">{t('chapter.sampleNoticeTitle')}</ThemedText>

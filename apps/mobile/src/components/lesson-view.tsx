@@ -8,6 +8,8 @@ import { useTranslation } from '@/hooks/use-translation';
 
 type LessonViewProps = {
   segments: LessonSegment[];
+  // Titre affiché sur l'écran verrouillé (généralement le titre du chapitre).
+  title?: string;
 };
 
 // Deux pistes possibles par segment : la récitation arabe et la traduction.
@@ -42,7 +44,7 @@ function currentWordIndex(
 // un bouton ▶ pour la récitation (surlignage karaoké), puis la traduction avec
 // son propre bouton ▶. En haut, deux boutons « Tout écouter » (récitation /
 // traduction) enchaînent automatiquement les segments. Un seul lecteur réutilisé.
-export function LessonView({ segments }: LessonViewProps) {
+export function LessonView({ segments, title }: LessonViewProps) {
   const { t, locale } = useTranslation();
   const player = useAudioPlayer(undefined, { updateInterval: 100 });
   const status = useAudioPlayerStatus(player);
@@ -52,7 +54,16 @@ export function LessonView({ segments }: LessonViewProps) {
   const queueIndexRef = useRef(0);
 
   useEffect(() => {
-    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+    // Lecture en fond (écran verrouillé) + même en mode silencieux (iOS).
+    setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true }).catch(() => {});
+    return () => {
+      try {
+        player.clearLockScreenControls();
+      } catch {
+        // lecteur déjà libéré
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const uriFor = (segment: LessonSegment, kind: Kind): string | undefined =>
@@ -67,6 +78,11 @@ export function LessonView({ segments }: LessonViewProps) {
     player.replace({ uri });
     player.play();
     setActive(track);
+    // Contrôles + infos sur l'écran verrouillé (titre du chapitre + type).
+    player.setActiveForLockScreen(true, {
+      title: title ?? 'Babou',
+      artist: track.kind === 'arabic' ? t('audio.nowArabic') : t('audio.nowTranslation'),
+    });
   };
 
   // `start` doit toujours être la version la plus récente pour l'enchaînement.
