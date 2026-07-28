@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AudioPlayer } from '@/components/audio-player';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { fetchSiteContent } from '@/data/supabase/site-content';
@@ -38,6 +39,15 @@ export default function HomeScreen() {
           <ThemedText type="title" style={styles.title}>
             {hc('home.title')}
           </ThemedText>
+
+          {overrides['home.audioUrl'] ? (
+            <View style={styles.homeAudio}>
+              <ThemedText type="smallBold" style={styles.homeAudioLabel}>
+                🔊 {t('home.audioLabel')}
+              </ThemedText>
+              <AudioPlayer uri={overrides['home.audioUrl']} title={hc('home.title')} />
+            </View>
+          ) : null}
 
           <ThemedText style={styles.paragraph}>{hc('home.intro.p1')}</ThemedText>
           <ThemedText style={styles.paragraph}>{hc('home.intro.p2')}</ThemedText>
@@ -104,6 +114,14 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     marginBottom: Spacing.two,
     color: CREAM,
+  },
+  homeAudio: {
+    gap: Spacing.two,
+    marginBottom: Spacing.two,
+  },
+  homeAudioLabel: {
+    color: CREAM,
+    letterSpacing: 0.5,
   },
   paragraph: {
     fontSize: 16,

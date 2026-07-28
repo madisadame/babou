@@ -6,8 +6,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { pickAudio, uploadMedia } from '@/data/media';
 import { upsertSiteContent } from '@/data/supabase/admin-repository';
 import { fetchSiteContent } from '@/data/supabase/site-content';
+
+const AUDIO_KEY = 'home.audioUrl';
 import type { TranslationKey } from '@/i18n';
 import { useAuth } from '@/hooks/use-auth';
 import { useTheme } from '@/hooks/use-theme';
@@ -32,7 +35,9 @@ export default function AdminHomeScreen() {
   const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const [values, setValues] = useState<Record<string, string>>({});
+  const [audioUrl, setAudioUrl] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -40,9 +45,23 @@ export default function AdminHomeScreen() {
       const initial: Record<string, string> = {};
       for (const f of FIELDS) initial[f.key] = overrides[f.key] ?? t(f.key);
       setValues(initial);
+      setAudioUrl(overrides[AUDIO_KEY] ?? '');
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleUploadAudio = async () => {
+    const picked = await pickAudio();
+    if (!picked) return;
+    setUploading(true);
+    const { url, error } = await uploadMedia(picked, 'audio');
+    setUploading(false);
+    if (error || !url) {
+      Alert.alert(t('admin.uploadError'));
+      return;
+    }
+    setAudioUrl(url);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -51,6 +70,8 @@ export default function AdminHomeScreen() {
       const { error } = await upsertSiteContent(f.key, (values[f.key] ?? '').trim());
       if (error) failed = true;
     }
+    const audioRes = await upsertSiteContent(AUDIO_KEY, audioUrl.trim());
+    if (audioRes.error) failed = true;
     setSaving(false);
     if (failed) {
       Alert.alert(t('admin.errorSave'));
@@ -103,6 +124,36 @@ export default function AdminHomeScreen() {
               </View>
             ))}
 
+            <View style={styles.field}>
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                {t('admin.homeAudioLabel')}
+              </ThemedText>
+              {audioUrl ? (
+                <View style={styles.audioRow}>
+                  <ThemedText type="small" style={styles.audioSet}>
+                    ✓ {t('admin.homeAudioSet')}
+                  </ThemedText>
+                  <Pressable onPress={() => setAudioUrl('')} hitSlop={Spacing.two}>
+                    <ThemedText type="small" style={styles.audioRemove}>
+                      {t('admin.homeAudioRemove')}
+                    </ThemedText>
+                  </Pressable>
+                </View>
+              ) : null}
+              <Pressable
+                onPress={handleUploadAudio}
+                disabled={uploading}
+                style={({ pressed }) => [
+                  styles.uploadButton,
+                  { backgroundColor: theme.backgroundElement },
+                  pressed && styles.pressed,
+                ]}>
+                <ThemedText type="smallBold">
+                  {uploading ? t('admin.uploading') : t('admin.homeAudioUpload')}
+                </ThemedText>
+              </Pressable>
+            </View>
+
             <Pressable
               disabled={saving}
               onPress={handleSave}
@@ -131,6 +182,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputMultiline: { minHeight: 96, textAlignVertical: 'top' },
+  audioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  audioSet: { color: '#7fd3af' },
+  audioRemove: { color: '#e5484d' },
+  uploadButton: {
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.two,
+    alignItems: 'center',
+  },
   primaryButton: {
     backgroundColor: '#0C5A44',
     borderRadius: Spacing.three,
