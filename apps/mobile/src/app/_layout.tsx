@@ -7,6 +7,7 @@ import { AuthProvider } from '@/hooks/use-auth';
 import { DownloadsProvider } from '@/hooks/use-downloads';
 import { LastReadProvider } from '@/hooks/use-last-read';
 import { PreferencesProvider } from '@/hooks/use-preferences';
+import { StudyGoalProvider } from '@/hooks/use-study-goal';
 import { QuizResultsProvider } from '@/hooks/use-quiz-results';
 import { ReadingProgressProvider } from '@/hooks/use-reading-progress';
 
@@ -18,6 +19,7 @@ export default function RootLayout() {
           <QuizResultsProvider>
             <DownloadsProvider>
               <LastReadProvider>
+              <StudyGoalProvider>
               {/* Le ciel étoilé est rendu une seule fois, en fond de toute
                   l'app : il reste continu d'un écran à l'autre. Les scènes de
                   navigation sont transparentes pour le laisser apparaître. */}
@@ -32,6 +34,7 @@ export default function RootLayout() {
                 />
               </View>
               <StatusBar style="light" />
+              </StudyGoalProvider>
               </LastReadProvider>
             </DownloadsProvider>
           </QuizResultsProvider>

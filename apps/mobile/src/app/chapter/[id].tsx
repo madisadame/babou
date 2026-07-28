@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect } from 'react';
 import {
   Alert,
   Pressable,
@@ -18,6 +18,7 @@ import { Spacing } from '@/constants/theme';
 import { useChapter, useLesson, useQuestions } from '@/hooks/use-content';
 import { useLastRead } from '@/hooks/use-last-read';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
+import { useStudyGoal } from '@/hooks/use-study-goal';
 import { useTranslation } from '@/hooks/use-translation';
 
 // Lecture d'un chapitre : le lecteur pédagogique affiche le texte arabe et sa
@@ -32,6 +33,7 @@ export default function ChapterReadScreen() {
   const { questions } = useQuestions(id);
   const { getProgress, setProgress, resetProgress } = useReadingProgress();
   const { recordRead } = useLastRead();
+  const { addStudySeconds } = useStudyGoal();
 
   // Mémorise ce chapitre comme « dernier lu » pour la reprise sur l'accueil.
   useEffect(() => {
@@ -39,6 +41,14 @@ export default function ChapterReadScreen() {
     // On enregistre au (re)chargement du chapitre ; recordRead est stable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chapter?.id]);
+
+  // Compte le temps d'étude tant que l'écran du chapitre est affiché.
+  useFocusEffect(
+    useCallback(() => {
+      const id = setInterval(() => addStudySeconds(10), 10000);
+      return () => clearInterval(id);
+    }, [addStudySeconds]),
+  );
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!chapter) return;

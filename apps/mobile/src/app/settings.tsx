@@ -10,6 +10,7 @@ import { LOCALES } from '@/domain/locale';
 import type { CorrectionMode } from '@/domain/quiz';
 import { useAuth } from '@/hooks/use-auth';
 import { usePreferences } from '@/hooks/use-preferences';
+import { GOAL_OPTIONS, useStudyGoal } from '@/hooks/use-study-goal';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
 
@@ -19,6 +20,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const { language, setLanguage, correctionMode, setCorrectionMode } = usePreferences();
   const { user, isAdmin, available, signIn, signUp, signOut } = useAuth();
+  const { goalMinutes, setGoalMinutes } = useStudyGoal();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -185,6 +187,17 @@ export default function SettingsScreen() {
             {correctionOptions.map((option) =>
               renderChip(option.value === correctionMode, option.label, () =>
                 setCorrectionMode(option.value),
+              ),
+            )}
+          </View>
+
+          <ThemedText type="smallBold" themeColor="textSecondary" style={styles.section}>
+            {t('settings.goalSection')}
+          </ThemedText>
+          <View style={styles.rowWrap}>
+            {GOAL_OPTIONS.map((min) =>
+              renderChip(min === goalMinutes, t('study.goalMinutes', { count: min }), () =>
+                setGoalMinutes(min),
               ),
             )}
           </View>

@@ -4,6 +4,7 @@ import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
+import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -11,6 +12,7 @@ import type { Book } from '@/domain/book';
 import { useBook, useBooks } from '@/hooks/use-content';
 import { useLastRead, type LastRead } from '@/hooks/use-last-read';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
+import { useStudyGoal } from '@/hooks/use-study-goal';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
 
@@ -34,6 +36,36 @@ function normalize(value: string) {
 
 // Sentinelle interne « tout afficher » (valeur stable, libellé traduit à part).
 const ALL_CATEGORIES = '__all__';
+
+// Carte « régularité » : série de jours + progression de l'objectif du jour.
+function StudyStreakCard() {
+  const { t } = useTranslation();
+  const { streak, todaySeconds, goalMinutes, goalMet } = useStudyGoal();
+  const todayMin = Math.floor(todaySeconds / 60);
+  const value = goalMinutes > 0 ? Math.min(1, todaySeconds / (goalMinutes * 60)) : 0;
+  return (
+    <View style={styles.streakCard}>
+      <View style={styles.streakLeft}>
+        <ThemedText style={styles.streakFlame}>🔥</ThemedText>
+        <View>
+          <ThemedText style={styles.streakNumber}>{streak}</ThemedText>
+          <ThemedText style={styles.streakDays}>
+            {t(streak > 1 ? 'study.daysOther' : 'study.daysOne')}
+          </ThemedText>
+        </View>
+      </View>
+      <View style={styles.streakRight}>
+        <ThemedText type="smallBold" style={goalMet ? styles.streakDone : styles.streakTodayLabel}>
+          {goalMet ? `✓ ${t('study.goalMet')}` : t('study.today')}
+        </ThemedText>
+        <ProgressBar value={value} />
+        <ThemedText style={styles.streakMin}>
+          {t('study.progress', { min: todayMin, goal: goalMinutes })}
+        </ThemedText>
+      </View>
+    </View>
+  );
+}
 
 // Carte « Reprendre la lecture » : rouvre le dernier chapitre ouvert. Rendue
 // uniquement quand il existe un dernier chapitre (donc pas de requête inutile).
@@ -151,6 +183,8 @@ export default function LibraryScreen() {
           {t('library.subtitle')}
         </ThemedText>
 
+        <StudyStreakCard />
+
         {lastRead ? <ContinueCard lastRead={lastRead} /> : null}
 
         <TextInput
@@ -261,6 +295,50 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: Spacing.one,
     marginBottom: Spacing.three,
+  },
+  streakCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.four,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.18)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 14,
+    padding: Spacing.three,
+    marginBottom: Spacing.two,
+  },
+  streakLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  streakFlame: {
+    fontSize: 30,
+  },
+  streakNumber: {
+    color: '#F5EEDA',
+    fontSize: 24,
+    fontWeight: '700',
+    lineHeight: 26,
+  },
+  streakDays: {
+    color: 'rgba(245, 238, 218, 0.6)',
+    fontSize: 12,
+  },
+  streakRight: {
+    flex: 1,
+    gap: 5,
+  },
+  streakTodayLabel: {
+    color: 'rgba(245, 238, 218, 0.72)',
+  },
+  streakDone: {
+    color: '#7fd3af',
+  },
+  streakMin: {
+    color: 'rgba(245, 238, 218, 0.6)',
+    fontSize: 12,
+    fontVariant: ['tabular-nums'],
   },
   continueCard: {
     flexDirection: 'row',

@@ -99,6 +99,15 @@ export const fr = {
   'settings.correctionImmediate': 'Après chaque question',
   'settings.correctionEnd': 'À la fin du questionnaire',
   'settings.accountSection': 'Compte',
+  'settings.goalSection': 'Objectif quotidien',
+
+  // Régularité (série + objectif)
+  'study.daysOne': 'jour',
+  'study.daysOther': 'jours',
+  'study.today': "Aujourd'hui",
+  'study.goalMet': 'Objectif atteint',
+  'study.progress': '{{min}} / {{goal}} min',
+  'study.goalMinutes': '{{count}} min',
 
   // Authentification
   'auth.email': 'Email',
