@@ -9,18 +9,25 @@ import type { CorrectionMode } from '@/domain/quiz';
 // individuel de l'utilisateur).
 export type ProgressCard = 'study' | 'review' | 'continue';
 
+// Échelles de taille de texte de lecture (facteur multiplicateur).
+export const READING_SCALES = [0.9, 1, 1.15, 1.3] as const;
+
 type Preferences = {
   language: Locale;
   correctionMode: CorrectionMode;
   showStudyCard: boolean;
   showReviewCard: boolean;
   showContinueCard: boolean;
+  readingScale: number;
 };
 
 type PreferencesContextValue = Preferences & {
   setLanguage: (language: Locale) => void;
   setCorrectionMode: (mode: CorrectionMode) => void;
   setShowCard: (card: ProgressCard, show: boolean) => void;
+  setReadingScale: (scale: number) => void;
+  // Ajuste la taille d'un cran (+1 / -1) dans READING_SCALES.
+  stepReadingScale: (direction: 1 | -1) => void;
 };
 
 const DEFAULT_PREFERENCES: Preferences = {
@@ -29,6 +36,7 @@ const DEFAULT_PREFERENCES: Preferences = {
   showStudyCard: true,
   showReviewCard: true,
   showContinueCard: true,
+  readingScale: 1,
 };
 
 const CARD_KEY: Record<ProgressCard, keyof Preferences> = {
@@ -72,6 +80,14 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
         setPreferences((prev) => ({ ...prev, correctionMode })),
       setShowCard: (card, show) =>
         setPreferences((prev) => ({ ...prev, [CARD_KEY[card]]: show })),
+      setReadingScale: (readingScale) => setPreferences((prev) => ({ ...prev, readingScale })),
+      stepReadingScale: (direction) =>
+        setPreferences((prev) => {
+          const index = READING_SCALES.indexOf(prev.readingScale as (typeof READING_SCALES)[number]);
+          const base = index === -1 ? 1 : index;
+          const next = Math.max(0, Math.min(READING_SCALES.length - 1, base + direction));
+          return { ...prev, readingScale: READING_SCALES[next] };
+        }),
     }),
     [preferences],
   );

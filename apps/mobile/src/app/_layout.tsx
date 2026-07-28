@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { StarrySky } from '@/components/starry-sky';
 import { AuthProvider } from '@/hooks/use-auth';
+import { BookmarksProvider } from '@/hooks/use-bookmarks';
 import { DownloadsProvider } from '@/hooks/use-downloads';
 import { FinalQuizProvider } from '@/hooks/use-final-quiz';
 import { LastReadProvider } from '@/hooks/use-last-read';
@@ -24,6 +25,7 @@ export default function RootLayout() {
               <StudyGoalProvider>
               <ReviewProvider>
               <FinalQuizProvider>
+              <BookmarksProvider>
               {/* Le ciel étoilé est rendu une seule fois, en fond de toute
                   l'app : il reste continu d'un écran à l'autre. Les scènes de
                   navigation sont transparentes pour le laisser apparaître. */}
@@ -38,6 +40,7 @@ export default function RootLayout() {
                 />
               </View>
               <StatusBar style="light" />
+              </BookmarksProvider>
               </FinalQuizProvider>
               </ReviewProvider>
               </StudyGoalProvider>

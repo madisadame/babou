@@ -9,7 +9,7 @@ import { Spacing } from '@/constants/theme';
 import { LOCALES } from '@/domain/locale';
 import type { CorrectionMode } from '@/domain/quiz';
 import { useAuth } from '@/hooks/use-auth';
-import { usePreferences } from '@/hooks/use-preferences';
+import { READING_SCALES, usePreferences } from '@/hooks/use-preferences';
 import { GOAL_OPTIONS, useStudyGoal } from '@/hooks/use-study-goal';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
@@ -27,7 +27,15 @@ export default function SettingsScreen() {
     showReviewCard,
     showContinueCard,
     setShowCard,
+    readingScale,
+    setReadingScale,
   } = usePreferences();
+  const sizeLabels = [
+    t('reading.sizeSmall'),
+    t('reading.sizeNormal'),
+    t('reading.sizeLarge'),
+    t('reading.sizeXLarge'),
+  ];
   const { user, isAdmin, available, signIn, signUp, signOut } = useAuth();
   const { goalMinutes, setGoalMinutes } = useStudyGoal();
 
@@ -208,6 +216,15 @@ export default function SettingsScreen() {
               renderChip(min === goalMinutes, t('study.goalMinutes', { count: min }), () =>
                 setGoalMinutes(min),
               ),
+            )}
+          </View>
+
+          <ThemedText type="smallBold" themeColor="textSecondary" style={styles.section}>
+            {t('settings.textSizeSection')}
+          </ThemedText>
+          <View style={styles.rowWrap}>
+            {READING_SCALES.map((scale, i) =>
+              renderChip(readingScale === scale, sizeLabels[i], () => setReadingScale(scale)),
             )}
           </View>
 

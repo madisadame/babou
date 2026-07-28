@@ -101,6 +101,7 @@ export const fr = {
   'settings.correctionEnd': 'À la fin du questionnaire',
   'settings.accountSection': 'Compte',
   'settings.goalSection': 'Objectif quotidien',
+  'settings.textSizeSection': 'Taille du texte de lecture',
   'settings.progressCardsSection': 'Cartes de progression (bibliothèque)',
   'settings.progressCardsHint': 'Touche une carte pour l\'afficher ou la masquer.',
   'settings.cardStudy': 'Série & objectif',
@@ -241,4 +242,17 @@ export const fr = {
   'finalQuiz.validatedTitle': 'Quiz final validé !',
   'finalQuiz.validatedBody': "Tu as atteint 100 %. Qu'Allah accroisse ta science.",
   'finalQuiz.finish': 'Terminer',
+
+  // Confort de lecture (taille + marque-pages)
+  'reading.smaller': 'Réduire la taille du texte',
+  'reading.larger': 'Agrandir la taille du texte',
+  'reading.sizeSmall': 'Petit',
+  'reading.sizeNormal': 'Normal',
+  'reading.sizeLarge': 'Grand',
+  'reading.sizeXLarge': 'Très grand',
+  'bookmark.title': 'Marque-pages',
+  'bookmark.empty': "Aucun marque-page. Touche l'étoile ☆ en haut d'un chapitre pour l'ajouter.",
+  'bookmark.add': 'Ajouter aux marque-pages',
+  'bookmark.remove': 'Retirer des marque-pages',
+  'bookmark.a11y': 'Voir mes marque-pages',
 } as const;

@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  View,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
@@ -17,6 +18,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useChapter, useLesson, useQuestions } from '@/hooks/use-content';
 import { useLastRead } from '@/hooks/use-last-read';
+import { useBookmarks } from '@/hooks/use-bookmarks';
+import { usePreferences } from '@/hooks/use-preferences';
 import { useReadingProgress } from '@/hooks/use-reading-progress';
 import { useStudyGoal } from '@/hooks/use-study-goal';
 import { useTranslation } from '@/hooks/use-translation';
@@ -34,6 +37,8 @@ export default function ChapterReadScreen() {
   const { getProgress, setProgress, resetProgress } = useReadingProgress();
   const { recordRead } = useLastRead();
   const { addStudySeconds } = useStudyGoal();
+  const { readingScale, stepReadingScale } = usePreferences();
+  const { isBookmarked, toggle } = useBookmarks();
 
   // Mémorise ce chapitre comme « dernier lu » pour la reprise sur l'accueil.
   useEffect(() => {
@@ -72,11 +77,24 @@ export default function ChapterReadScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <Pressable onPress={() => router.back()} hitSlop={Spacing.three} style={styles.back}>
-          <ThemedText type="link" themeColor="textSecondary">
-            ← {t('common.back')}
-          </ThemedText>
-        </Pressable>
+        <View style={styles.headerRow}>
+          <Pressable onPress={() => router.back()} hitSlop={Spacing.three}>
+            <ThemedText type="link" themeColor="textSecondary">
+              ← {t('common.back')}
+            </ThemedText>
+          </Pressable>
+          {chapter ? (
+            <Pressable
+              onPress={() => toggle(chapter)}
+              hitSlop={Spacing.two}
+              accessibilityRole="button"
+              accessibilityLabel={t(isBookmarked(chapter.id) ? 'bookmark.remove' : 'bookmark.add')}>
+              <ThemedText style={styles.bookmarkIcon}>
+                {isBookmarked(chapter.id) ? '★' : '☆'}
+              </ThemedText>
+            </Pressable>
+          ) : null}
+        </View>
 
         {loading ? (
           <ThemedText themeColor="textSecondary" style={styles.centered}>
@@ -88,14 +106,36 @@ export default function ChapterReadScreen() {
             showsVerticalScrollIndicator={false}
             onScroll={handleScroll}
             scrollEventThrottle={50}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('chapter.meta', { order: chapter.order, pct: Math.round(progress * 100) })}
-            </ThemedText>
+            <View style={styles.metaRow}>
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                {t('chapter.meta', { order: chapter.order, pct: Math.round(progress * 100) })}
+              </ThemedText>
+              <View style={styles.fontControls}>
+                <Pressable
+                  onPress={() => stepReadingScale(-1)}
+                  hitSlop={Spacing.two}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('reading.smaller')}
+                  style={({ pressed }) => [styles.fontStep, pressed && styles.pressed]}>
+                  <ThemedText style={styles.fontStepSmall}>A−</ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => stepReadingScale(1)}
+                  hitSlop={Spacing.two}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('reading.larger')}
+                  style={({ pressed }) => [styles.fontStep, pressed && styles.pressed]}>
+                  <ThemedText style={styles.fontStepLarge}>A+</ThemedText>
+                </Pressable>
+              </View>
+            </View>
             <ThemedText type="title" style={styles.title}>
               {chapter.title}
             </ThemedText>
 
-            <ThemedText style={styles.lead}>{chapter.description}</ThemedText>
+            <ThemedText style={[styles.lead, { fontSize: 18 * readingScale, lineHeight: 28 * readingScale }]}>
+              {chapter.description}
+            </ThemedText>
 
             {lesson ? (
               <>
@@ -163,8 +203,45 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.four,
   },
-  back: {
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: Spacing.three,
+  },
+  bookmarkIcon: {
+    fontSize: 22,
+    color: '#E0BE6D',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  fontControls: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
+  fontStep: {
+    minWidth: 40,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.3)',
+    alignItems: 'center',
+  },
+  fontStepSmall: {
+    color: '#F5EEDA',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  fontStepLarge: {
+    color: '#F5EEDA',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  pressed: {
+    opacity: 0.6,
   },
   content: {
     gap: Spacing.three,

@@ -273,16 +273,25 @@ export default function LibraryScreen() {
               ‹ {t('library.backHome')}
             </ThemedText>
           </Pressable>
-          <Link href="/settings" asChild>
+          <View style={styles.topBarRight}>
             <Pressable
+              onPress={() => router.push('/bookmarks')}
               hitSlop={Spacing.two}
               accessibilityRole="button"
-              accessibilityLabel={t('settings.a11y')}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
-                {t('settings.title')}
-              </ThemedText>
+              accessibilityLabel={t('bookmark.a11y')}>
+              <ThemedText style={styles.topStar}>★</ThemedText>
             </Pressable>
-          </Link>
+            <Link href="/settings" asChild>
+              <Pressable
+                hitSlop={Spacing.two}
+                accessibilityRole="button"
+                accessibilityLabel={t('settings.a11y')}>
+                <ThemedText type="smallBold" themeColor="textSecondary">
+                  {t('settings.title')}
+                </ThemedText>
+              </Pressable>
+            </Link>
+          </View>
         </View>
         <TextInput
           value={query}
@@ -347,6 +356,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.two,
+  },
+  topBarRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+  topStar: {
+    fontSize: 18,
+    color: '#E0BE6D',
   },
   title: {
     fontSize: 34,

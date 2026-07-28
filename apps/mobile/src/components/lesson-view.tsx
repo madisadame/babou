@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import type { LessonSegment } from '@/domain/lesson';
+import { usePreferences } from '@/hooks/use-preferences';
 import { useTranslation } from '@/hooks/use-translation';
 
 type LessonViewProps = {
@@ -46,6 +47,7 @@ function currentWordIndex(
 // traduction) enchaînent automatiquement les segments. Un seul lecteur réutilisé.
 export function LessonView({ segments, title }: LessonViewProps) {
   const { t, locale } = useTranslation();
+  const { readingScale } = usePreferences();
   const player = useAudioPlayer(undefined, { updateInterval: 100 });
   const status = useAudioPlayerStatus(player);
   const [active, setActive] = useState<Track | null>(null);
@@ -194,7 +196,8 @@ export function LessonView({ segments, title }: LessonViewProps) {
                   <ThemedText style={styles.playIcon}>{arabicPlaying ? '❚❚' : '▶'}</ThemedText>
                 </Pressable>
               ) : null}
-              <ThemedText style={styles.arabic}>
+              <ThemedText
+                style={[styles.arabic, { fontSize: 26 * readingScale, lineHeight: 46 * readingScale }]}>
                 {words.map((word, index) => (
                   <Text key={index} style={index === highlight ? styles.wordActive : undefined}>
                     {word}
@@ -216,7 +219,12 @@ export function LessonView({ segments, title }: LessonViewProps) {
                     </ThemedText>
                   </Pressable>
                 ) : null}
-                <ThemedText themeColor="textSecondary" style={styles.translation}>
+                <ThemedText
+                  themeColor="textSecondary"
+                  style={[
+                    styles.translation,
+                    { fontSize: 16 * readingScale, lineHeight: 24 * readingScale },
+                  ]}>
                   {translation}
                 </ThemedText>
               </View>
