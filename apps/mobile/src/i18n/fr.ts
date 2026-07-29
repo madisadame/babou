@@ -172,6 +172,23 @@ export const fr = {
   'auth.deleteConfirm': 'Supprimer définitivement',
   'auth.deleteError': 'La suppression a échoué. Réessaie.',
 
+  // Paywall (abonnement)
+  'paywall.title': 'Babou en illimité',
+  'paywall.intro':
+    'Accède à tous les livres et chapitres avec un abonnement. La première semaine est offerte.',
+  'paywall.trialOver':
+    "Ta semaine d'essai est terminée. Choisis un abonnement pour continuer — ta progression est conservée.",
+  'paywall.signInToStart': 'Se connecter pour démarrer la semaine offerte',
+  'paywall.yearly': 'Annuel — 79,99 €/an',
+  'paywall.yearlyHint': 'Économise ~33 % (soit 6,67 €/mois)',
+  'paywall.monthly': 'Mensuel — 9,99 €/mois',
+  'paywall.restore': 'Restaurer un achat',
+  'paywall.restoreNone': 'Aucun abonnement à restaurer sur ce compte.',
+  'paywall.donateInstead': '🤲 Ou faire un don libre',
+  'paywall.note':
+    'Sans engagement, résiliable à tout moment. Paiement via ton compte App Store / Google Play.',
+  'paywall.comingSoon': "L'abonnement sera disponible à la sortie de l'application.",
+
   // Administration
   'admin.title': 'Administration',
   'admin.entry': 'Espace admin',
@@ -273,6 +290,16 @@ export const fr = {
   'admin.homeAudioSet': 'Audio en place',
   'admin.homeAudioRemove': 'Retirer',
   'admin.supportTitle': 'Soutien',
+  'admin.subTitle': 'Abonnement',
+  'admin.subEnable': "Activer l'abonnement",
+  'admin.subEnableHint':
+    "Quand tu l'actives, la semaine gratuite démarre pour tous et le blocage s'applique en cas de non-paiement. Tant qu'il est désactivé, toute l'app reste libre.",
+  'admin.subActivatedOn': 'Activé le',
+  'admin.subGrant': "Offrir l'accès à une personne",
+  'admin.subGrantHint':
+    "Recherche un utilisateur par e-mail, puis active « accès offert » pour le débloquer gratuitement.",
+  'admin.subSearchPlaceholder': "e-mail de l'utilisateur",
+  'admin.subSearch': 'Chercher',
   'admin.supportHint':
     'Colle les liens de paiement de ta plateforme (HelloAsso, Stripe, PayPal…). Un champ vide masque le bouton. Le montant se choisit sur la page de paiement.',
 

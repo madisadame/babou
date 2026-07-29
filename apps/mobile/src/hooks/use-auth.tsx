@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 
 import { supabase } from '@/data/supabase/client';
 
-export type AuthUser = { id: string; email: string };
+export type AuthUser = { id: string; email: string; createdAt: string | null };
 
 type AuthResult = { error: string | null; needsConfirmation?: boolean };
 
@@ -29,7 +29,9 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function toUser(user: User | null | undefined): AuthUser | null {
-  return user ? { id: user.id, email: user.email ?? '' } : null;
+  return user
+    ? { id: user.id, email: user.email ?? '', createdAt: user.created_at ?? null }
+    : null;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

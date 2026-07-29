@@ -2,8 +2,10 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
+import { AccessGate } from '@/components/access-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { StarrySky } from '@/components/starry-sky';
+import { AccessProvider } from '@/hooks/use-access';
 import { AuthProvider } from '@/hooks/use-auth';
 import { BookmarksProvider } from '@/hooks/use-bookmarks';
 import { DownloadsProvider } from '@/hooks/use-downloads';
@@ -20,6 +22,7 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
     <AuthProvider>
+      <AccessProvider>
       <PreferencesProvider>
         <ReadingProgressProvider>
           <QuizResultsProvider>
@@ -35,6 +38,7 @@ export default function RootLayout() {
                   navigation sont transparentes pour le laisser apparaître. */}
               <View style={{ flex: 1 }}>
                 <StarrySky />
+                <AccessGate />
                 <Stack
                   screenOptions={{
                     headerShown: false,
@@ -54,6 +58,7 @@ export default function RootLayout() {
           </QuizResultsProvider>
         </ReadingProgressProvider>
       </PreferencesProvider>
+      </AccessProvider>
     </AuthProvider>
     </ErrorBoundary>
   );

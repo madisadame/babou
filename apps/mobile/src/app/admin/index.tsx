@@ -98,6 +98,11 @@ export default function AdminBooksScreen() {
                       🤲 {t('admin.supportTitle')}
                     </ThemedText>
                   </Pressable>
+                  <Pressable onPress={() => router.push('/admin/subscription')} hitSlop={Spacing.two}>
+                    <ThemedText type="smallBold" themeColor="textSecondary">
+                      🔑 {t('admin.subTitle')}
+                    </ThemedText>
+                  </Pressable>
                 </View>
               </View>
             }
