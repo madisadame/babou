@@ -10,6 +10,7 @@ import { LOCALES } from '@/domain/locale';
 import type { CorrectionMode } from '@/domain/quiz';
 import { useAuth } from '@/hooks/use-auth';
 import { PLAYBACK_RATES, READING_SCALES, usePreferences } from '@/hooks/use-preferences';
+import { useProfile } from '@/hooks/use-profile';
 import { GOAL_OPTIONS, useStudyGoal } from '@/hooks/use-study-goal';
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
@@ -41,6 +42,7 @@ export default function SettingsScreen() {
   const { user, isAdmin, available, recovering, signIn, signUp, signOut, resetPassword, updatePassword } =
     useAuth();
   const { goalMinutes, setGoalMinutes } = useStudyGoal();
+  const { name, avatar } = useProfile();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -128,6 +130,21 @@ export default function SettingsScreen() {
           <ThemedText type="title" style={styles.title}>
             {t('settings.title')}
           </ThemedText>
+
+          <Pressable
+            onPress={() => router.push('/profile')}
+            style={({ pressed }) => (pressed ? styles.pressed : undefined)}>
+            <ThemedView type="backgroundElement" style={styles.profileRow}>
+              <ThemedText style={styles.profileAvatar}>{avatar}</ThemedText>
+              <View style={styles.profileText}>
+                <ThemedText type="smallBold">{name || t('profile.title')}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('profile.open')}
+                </ThemedText>
+              </View>
+              <ThemedText style={styles.profileChevron}>›</ThemedText>
+            </ThemedView>
+          </Pressable>
 
           <Pressable
             onPress={() => router.push('/support')}
@@ -367,6 +384,17 @@ const styles = StyleSheet.create({
   },
   supportLink: { alignSelf: 'flex-start', marginTop: Spacing.one },
   supportLinkText: { color: '#E0BE6D' },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    borderRadius: Spacing.three,
+    padding: Spacing.three,
+    marginTop: Spacing.two,
+  },
+  profileAvatar: { fontSize: 30 },
+  profileText: { flex: 1, gap: 2 },
+  profileChevron: { color: 'rgba(245, 238, 218, 0.6)', fontSize: 26 },
   recoverBox: {
     gap: Spacing.two,
     borderWidth: 1,

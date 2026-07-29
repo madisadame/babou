@@ -26,6 +26,19 @@ export const fr = {
   'home.cta': 'Accéder à la bibliothèque',
   'home.audioLabel': "Écoute l'explication",
 
+  // Profil utilisateur
+  'profile.title': 'Mon profil',
+  'profile.open': 'Avatar, pseudo et progression',
+  'profile.namePlaceholder': 'Ton pseudo',
+  'profile.guestNote': 'Connecte-toi (dans les Réglages) pour synchroniser ton profil.',
+  'profile.avatarSection': 'Avatar',
+  'profile.statsSection': 'Ma progression',
+  'profile.streak': 'Série (jours)',
+  'profile.record': 'Record (jours)',
+  'profile.chaptersRead': 'Chapitres lus',
+  'profile.bookmarks': 'Marque-pages',
+  'profile.toReview': 'À réviser',
+
   // Soutien (dons & sadaqa)
   'support.title': 'Soutenir Babou',
   'support.intro':

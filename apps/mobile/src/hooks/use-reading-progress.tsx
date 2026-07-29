@@ -28,6 +28,9 @@ type ReadingProgressContextValue = {
   setProgress: (chapterId: string, value: number) => void;
   resetProgress: (chapterId: string) => void;
   resetAll: () => void;
+  // Nombre de chapitres entamés / terminés (pour le profil).
+  startedCount: number;
+  completedCount: number;
 };
 
 const STORAGE_KEY = 'babou:reading-progress';
@@ -93,6 +96,8 @@ export function ReadingProgressProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ReadingProgressContextValue>(
     () => ({
       hasProgress: Object.keys(progress).length > 0,
+      startedCount: Object.keys(progress).length,
+      completedCount: Object.values(progress).filter((p) => p >= 0.9).length,
       getProgress: (chapterId) => progress[chapterId] ?? 0,
       setProgress: (chapterId, next) => {
         const clamped = Math.max(0, Math.min(1, next));
