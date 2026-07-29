@@ -185,6 +185,7 @@ export const fr = {
   'paywall.monthly': 'Mensuel — 9,99 €/mois',
   'paywall.monthlyWord': 'Mensuel',
   'paywall.restore': 'Restaurer un achat',
+  'paywall.account': 'Réglages et compte',
   'paywall.restoreNone': 'Aucun abonnement à restaurer sur ce compte.',
   'paywall.donateInstead': '🤲 Ou faire un don libre',
   'paywall.note':

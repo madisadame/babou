@@ -4,9 +4,10 @@ import { useEffect } from 'react';
 import { useAccess } from '@/hooks/use-access';
 
 // Écrans accessibles même quand l'accès est bloqué, pour que l'utilisateur
-// puisse agir : le paywall lui-même, les réglages (se connecter / déconnecter /
-// restaurer un achat) et le soutien (don). Tout le reste (contenu) est bloqué.
-const ALLOWED_WHEN_BLOCKED = ['paywall', 'settings', 'support'];
+// puisse gérer son compte : le paywall lui-même, les réglages (connexion /
+// déconnexion / restauration / suppression de compte), le profil et le soutien.
+// Tout le reste (le contenu) est bloqué.
+const ALLOWED_WHEN_BLOCKED = ['paywall', 'settings', 'support', 'profile'];
 
 // Redirige vers le paywall quand l'accès est bloqué, et en sort dès qu'il est
 // rétabli. Ne rend rien : c'est une garde de navigation.

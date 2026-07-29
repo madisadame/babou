@@ -112,6 +112,14 @@ export default function PaywallScreen() {
                   {t('paywall.restore')}
                 </ThemedText>
               </Pressable>
+              <Pressable
+                onPress={() => router.push('/settings')}
+                hitSlop={Spacing.two}
+                style={styles.textBtn}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('paywall.account')}
+                </ThemedText>
+              </Pressable>
             </>
           )}
 
