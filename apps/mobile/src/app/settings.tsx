@@ -1,6 +1,6 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -39,8 +39,18 @@ export default function SettingsScreen() {
     t('reading.sizeLarge'),
     t('reading.sizeXLarge'),
   ];
-  const { user, isAdmin, available, recovering, signIn, signUp, signOut, resetPassword, updatePassword } =
-    useAuth();
+  const {
+    user,
+    isAdmin,
+    available,
+    recovering,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+    updatePassword,
+    deleteAccount,
+  } = useAuth();
   const { goalMinutes, setGoalMinutes } = useStudyGoal();
   const { name, avatar } = useProfile();
 
@@ -57,6 +67,20 @@ export default function SettingsScreen() {
     }
     const { error } = await resetPassword(email);
     setAuthMessage(error ? t('auth.resetError') : t('auth.resetSent'));
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(t('auth.deleteTitle'), t('auth.deleteMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('auth.deleteConfirm'),
+        style: 'destructive',
+        onPress: async () => {
+          const { error } = await deleteAccount();
+          if (error) setAuthMessage(t('auth.deleteError'));
+        },
+      },
+    ]);
   };
 
   const handleUpdatePassword = async () => {
@@ -203,6 +227,14 @@ export default function SettingsScreen() {
                       pressed && styles.pressed,
                     ]}>
                     <ThemedText type="smallBold">{t('auth.signOut')}</ThemedText>
+                  </Pressable>
+                  <Pressable
+                    onPress={handleDeleteAccount}
+                    hitSlop={Spacing.two}
+                    style={styles.deleteAccount}>
+                    <ThemedText type="small" style={styles.deleteAccountText}>
+                      {t('auth.deleteTitle')}
+                    </ThemedText>
                   </Pressable>
                 </>
               ) : (
@@ -384,6 +416,8 @@ const styles = StyleSheet.create({
   },
   supportLink: { alignSelf: 'flex-start', marginTop: Spacing.one },
   supportLinkText: { color: '#E0BE6D' },
+  deleteAccount: { alignSelf: 'center', marginTop: Spacing.two },
+  deleteAccountText: { color: '#e5484d' },
   profileRow: {
     flexDirection: 'row',
     alignItems: 'center',

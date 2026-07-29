@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
+import { ErrorBoundary } from '@/components/error-boundary';
 import { StarrySky } from '@/components/starry-sky';
 import { AuthProvider } from '@/hooks/use-auth';
 import { BookmarksProvider } from '@/hooks/use-bookmarks';
@@ -17,6 +18,7 @@ import { ReviewProvider } from '@/hooks/use-review';
 
 export default function RootLayout() {
   return (
+    <ErrorBoundary>
     <AuthProvider>
       <PreferencesProvider>
         <ReadingProgressProvider>
@@ -53,5 +55,6 @@ export default function RootLayout() {
         </ReadingProgressProvider>
       </PreferencesProvider>
     </AuthProvider>
+    </ErrorBoundary>
   );
 }

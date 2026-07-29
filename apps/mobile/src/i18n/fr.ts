@@ -166,6 +166,11 @@ export const fr = {
   'auth.newPassword': 'Nouveau mot de passe',
   'auth.updatePassword': 'Enregistrer le mot de passe',
   'auth.passwordUpdated': 'Mot de passe mis à jour. Tu peux te connecter.',
+  'auth.deleteTitle': 'Supprimer mon compte',
+  'auth.deleteMessage':
+    'Ton compte et toutes tes données (progression, quiz, marque-pages…) seront définitivement supprimés. Cette action est irréversible.',
+  'auth.deleteConfirm': 'Supprimer définitivement',
+  'auth.deleteError': 'La suppression a échoué. Réessaie.',
 
   // Administration
   'admin.title': 'Administration',

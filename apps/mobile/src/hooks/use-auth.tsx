@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { User } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -21,6 +22,8 @@ type AuthContextValue = {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<AuthResult>;
   updatePassword: (password: string) => Promise<AuthResult>;
+  // Supprime définitivement le compte et toutes ses données (exigence Apple).
+  deleteAccount: () => Promise<AuthResult>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -111,6 +114,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { error } = await supabase.auth.updateUser({ password });
         if (error) return { error: error.message };
         setRecovering(false);
+        return { error: null };
+      },
+      deleteAccount: async () => {
+        if (!supabase) return { error: 'unavailable' };
+        const { error } = await supabase.rpc('delete_own_account');
+        if (error) return { error: error.message };
+        await supabase.auth.signOut();
+        // Efface les données locales pour repartir d'un état propre.
+        try {
+          const keys = await AsyncStorage.getAllKeys();
+          const local = keys.filter((k) => k.startsWith('babou:'));
+          if (local.length) await AsyncStorage.multiRemove(local);
+        } catch {
+          // stockage indisponible : rien de plus à faire
+        }
         return { error: null };
       },
     }),
