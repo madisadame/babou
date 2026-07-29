@@ -11,7 +11,8 @@
       "bundleIdentifier": "com.madisadame.babou",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": ["audio"],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
