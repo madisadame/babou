@@ -25,6 +25,20 @@ export const fr = {
   'home.invocation': "Qu'Allah facilite ton apprentissage et t'accorde la science utile.",
   'home.cta': 'Accéder à la bibliothèque',
   'home.audioLabel': "Écoute l'explication",
+
+  // Soutien (dons & sadaqa)
+  'support.title': 'Soutenir Babou',
+  'support.intro':
+    "Babou est et restera gratuit pour tous. Si le projet t'est utile, tu peux le soutenir : c'est une sadaqa jariya qui aide à le faire vivre et grandir.",
+  'support.donateOnce': 'Faire un don',
+  'support.monthly': 'Soutien mensuel',
+  'support.yearly': 'Soutien annuel',
+  'support.soon': 'Le soutien sera bientôt disponible, in châ Allah.',
+  'support.note':
+    "Le montant est libre et se choisit sur la page de paiement. Qu'Allah récompense ta générosité.",
+  'support.cardTitle': 'Soutenir Babou',
+  'support.cardBody': "Babou t'est utile ? Tu peux soutenir le projet — il reste gratuit pour tous.",
+  'support.cardCta': 'Soutenir',
   'home.continue.eyebrow': 'Reprendre la lecture',
   'home.continue.a11y': 'Reprendre : {{title}}',
 
@@ -240,6 +254,9 @@ export const fr = {
   'admin.homeAudioUpload': 'Uploader un audio',
   'admin.homeAudioSet': 'Audio en place',
   'admin.homeAudioRemove': 'Retirer',
+  'admin.supportTitle': 'Soutien',
+  'admin.supportHint':
+    'Colle les liens de paiement de ta plateforme (HelloAsso, Stripe, PayPal…). Un champ vide masque le bouton. Le montant se choisit sur la page de paiement.',
 
   // Statistiques de contenu
   'admin.statsTitle': 'Statistiques',

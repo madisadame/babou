@@ -24,6 +24,9 @@ type Preferences = {
   showContinueCard: boolean;
   readingScale: number;
   playbackRate: number;
+  // Premier lancement (pour proposer le soutien après ~1 semaine).
+  firstUseAt: number;
+  supportDismissed: boolean;
 };
 
 type PreferencesContextValue = Preferences & {
@@ -36,6 +39,7 @@ type PreferencesContextValue = Preferences & {
   setPlaybackRate: (rate: number) => void;
   // Passe à la vitesse suivante (en boucle) dans PLAYBACK_RATES.
   cyclePlaybackRate: () => void;
+  setSupportDismissed: (dismissed: boolean) => void;
 };
 
 const DEFAULT_PREFERENCES: Preferences = {
@@ -46,6 +50,8 @@ const DEFAULT_PREFERENCES: Preferences = {
   showContinueCard: true,
   readingScale: 1,
   playbackRate: 1,
+  firstUseAt: 0,
+  supportDismissed: false,
 };
 
 const CARD_KEY: Record<ProgressCard, keyof Preferences> = {
@@ -66,7 +72,9 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        if (raw) setPreferences({ ...DEFAULT_PREFERENCES, ...JSON.parse(raw) });
+        const loaded = raw ? { ...DEFAULT_PREFERENCES, ...JSON.parse(raw) } : { ...DEFAULT_PREFERENCES };
+        if (!loaded.firstUseAt) loaded.firstUseAt = Date.now();
+        setPreferences(loaded);
       } catch {
         // Stockage indisponible : on garde les valeurs par défaut.
       } finally {
@@ -114,6 +122,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
           const next = (index === -1 ? 1 : index + 1) % PLAYBACK_RATES.length;
           return { ...prev, playbackRate: PLAYBACK_RATES[next] };
         }),
+      setSupportDismissed: (supportDismissed) =>
+        setPreferences((prev) => ({ ...prev, supportDismissed })),
     }),
     [preferences],
   );

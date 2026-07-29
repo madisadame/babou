@@ -21,7 +21,8 @@ const GREEN = '#0C5A44';
 export default function HomeScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { language, setLanguage } = usePreferences();
+  const { language, setLanguage, firstUseAt, supportDismissed, setSupportDismissed } =
+    usePreferences();
 
   // Textes de l'accueil éditables depuis l'admin (repli sur le texte par défaut).
   const [overrides, setOverrides] = useState<Record<string, string>>({});
@@ -31,6 +32,17 @@ export default function HomeScreen() {
     }, []),
   );
   const hc = (key: TranslationKey) => overrides[key] || t(key);
+
+  // Invitation au soutien : après ~1 semaine d'usage, si des liens existent et
+  // que l'utilisateur ne l'a pas masquée.
+  const WEEK = 7 * 24 * 60 * 60 * 1000;
+  const hasSupportLink = !!(
+    overrides['support.donateUrl'] ||
+    overrides['support.monthlyUrl'] ||
+    overrides['support.yearlyUrl']
+  );
+  const showSupport =
+    hasSupportLink && !supportDismissed && firstUseAt > 0 && Date.now() - firstUseAt >= WEEK;
 
   return (
     <View style={styles.container}>
@@ -46,6 +58,28 @@ export default function HomeScreen() {
                 🔊 {t('home.audioLabel')}
               </ThemedText>
               <AudioPlayer uri={overrides['home.audioUrl']} title={hc('home.title')} />
+            </View>
+          ) : null}
+
+          {showSupport ? (
+            <View style={styles.supportCard}>
+              <Pressable
+                onPress={() => setSupportDismissed(true)}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.cancel')}
+                style={styles.supportDismiss}>
+                <ThemedText style={styles.supportDismissIcon}>✕</ThemedText>
+              </Pressable>
+              <ThemedText type="smallBold" style={styles.supportEyebrow}>
+                🤲 {t('support.cardTitle')}
+              </ThemedText>
+              <ThemedText style={styles.supportBody}>{t('support.cardBody')}</ThemedText>
+              <Pressable
+                onPress={() => router.push('/support')}
+                style={({ pressed }) => [styles.supportCta, pressed && styles.pressed]}>
+                <ThemedText style={styles.supportCtaLabel}>{t('support.cardCta')}</ThemedText>
+              </Pressable>
             </View>
           ) : null}
 
@@ -119,6 +153,27 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
     marginBottom: Spacing.two,
   },
+  supportCard: {
+    borderWidth: 1,
+    borderColor: 'rgba(224, 190, 109, 0.4)',
+    backgroundColor: 'rgba(224, 190, 109, 0.1)',
+    borderRadius: 14,
+    padding: Spacing.four,
+    gap: Spacing.two,
+  },
+  supportDismiss: { position: 'absolute', top: 6, right: 8, padding: 6 },
+  supportDismissIcon: { color: 'rgba(245, 238, 218, 0.55)', fontSize: 13, fontWeight: '700' },
+  supportEyebrow: { color: '#E0BE6D', letterSpacing: 0.5 },
+  supportBody: { color: CREAM, fontSize: 15, lineHeight: 22 },
+  supportCta: {
+    alignSelf: 'flex-start',
+    backgroundColor: CREAM,
+    borderRadius: 999,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.four,
+    marginTop: Spacing.one,
+  },
+  supportCtaLabel: { color: GREEN, fontWeight: '700' },
   homeAudioLabel: {
     color: CREAM,
     letterSpacing: 0.5,
