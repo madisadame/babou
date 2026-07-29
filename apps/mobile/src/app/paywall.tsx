@@ -1,12 +1,18 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { purchasePlan, purchasesConfigured, restorePurchases } from '@/data/purchases';
+import {
+  getPlans,
+  purchasePlan,
+  purchasesConfigured,
+  restorePurchases,
+  type SubscriptionPlan,
+} from '@/data/purchases';
 import { useAccess } from '@/hooks/use-access';
 import { useAuth } from '@/hooks/use-auth';
 import { useTranslation } from '@/hooks/use-translation';
@@ -24,8 +30,21 @@ export default function PaywallScreen() {
   const { user } = useAuth();
   const { trialEndsAt, refresh } = useAccess();
   const [busy, setBusy] = useState(false);
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+
+  useEffect(() => {
+    getPlans().then(setPlans);
+  }, []);
 
   const trialOver = trialEndsAt ? Date.now() >= trialEndsAt.getTime() : false;
+
+  // Prix réels du store si disponibles, sinon libellés statiques de secours.
+  const yearlyPrice = plans.find((p) => p.period === 'yearly')?.priceLabel;
+  const monthlyPrice = plans.find((p) => p.period === 'monthly')?.priceLabel;
+  const yearlyLabel = yearlyPrice ? `${t('paywall.yearlyWord')} — ${yearlyPrice}` : t('paywall.yearly');
+  const monthlyLabel = monthlyPrice
+    ? `${t('paywall.monthlyWord')} — ${monthlyPrice}`
+    : t('paywall.monthly');
 
   const subscribe = async (planId: 'monthly' | 'yearly') => {
     if (!purchasesConfigured) {
@@ -75,7 +94,7 @@ export default function PaywallScreen() {
                 disabled={busy}
                 onPress={() => subscribe('yearly')}
                 style={({ pressed }) => [styles.primaryBtn, pressed && styles.pressed]}>
-                <ThemedText style={styles.primaryLabel}>{t('paywall.yearly')}</ThemedText>
+                <ThemedText style={styles.primaryLabel}>{yearlyLabel}</ThemedText>
                 <ThemedText type="small" style={styles.primarySub}>
                   {t('paywall.yearlyHint')}
                 </ThemedText>
@@ -85,7 +104,7 @@ export default function PaywallScreen() {
                 onPress={() => subscribe('monthly')}
                 style={({ pressed }) => [styles.outlineBtn, pressed && styles.pressed]}>
                 <ThemedText type="smallBold" style={styles.outlineLabel}>
-                  {t('paywall.monthly')}
+                  {monthlyLabel}
                 </ThemedText>
               </Pressable>
               <Pressable onPress={restore} hitSlop={Spacing.two} style={styles.textBtn}>
