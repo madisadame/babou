@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -19,6 +19,12 @@ import { useTranslation } from '@/hooks/use-translation';
 
 const CREAM = '#F5EEDA';
 const GREEN = '#0C5A44';
+
+// Liens légaux requis par Apple (règle 3.1.2) pour un abonnement.
+// Mets à jour PRIVACY_URL avec l'URL définitive de la politique une fois hébergée.
+const PRIVACY_URL =
+  'https://xjmjdwxmszfqnhdtnnru.supabase.co/storage/v1/object/public/public/confidentialite.html';
+const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 // Écran de blocage : proposé quand l'abonnement est activé et que l'utilisateur
 // n'a ni abonnement actif, ni accès offert, ni essai en cours. Il offre les
@@ -135,6 +141,25 @@ export default function PaywallScreen() {
           <ThemedText type="small" themeColor="textSecondary" style={styles.note}>
             {t('paywall.note')}
           </ThemedText>
+
+          {/* Liens légaux exigés par Apple pour un abonnement (règle 3.1.2). */}
+          <View style={styles.legalRow}>
+            <Pressable onPress={() => Linking.openURL(TERMS_URL).catch(() => {})} hitSlop={Spacing.two}>
+              <ThemedText type="small" themeColor="textSecondary" style={styles.legalLink}>
+                {t('paywall.terms')}
+              </ThemedText>
+            </Pressable>
+            <ThemedText type="small" themeColor="textSecondary">
+              ·
+            </ThemedText>
+            <Pressable
+              onPress={() => Linking.openURL(PRIVACY_URL).catch(() => {})}
+              hitSlop={Spacing.two}>
+              <ThemedText type="small" themeColor="textSecondary" style={styles.legalLink}>
+                {t('paywall.privacy')}
+              </ThemedText>
+            </Pressable>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -168,5 +193,13 @@ const styles = StyleSheet.create({
   textBtn: { alignItems: 'center', marginTop: Spacing.one },
   supportLink: { color: '#E0BE6D' },
   note: { textAlign: 'center', marginTop: Spacing.two, lineHeight: 20 },
+  legalRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: Spacing.two,
+    marginTop: Spacing.one,
+  },
+  legalLink: { textDecorationLine: 'underline' },
   pressed: { opacity: 0.8 },
 });

@@ -186,6 +186,8 @@ export const fr = {
   'paywall.monthlyWord': 'Mensuel',
   'paywall.restore': 'Restaurer un achat',
   'paywall.account': 'Réglages et compte',
+  'paywall.terms': "Conditions d'utilisation",
+  'paywall.privacy': 'Politique de confidentialité',
   'paywall.restoreNone': 'Aucun abonnement à restaurer sur ce compte.',
   'paywall.donateInstead': '🤲 Ou faire un don libre',
   'paywall.note':
