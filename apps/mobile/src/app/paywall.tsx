@@ -23,7 +23,7 @@ const GREEN = '#0C5A44';
 // Liens légaux requis par Apple (règle 3.1.2) pour un abonnement.
 // Mets à jour PRIVACY_URL avec l'URL définitive de la politique une fois hébergée.
 const PRIVACY_URL =
-  'https://xjmjdwxmszfqnhdtnnru.supabase.co/storage/v1/object/public/public/confidentialite.html';
+  'https://xjmjdwxmszfqnhdtnnru.supabase.co/storage/v1/object/public/legal/confidentialite.html';
 const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 // Écran de blocage : proposé quand l'abonnement est activé et que l'utilisateur
