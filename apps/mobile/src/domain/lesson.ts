@@ -20,6 +20,9 @@ export interface LessonSegment {
   id: string;
   arabic: string;
   translations: Translations;
+  // Explication libre (par langue), pour un segment purement explicatif ou en
+  // complément du texte. Optionnelle.
+  explanations?: Translations;
   words?: LessonWord[];
   audioUrl?: string;
   translationAudio?: Partial<Record<Locale, string>>;

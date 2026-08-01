@@ -38,6 +38,8 @@ create table if not exists public.chapter_segments (
   audio_url text,
   translation_audio_fr text,
   translation_audio_shimaore text,
+  explanation_fr text,
+  explanation_shimaore text,
   words jsonb,
   created_at timestamptz not null default now()
 );

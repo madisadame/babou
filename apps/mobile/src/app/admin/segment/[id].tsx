@@ -28,6 +28,8 @@ export default function AdminSegmentScreen() {
   const [arabic, setArabic] = useState('');
   const [translationFr, setTranslationFr] = useState('');
   const [translationShimaore, setTranslationShimaore] = useState('');
+  const [explanationFr, setExplanationFr] = useState('');
+  const [explanationShimaore, setExplanationShimaore] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
   const [translationAudioFr, setTranslationAudioFr] = useState('');
   const [translationAudioShimaore, setTranslationAudioShimaore] = useState('');
@@ -63,6 +65,8 @@ export default function AdminSegmentScreen() {
       setArabic(segment.arabic);
       setTranslationFr(segment.translationFr);
       setTranslationShimaore(segment.translationShimaore);
+      setExplanationFr(segment.explanationFr);
+      setExplanationShimaore(segment.explanationShimaore);
       setAudioUrl(segment.audioUrl);
       setTranslationAudioFr(segment.translationAudioFr);
       setTranslationAudioShimaore(segment.translationAudioShimaore);
@@ -72,7 +76,12 @@ export default function AdminSegmentScreen() {
   }, [params.id]);
 
   const handleSave = async () => {
-    if (!arabic.trim() && !translationFr.trim()) {
+    if (
+      !arabic.trim() &&
+      !translationFr.trim() &&
+      !explanationFr.trim() &&
+      !explanationShimaore.trim()
+    ) {
       Alert.alert(t('admin.errorSegmentEmpty'));
       return;
     }
@@ -83,6 +92,8 @@ export default function AdminSegmentScreen() {
       arabic: arabic.trim(),
       translationFr: translationFr.trim(),
       translationShimaore: translationShimaore.trim(),
+      explanationFr: explanationFr.trim(),
+      explanationShimaore: explanationShimaore.trim(),
       audioUrl: audioUrl.trim(),
       translationAudioFr: translationAudioFr.trim(),
       translationAudioShimaore: translationAudioShimaore.trim(),
@@ -157,6 +168,12 @@ export default function AdminSegmentScreen() {
           {field(t('admin.fieldArabic'), arabic, setArabic, { multiline: true, rtl: true })}
           {field(t('admin.fieldTranslationFr'), translationFr, setTranslationFr, { multiline: true })}
           {field(t('admin.fieldTranslationShimaore'), translationShimaore, setTranslationShimaore, {
+            multiline: true,
+          })}
+          {field(t('admin.fieldSegExplanationFr'), explanationFr, setExplanationFr, {
+            multiline: true,
+          })}
+          {field(t('admin.fieldSegExplanationShimaore'), explanationShimaore, setExplanationShimaore, {
             multiline: true,
           })}
           {field(t('admin.fieldAudioArabic'), audioUrl, setAudioUrl)}

@@ -127,6 +127,8 @@ export type SegmentInput = {
   arabic: string;
   translationFr: string;
   translationShimaore: string;
+  explanationFr: string;
+  explanationShimaore: string;
   audioUrl: string;
   translationAudioFr: string;
   translationAudioShimaore: string;
@@ -141,6 +143,8 @@ type SegmentRow = {
   arabic: string | null;
   translation_fr: string | null;
   translation_shimaore: string | null;
+  explanation_fr: string | null;
+  explanation_shimaore: string | null;
   audio_url: string | null;
   translation_audio_fr: string | null;
   translation_audio_shimaore: string | null;
@@ -154,6 +158,8 @@ function toAdminSegment(row: SegmentRow): AdminSegment {
     arabic: row.arabic ?? '',
     translationFr: row.translation_fr ?? '',
     translationShimaore: row.translation_shimaore ?? '',
+    explanationFr: row.explanation_fr ?? '',
+    explanationShimaore: row.explanation_shimaore ?? '',
     audioUrl: row.audio_url ?? '',
     translationAudioFr: row.translation_audio_fr ?? '',
     translationAudioShimaore: row.translation_audio_shimaore ?? '',
@@ -167,6 +173,8 @@ function segmentColumns(input: SegmentInput) {
     arabic: input.arabic,
     translation_fr: input.translationFr || null,
     translation_shimaore: input.translationShimaore || null,
+    explanation_fr: input.explanationFr || null,
+    explanation_shimaore: input.explanationShimaore || null,
     audio_url: input.audioUrl || null,
     translation_audio_fr: input.translationAudioFr || null,
     translation_audio_shimaore: input.translationAudioShimaore || null,

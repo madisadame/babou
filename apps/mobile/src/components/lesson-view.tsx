@@ -238,6 +238,7 @@ export function LessonView({ segments, title }: LessonViewProps) {
 
       {segments.map((segment) => {
         const translation = segment.translations[locale] ?? segment.translations.fr;
+        const explanation = segment.explanations?.[locale] ?? segment.explanations?.fr;
         const arabicPlaying = isPlayingTrack(segment.id, 'arabic');
         const words = wordsOf(segment);
         const highlight = arabicPlaying
@@ -303,6 +304,20 @@ export function LessonView({ segments, title }: LessonViewProps) {
                     { fontSize: 16 * readingScale, lineHeight: 24 * readingScale },
                   ]}>
                   {translation}
+                </ThemedText>
+              </View>
+            ) : null}
+            {explanation ? (
+              <View style={styles.explanationBox}>
+                <ThemedText type="small" style={styles.explanationLabel}>
+                  💡 {t('lesson.explanation')}
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    styles.explanationText,
+                    { fontSize: 15 * readingScale, lineHeight: 24 * readingScale },
+                  ]}>
+                  {explanation}
                 </ThemedText>
               </View>
             ) : null}
@@ -448,6 +463,25 @@ const styles = StyleSheet.create({
   translation: {
     flex: 1,
     fontSize: 16,
+    lineHeight: 24,
+  },
+  // Bloc explication : distinct de la traduction (accent latéral + fond doux).
+  explanationBox: {
+    borderLeftWidth: 3,
+    borderLeftColor: '#E0BE6D',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    gap: 4,
+  },
+  explanationLabel: {
+    color: '#E0BE6D',
+    fontWeight: '700',
+  },
+  explanationText: {
+    color: '#F5EEDA',
+    fontSize: 15,
     lineHeight: 24,
   },
 });
