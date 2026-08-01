@@ -278,6 +278,9 @@ const styles = StyleSheet.create({
     right: 36,
     width: MOON_D,
     height: MOON_D,
+    // Conteneur rond : sur le web, la lueur (box-shadow) épouse la boîte ; sans
+    // ce borderRadius elle formait un carré visible autour du croissant.
+    borderRadius: MOON_R,
     shadowColor: MOON,
     shadowOpacity: 0.45,
     shadowRadius: 9,
