@@ -1,8 +1,10 @@
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { notify } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -84,7 +86,7 @@ export default function AdminTimingsScreen() {
     const { error } = await updateSegmentWords(id, timings);
     setSaving(false);
     if (error) {
-      Alert.alert(t('admin.errorSave'));
+      notify(t('admin.errorSave'));
       return;
     }
     router.back();

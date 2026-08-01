@@ -1,7 +1,9 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { confirmAction, notify } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -47,7 +49,7 @@ export default function AdminChapterScreen() {
     const { url, error } = await uploadMedia(picked, 'audio');
     setUploading(false);
     if (error || !url) {
-      Alert.alert(t('admin.uploadError'));
+      notify(t('admin.uploadError'));
       return;
     }
     setAudioUrl(url);
@@ -64,31 +66,29 @@ export default function AdminChapterScreen() {
   );
 
   const confirmDeleteSegment = (segment: AdminSegment) => {
-    Alert.alert('', t('admin.deleteSegmentConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('admin.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          await deleteSegment(segment.id);
-          getSegments(params.id).then(setSegments);
-        },
+    confirmAction({
+      message: t('admin.deleteSegmentConfirm'),
+      confirmLabel: t('admin.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        await deleteSegment(segment.id);
+        getSegments(params.id).then(setSegments);
       },
-    ]);
+    });
   };
 
   const confirmDeleteQuestion = (question: AdminQuestion) => {
-    Alert.alert('', t('admin.deleteQuestionConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('admin.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          await deleteQuestion(question.id);
-          getQuestions(params.id).then(setQuestions);
-        },
+    confirmAction({
+      message: t('admin.deleteQuestionConfirm'),
+      confirmLabel: t('admin.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        await deleteQuestion(question.id);
+        getQuestions(params.id).then(setQuestions);
       },
-    ]);
+    });
   };
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function AdminChapterScreen() {
 
   const handleSave = async () => {
     if (!title.trim()) {
-      Alert.alert(t('admin.errorTitle'));
+      notify(t('admin.errorTitle'));
       return;
     }
     setSaving(true);
@@ -129,25 +129,25 @@ export default function AdminChapterScreen() {
     const { error } = isNew ? await createChapter(input) : await updateChapter(params.id, input);
     setSaving(false);
     if (error) {
-      Alert.alert(t('admin.errorSave'));
+      notify(t('admin.errorSave'));
       return;
     }
     router.back();
   };
 
   const handleDelete = () => {
-    Alert.alert(title, t('admin.deleteChapterConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('admin.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          const { error } = await deleteChapter(params.id);
-          if (error) Alert.alert(t('admin.errorSave'));
-          else router.back();
-        },
+    confirmAction({
+      title,
+      message: t('admin.deleteChapterConfirm'),
+      confirmLabel: t('admin.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        const { error } = await deleteChapter(params.id);
+        if (error) notify(t('admin.errorSave'));
+        else router.back();
       },
-    ]);
+    });
   };
 
   const field = (

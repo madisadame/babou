@@ -1,7 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { confirmAction, notify } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -46,7 +49,7 @@ export default function AdminSegmentScreen() {
     const { url, error } = await uploadMedia(picked, 'audio');
     setUploading(false);
     if (error || !url) {
-      Alert.alert(t('admin.uploadError'));
+      notify(t('admin.uploadError'));
       return;
     }
     setter(url);
@@ -86,7 +89,7 @@ export default function AdminSegmentScreen() {
       !explanationFr.trim() &&
       !explanationShimaore.trim()
     ) {
-      Alert.alert(t('admin.errorSegmentEmpty'));
+      notify(t('admin.errorSegmentEmpty'));
       return;
     }
     setSaving(true);
@@ -107,25 +110,24 @@ export default function AdminSegmentScreen() {
     const { error } = isNew ? await createSegment(input) : await updateSegment(params.id, input);
     setSaving(false);
     if (error) {
-      Alert.alert(t('admin.errorSave'));
+      notify(t('admin.errorSave'));
       return;
     }
     router.back();
   };
 
   const handleDelete = () => {
-    Alert.alert('', t('admin.deleteSegmentConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('admin.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          const { error } = await deleteSegment(params.id);
-          if (error) Alert.alert(t('admin.errorSave'));
-          else router.back();
-        },
+    confirmAction({
+      message: t('admin.deleteSegmentConfirm'),
+      confirmLabel: t('admin.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        const { error } = await deleteSegment(params.id);
+        if (error) notify(t('admin.errorSave'));
+        else router.back();
       },
-    ]);
+    });
   };
 
   const field = (

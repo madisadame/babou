@@ -1,7 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { notify } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -55,7 +57,7 @@ export default function AdminSubscriptionScreen() {
     const { error } = await setSubscriptionEnabled(value);
     setSaving(false);
     if (error) {
-      Alert.alert(t('admin.errorSave'));
+      notify(t('admin.errorSave'));
       return;
     }
     setEnabled(value);
@@ -73,7 +75,7 @@ export default function AdminSubscriptionScreen() {
   const toggleAccess = async (u: FoundUser, value: boolean) => {
     const { error } = await setUserAccess(u.userId, value, 'admin');
     if (error) {
-      Alert.alert(t('admin.errorSave'));
+      notify(t('admin.errorSave'));
       return;
     }
     setResults((prev) =>

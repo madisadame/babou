@@ -1,7 +1,9 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { confirmAction } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -55,17 +57,17 @@ export default function AdminAdminsScreen() {
   };
 
   const confirmRemove = (admin: AdminUser) => {
-    Alert.alert(admin.email, t('admin.adminRemoveConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('admin.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          await removeAdmin(admin.userId);
-          load();
-        },
+    confirmAction({
+      title: admin.email,
+      message: t('admin.adminRemoveConfirm'),
+      confirmLabel: t('admin.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        await removeAdmin(admin.userId);
+        load();
       },
-    ]);
+    });
   };
 
   return (

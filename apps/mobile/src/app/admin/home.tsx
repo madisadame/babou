@@ -1,7 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { notify } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -57,7 +59,7 @@ export default function AdminHomeScreen() {
     const { url, error } = await uploadMedia(picked, 'audio');
     setUploading(false);
     if (error || !url) {
-      Alert.alert(t('admin.uploadError'));
+      notify(t('admin.uploadError'));
       return;
     }
     setAudioUrl(url);
@@ -74,7 +76,7 @@ export default function AdminHomeScreen() {
     if (audioRes.error) failed = true;
     setSaving(false);
     if (failed) {
-      Alert.alert(t('admin.errorSave'));
+      notify(t('admin.errorSave'));
       return;
     }
     router.back();

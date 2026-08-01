@@ -1,6 +1,8 @@
 import { Link, useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+
+import { confirmAction, notify } from '@/lib/dialogs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -32,18 +34,18 @@ export default function AdminBooksScreen() {
   );
 
   const confirmDelete = (book: Book) => {
-    Alert.alert(book.title, t('admin.deleteBookConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('admin.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          const { error } = await deleteBook(book.id);
-          if (error) Alert.alert(t('admin.errorSave'));
-          load();
-        },
+    confirmAction({
+      title: book.title,
+      message: t('admin.deleteBookConfirm'),
+      confirmLabel: t('admin.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        const { error } = await deleteBook(book.id);
+        if (error) notify(t('admin.errorSave'));
+        load();
       },
-    ]);
+    });
   };
 
   return (

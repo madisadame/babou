@@ -1,7 +1,9 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { confirmAction } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -70,17 +72,17 @@ export default function SettingsScreen() {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(t('auth.deleteTitle'), t('auth.deleteMessage'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('auth.deleteConfirm'),
-        style: 'destructive',
-        onPress: async () => {
-          const { error } = await deleteAccount();
-          if (error) setAuthMessage(t('auth.deleteError'));
-        },
+    confirmAction({
+      title: t('auth.deleteTitle'),
+      message: t('auth.deleteMessage'),
+      confirmLabel: t('auth.deleteConfirm'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        const { error } = await deleteAccount();
+        if (error) setAuthMessage(t('auth.deleteError'));
       },
-    ]);
+    });
   };
 
   const handleUpdatePassword = async () => {

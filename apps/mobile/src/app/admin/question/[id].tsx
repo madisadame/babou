@@ -1,7 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { confirmAction, notify } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -76,7 +78,7 @@ export default function AdminQuestionScreen() {
   const handleSave = async () => {
     const filledChoices = choices.filter((c) => c.textFr.trim() || c.textShimaore.trim());
     if (!promptFr.trim() || filledChoices.length < 2 || correctIndex >= filledChoices.length) {
-      Alert.alert(t('admin.errorQuestion'));
+      notify(t('admin.errorQuestion'));
       return;
     }
     setSaving(true);
@@ -93,25 +95,24 @@ export default function AdminQuestionScreen() {
     const { error } = isNew ? await createQuestion(input) : await updateQuestion(params.id, input);
     setSaving(false);
     if (error) {
-      Alert.alert(t('admin.errorSave'));
+      notify(t('admin.errorSave'));
       return;
     }
     router.back();
   };
 
   const handleDelete = () => {
-    Alert.alert('', t('admin.deleteQuestionConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('admin.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          const { error } = await deleteQuestion(params.id);
-          if (error) Alert.alert(t('admin.errorSave'));
-          else router.back();
-        },
+    confirmAction({
+      message: t('admin.deleteQuestionConfirm'),
+      confirmLabel: t('admin.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+      onConfirm: async () => {
+        const { error } = await deleteQuestion(params.id);
+        if (error) notify(t('admin.errorSave'));
+        else router.back();
       },
-    ]);
+    });
   };
 
   const field = (
