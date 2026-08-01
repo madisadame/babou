@@ -158,6 +158,7 @@ export async function downloadBook(
       for (const s of l.segments) {
         if (s.audioUrl) total++;
         if (s.translationAudio) total += Object.values(s.translationAudio).filter(Boolean).length;
+        if (s.explanationAudio) total += Object.values(s.explanationAudio).filter(Boolean).length;
       }
   }
   let done = 0;
@@ -211,6 +212,18 @@ export async function downloadBook(
           if (!url) continue;
           try {
             map[loc] = await downloadMedia(url, audioDir, `${safe(s.id)}-${loc}.${extFromUrl(url, 'mp3')}`);
+          } catch {
+            /* garde l'URL distante */
+          }
+          tick();
+        }
+      }
+      if (s.explanationAudio) {
+        const map = s.explanationAudio as Record<string, string>;
+        for (const [loc, url] of Object.entries(map)) {
+          if (!url) continue;
+          try {
+            map[loc] = await downloadMedia(url, audioDir, `${safe(s.id)}-exp-${loc}.${extFromUrl(url, 'mp3')}`);
           } catch {
             /* garde l'URL distante */
           }

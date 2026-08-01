@@ -13,8 +13,8 @@ type LessonViewProps = {
   title?: string;
 };
 
-// Deux pistes possibles par segment : la récitation arabe et la traduction.
-type Kind = 'arabic' | 'translation';
+// Pistes possibles par segment : la récitation arabe, la traduction, l'explication.
+type Kind = 'arabic' | 'translation' | 'explanation';
 type Track = { segmentId: string; kind: Kind };
 
 function wordsOf(segment: LessonSegment): string[] {
@@ -94,10 +94,12 @@ export function LessonView({ segments, title }: LessonViewProps) {
     }
   }, [playbackRate, player]);
 
-  const uriFor = (segment: LessonSegment, kind: Kind): string | undefined =>
-    kind === 'arabic'
-      ? segment.audioUrl
-      : segment.translationAudio?.[locale] ?? segment.translationAudio?.fr;
+  const uriFor = (segment: LessonSegment, kind: Kind): string | undefined => {
+    if (kind === 'arabic') return segment.audioUrl;
+    if (kind === 'translation')
+      return segment.translationAudio?.[locale] ?? segment.translationAudio?.fr;
+    return segment.explanationAudio?.[locale] ?? segment.explanationAudio?.fr;
+  };
 
   const start = (track: Track) => {
     const segment = segments.find((s) => s.id === track.segmentId);
@@ -115,7 +117,12 @@ export function LessonView({ segments, title }: LessonViewProps) {
     // Contrôles + infos sur l'écran verrouillé (titre du chapitre + type).
     player.setActiveForLockScreen(true, {
       title: title ?? 'Babou',
-      artist: track.kind === 'arabic' ? t('audio.nowArabic') : t('audio.nowTranslation'),
+      artist:
+        track.kind === 'arabic'
+          ? t('audio.nowArabic')
+          : track.kind === 'translation'
+            ? t('audio.nowTranslation')
+            : t('audio.nowExplanation'),
     });
   };
 
@@ -309,9 +316,22 @@ export function LessonView({ segments, title }: LessonViewProps) {
             ) : null}
             {explanation ? (
               <View style={styles.explanationBox}>
-                <ThemedText type="small" style={styles.explanationLabel}>
-                  💡 {t('lesson.explanation')}
-                </ThemedText>
+                <View style={styles.explanationHead}>
+                  <ThemedText type="small" style={styles.explanationLabel}>
+                    💡 {t('lesson.explanation')}
+                  </ThemedText>
+                  {uriFor(segment, 'explanation') ? (
+                    <Pressable
+                      onPress={() => playSingle(segment, 'explanation')}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('audio.playExplanationA11y')}
+                      style={({ pressed }) => [styles.playButtonAlt, pressed && styles.pressed]}>
+                      <ThemedText style={styles.playIconAlt}>
+                        {isPlayingTrack(segment.id, 'explanation') ? '❚❚' : '▶'}
+                      </ThemedText>
+                    </Pressable>
+                  ) : null}
+                </View>
                 <ThemedText
                   style={[
                     styles.explanationText,
@@ -474,6 +494,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 14,
     gap: 4,
+  },
+  explanationHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
   },
   explanationLabel: {
     color: '#E0BE6D',

@@ -132,6 +132,8 @@ export type SegmentInput = {
   audioUrl: string;
   translationAudioFr: string;
   translationAudioShimaore: string;
+  explanationAudioFr: string;
+  explanationAudioShimaore: string;
 };
 
 export type AdminSegment = SegmentInput & { id: string };
@@ -148,6 +150,8 @@ type SegmentRow = {
   audio_url: string | null;
   translation_audio_fr: string | null;
   translation_audio_shimaore: string | null;
+  explanation_audio_fr: string | null;
+  explanation_audio_shimaore: string | null;
 };
 
 function toAdminSegment(row: SegmentRow): AdminSegment {
@@ -163,6 +167,8 @@ function toAdminSegment(row: SegmentRow): AdminSegment {
     audioUrl: row.audio_url ?? '',
     translationAudioFr: row.translation_audio_fr ?? '',
     translationAudioShimaore: row.translation_audio_shimaore ?? '',
+    explanationAudioFr: row.explanation_audio_fr ?? '',
+    explanationAudioShimaore: row.explanation_audio_shimaore ?? '',
   };
 }
 
@@ -178,6 +184,8 @@ function segmentColumns(input: SegmentInput) {
     audio_url: input.audioUrl || null,
     translation_audio_fr: input.translationAudioFr || null,
     translation_audio_shimaore: input.translationAudioShimaore || null,
+    explanation_audio_fr: input.explanationAudioFr || null,
+    explanation_audio_shimaore: input.explanationAudioShimaore || null,
   };
 }
 

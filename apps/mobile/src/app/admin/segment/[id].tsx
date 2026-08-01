@@ -33,6 +33,8 @@ export default function AdminSegmentScreen() {
   const [audioUrl, setAudioUrl] = useState('');
   const [translationAudioFr, setTranslationAudioFr] = useState('');
   const [translationAudioShimaore, setTranslationAudioShimaore] = useState('');
+  const [explanationAudioFr, setExplanationAudioFr] = useState('');
+  const [explanationAudioShimaore, setExplanationAudioShimaore] = useState('');
   const [position, setPosition] = useState('0');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -70,6 +72,8 @@ export default function AdminSegmentScreen() {
       setAudioUrl(segment.audioUrl);
       setTranslationAudioFr(segment.translationAudioFr);
       setTranslationAudioShimaore(segment.translationAudioShimaore);
+      setExplanationAudioFr(segment.explanationAudioFr);
+      setExplanationAudioShimaore(segment.explanationAudioShimaore);
       setPosition(String(segment.position));
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,6 +101,8 @@ export default function AdminSegmentScreen() {
       audioUrl: audioUrl.trim(),
       translationAudioFr: translationAudioFr.trim(),
       translationAudioShimaore: translationAudioShimaore.trim(),
+      explanationAudioFr: explanationAudioFr.trim(),
+      explanationAudioShimaore: explanationAudioShimaore.trim(),
     };
     const { error } = isNew ? await createSegment(input) : await updateSegment(params.id, input);
     setSaving(false);
@@ -219,6 +225,38 @@ export default function AdminSegmentScreen() {
             ]}>
             <ThemedText type="smallBold">
               {uploading ? t('admin.uploading') : t('admin.uploadAudioTranslationShimaore')}
+            </ThemedText>
+          </Pressable>
+
+          {field(t('admin.fieldAudioExplanationFr'), explanationAudioFr, setExplanationAudioFr)}
+          <Pressable
+            onPress={() => uploadAudioTo(setExplanationAudioFr)}
+            disabled={uploading}
+            style={({ pressed }) => [
+              styles.uploadButton,
+              { backgroundColor: theme.backgroundElement },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold">
+              {uploading ? t('admin.uploading') : t('admin.uploadAudioExplanationFr')}
+            </ThemedText>
+          </Pressable>
+
+          {field(
+            t('admin.fieldAudioExplanationShimaore'),
+            explanationAudioShimaore,
+            setExplanationAudioShimaore,
+          )}
+          <Pressable
+            onPress={() => uploadAudioTo(setExplanationAudioShimaore)}
+            disabled={uploading}
+            style={({ pressed }) => [
+              styles.uploadButton,
+              { backgroundColor: theme.backgroundElement },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold">
+              {uploading ? t('admin.uploading') : t('admin.uploadAudioExplanationShimaore')}
             </ThemedText>
           </Pressable>
           {field(t('admin.fieldPosition'), position, setPosition, { numeric: true })}

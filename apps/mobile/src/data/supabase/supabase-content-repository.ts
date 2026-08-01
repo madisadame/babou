@@ -38,6 +38,8 @@ type SegmentRow = {
   translation_audio_shimaore: string | null;
   explanation_fr: string | null;
   explanation_shimaore: string | null;
+  explanation_audio_fr: string | null;
+  explanation_audio_shimaore: string | null;
   words: LessonWord[] | null;
 };
 
@@ -75,6 +77,9 @@ function mapSegment(row: SegmentRow): LessonSegment {
   const explanations: Translations = {};
   if (row.explanation_fr) explanations.fr = row.explanation_fr;
   if (row.explanation_shimaore) explanations.shimaore = row.explanation_shimaore;
+  const explanationAudio: Translations = {};
+  if (row.explanation_audio_fr) explanationAudio.fr = row.explanation_audio_fr;
+  if (row.explanation_audio_shimaore) explanationAudio.shimaore = row.explanation_audio_shimaore;
   return {
     id: row.id,
     arabic: row.arabic ?? '',
@@ -83,6 +88,7 @@ function mapSegment(row: SegmentRow): LessonSegment {
     words: row.words ?? undefined,
     audioUrl: row.audio_url ?? undefined,
     translationAudio: Object.keys(translationAudio).length ? translationAudio : undefined,
+    explanationAudio: Object.keys(explanationAudio).length ? explanationAudio : undefined,
   };
 }
 

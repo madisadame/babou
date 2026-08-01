@@ -26,6 +26,8 @@ export interface LessonSegment {
   words?: LessonWord[];
   audioUrl?: string;
   translationAudio?: Partial<Record<Locale, string>>;
+  // Audio de l'explication, par langue (fr / shimaoré). Optionnel.
+  explanationAudio?: Partial<Record<Locale, string>>;
 }
 
 // La leçon d'un chapitre : une suite de segments. L'audio complet du chapitre
