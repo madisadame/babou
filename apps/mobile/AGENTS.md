@@ -20,3 +20,6 @@ crashs propres au web (ex. `window is not defined` quand du code touche
   garder `typeof window !== 'undefined'`.
 - `expo-file-system` (téléchargement hors-ligne) n'existe pas sur web : dégrader
   proprement, ne pas planter.
+- `Alert.alert` ne marche PAS sur web (boîte non affichée, callbacks des boutons
+  jamais déclenchés). Utiliser `notify()` / `confirmAction()` de
+  `src/lib/dialogs.ts` à la place, jamais `Alert.alert` directement.
