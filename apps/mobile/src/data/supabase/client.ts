@@ -13,22 +13,34 @@ const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 // automatiquement entre le mock (dev) et Supabase (config présente).
 export const isSupabaseConfigured = Boolean(url && anonKey);
 
-// Client Supabase, créé seulement si configuré. La session d'authentification
+// Vrai en environnement client (React Native ou navigateur), faux côté Node
+// (rendu statique d'expo-router). En Node, AsyncStorage n'est pas utilisable
+// (`window is not defined`) : on évite donc la persistance de session, sinon
+// l'initialisation de l'auth Supabase ferait planter le serveur Metro.
+const canPersistSession = typeof window !== 'undefined';
+
+// Client Supabase, créé seulement si configuré. En contexte client, la session
 // est persistée (AsyncStorage) et le token rafraîchi automatiquement.
 export const supabase: SupabaseClient | null = isSupabaseConfigured
   ? createClient(url as string, anonKey as string, {
-      auth: {
-        storage: AsyncStorage,
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: false,
-      },
+      auth: canPersistSession
+        ? {
+            storage: AsyncStorage,
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false,
+          }
+        : {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false,
+          },
     })
   : null;
 
 // Recommandation Supabase pour React Native : rafraîchir le token seulement
 // quand l'app est au premier plan.
-if (supabase) {
+if (supabase && canPersistSession) {
   AppState.addEventListener('change', (state) => {
     if (state === 'active') supabase.auth.startAutoRefresh();
     else supabase.auth.stopAutoRefresh();
