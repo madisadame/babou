@@ -404,6 +404,10 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
     paddingHorizontal: Spacing.three,
     fontSize: 16,
+    // Bordure subtile : garantit que le champ reste perceptible quel que soit
+    // le fond (utile notamment sur le web).
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.18)',
   },
   authButtons: {
     flexDirection: 'row',

@@ -36,7 +36,7 @@ export default function RootLayout() {
               {/* Le ciel étoilé est rendu une seule fois, en fond de toute
                   l'app : il reste continu d'un écran à l'autre. Les scènes de
                   navigation sont transparentes pour le laisser apparaître. */}
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, backgroundColor: '#083D2C' }}>
                 <StarrySky />
                 <AccessGate />
                 <Stack
