@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { Platform, View, type ViewStyle } from 'react-native';
 
 import { AccessGate } from '@/components/access-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -17,6 +17,17 @@ import { StudyGoalProvider } from '@/hooks/use-study-goal';
 import { QuizResultsProvider } from '@/hooks/use-quiz-results';
 import { ReadingProgressProvider } from '@/hooks/use-reading-progress';
 import { ReviewProvider } from '@/hooks/use-review';
+
+// Conteneur racine : fond nuit explicite (sur natif il est couvert par le ciel
+// étoilé, aucun changement ; sur web il peint le fond). Sur web on force en plus
+// une hauteur pleine (100vh) pour que le fond remplisse toute la fenêtre, comme
+// le ciel étoilé le fait nativement.
+const rootStyle: ViewStyle = {
+  flex: 1,
+  backgroundColor: '#083D2C',
+  // '100vh' est valide sur react-native-web mais pas typé par RN → cast.
+  ...(Platform.OS === 'web' ? ({ minHeight: '100vh' } as unknown as ViewStyle) : null),
+};
 
 export default function RootLayout() {
   return (
@@ -36,7 +47,7 @@ export default function RootLayout() {
               {/* Le ciel étoilé est rendu une seule fois, en fond de toute
                   l'app : il reste continu d'un écran à l'autre. Les scènes de
                   navigation sont transparentes pour le laisser apparaître. */}
-              <View style={{ flex: 1, backgroundColor: '#083D2C' }}>
+              <View style={rootStyle}>
                 <StarrySky />
                 <AccessGate />
                 <Stack
