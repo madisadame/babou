@@ -25,6 +25,7 @@ type ChapterRow = {
   title: string;
   description: string | null;
   published: boolean | null;
+  audio_url: string | null;
 };
 
 type SegmentRow = {
@@ -64,6 +65,7 @@ function mapChapter(row: ChapterRow): Chapter {
     title: row.title,
     description: row.description ?? '',
     published: row.published ?? true,
+    audioUrl: row.audio_url ?? undefined,
   };
 }
 

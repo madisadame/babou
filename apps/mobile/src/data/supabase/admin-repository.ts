@@ -20,6 +20,7 @@ export type ChapterInput = {
   description: string;
   position: number;
   published: boolean;
+  audioUrl: string;
 };
 
 // Génère un identifiant lisible et unique à partir d'un titre.
@@ -95,6 +96,7 @@ export async function createChapter(input: ChapterInput): Promise<Result> {
     description: input.description,
     position: input.position,
     published: input.published,
+    audio_url: input.audioUrl || null,
   });
   return toError(error);
 }
@@ -108,6 +110,7 @@ export async function updateChapter(id: string, input: ChapterInput): Promise<Re
       description: input.description,
       position: input.position,
       published: input.published,
+      audio_url: input.audioUrl || null,
     })
     .eq('id', id);
   return toError(error);

@@ -10,4 +10,6 @@ export interface Chapter {
   description: string;
   /** Publié (visible du public) ou brouillon (visible des seuls admins). */
   published?: boolean;
+  /** Audio global du chapitre (facultatif), joué en bas de l'écran chapitre. */
+  audioUrl?: string;
 }

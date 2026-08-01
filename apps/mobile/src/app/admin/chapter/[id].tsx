@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { contentRepository } from '@/data/content-repository';
+import { pickAudio, uploadMedia } from '@/data/media';
 import {
   createChapter,
   deleteChapter,
@@ -33,9 +34,24 @@ export default function AdminChapterScreen() {
   const [description, setDescription] = useState('');
   const [position, setPosition] = useState('0');
   const [published, setPublished] = useState(true);
+  const [audioUrl, setAudioUrl] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [segments, setSegments] = useState<AdminSegment[]>([]);
   const [questions, setQuestions] = useState<AdminQuestion[]>([]);
+
+  const uploadChapterAudio = async () => {
+    const picked = await pickAudio();
+    if (!picked) return;
+    setUploading(true);
+    const { url, error } = await uploadMedia(picked, 'audio');
+    setUploading(false);
+    if (error || !url) {
+      Alert.alert(t('admin.uploadError'));
+      return;
+    }
+    setAudioUrl(url);
+  };
 
   // Segments + questions : rechargés à chaque focus (après édition).
   useFocusEffect(
@@ -91,6 +107,7 @@ export default function AdminChapterScreen() {
       setDescription(chapter.description);
       setPosition(String(chapter.order));
       setPublished(chapter.published ?? true);
+      setAudioUrl(chapter.audioUrl ?? '');
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
@@ -107,6 +124,7 @@ export default function AdminChapterScreen() {
       description: description.trim(),
       position: Number(position) || 0,
       published,
+      audioUrl: audioUrl.trim(),
     };
     const { error } = isNew ? await createChapter(input) : await updateChapter(params.id, input);
     setSaving(false);
@@ -205,6 +223,20 @@ export default function AdminChapterScreen() {
               </Pressable>
             </View>
           </View>
+
+          {field(t('admin.fieldChapterAudio'), audioUrl, setAudioUrl)}
+          <Pressable
+            onPress={uploadChapterAudio}
+            disabled={uploading}
+            style={({ pressed }) => [
+              styles.uploadButton,
+              { backgroundColor: theme.backgroundElement },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText type="smallBold">
+              {uploading ? t('admin.uploading') : t('admin.uploadChapterAudio')}
+            </ThemedText>
+          </Pressable>
 
           <Pressable
             disabled={saving}
@@ -358,6 +390,11 @@ const styles = StyleSheet.create({
     marginTop: Spacing.two,
   },
   primaryLabel: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  uploadButton: {
+    borderRadius: Spacing.three,
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
+  },
   pressed: { opacity: 0.6 },
   section: { letterSpacing: 1 },
   sectionHeader: {

@@ -244,6 +244,8 @@ export const fr = {
   'admin.uploadAudioTranslationFr': "Uploader l'audio traduction (fr)",
   'admin.fieldAudioTranslationShimaore': 'Audio — traduction (shimaoré)',
   'admin.uploadAudioTranslationShimaore': "Uploader l'audio traduction (shimaoré)",
+  'admin.fieldChapterAudio': 'Audio du chapitre (URL)',
+  'admin.uploadChapterAudio': "Uploader l'audio du chapitre",
   'admin.fieldAudioExplanationFr': 'Audio — explication (français)',
   'admin.uploadAudioExplanationFr': "Uploader l'audio explication (fr)",
   'admin.fieldAudioExplanationShimaore': 'Audio — explication (shimaoré)',
