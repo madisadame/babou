@@ -1,6 +1,14 @@
+import { DefaultTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, View, type ViewStyle } from 'react-native';
+
+// Le navigateur react-navigation (utilisé par expo-router) peint le fond de son
+// thème par défaut = gris clair `rgb(242,242,242)`. Sur le web, ce fond opaque
+// recouvrait le ciel étoilé et rendait le texte crème illisible (sur natif il
+// ne couvre pas). On le rend transparent pour que le fond nuit reste visible
+// sur les trois plateformes. C'est la cause racine du bug d'affichage web.
+DefaultTheme.colors.background = 'transparent';
 
 import { AccessGate } from '@/components/access-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
