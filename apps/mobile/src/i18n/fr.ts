@@ -306,6 +306,13 @@ export const fr = {
   'admin.homeAudioSet': 'Audio en place',
   'admin.homeAudioRemove': 'Retirer',
   'admin.supportTitle': 'Soutien',
+  'admin.audienceTitle': 'Audience',
+  'admin.audTotalUsers': 'Inscrits',
+  'admin.audNewThisMonth': 'Nouveaux ce mois',
+  'admin.audGrantedAccess': 'Accès offerts',
+  'admin.audMonthlySignups': 'Inscriptions par mois',
+  'admin.audSubscribersNote':
+    'Les abonnés payants sont comptés par RevenueCat (tableau de bord RevenueCat). Une synchro dans l’app sera ajoutée quand l’abonnement sera actif.',
   'admin.subTitle': 'Abonnement',
   'admin.subEnable': "Activer l'abonnement",
   'admin.subEnableHint':

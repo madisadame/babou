@@ -52,6 +52,27 @@ export async function setUserAccess(
   return { error: error ? error.message : null };
 }
 
+export type UserStats = {
+  totalUsers: number;
+  newThisMonth: number;
+  grantedAccess: number;
+  monthly: { month: string; count: number }[];
+};
+
+// Statistiques d'audience (réservé admin). null si indisponible.
+export async function fetchUserStats(): Promise<UserStats | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.rpc('admin_user_stats');
+  if (error || !data) return null;
+  const d = data as Partial<UserStats>;
+  return {
+    totalUsers: d.totalUsers ?? 0,
+    newThisMonth: d.newThisMonth ?? 0,
+    grantedAccess: d.grantedAccess ?? 0,
+    monthly: Array.isArray(d.monthly) ? d.monthly : [],
+  };
+}
+
 export type FoundUser = {
   userId: string;
   email: string;

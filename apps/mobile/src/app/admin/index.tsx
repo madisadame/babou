@@ -95,6 +95,11 @@ export default function AdminBooksScreen() {
                       📊 {t('admin.statsTitle')}
                     </ThemedText>
                   </Pressable>
+                  <Pressable onPress={() => router.push('/admin/audience')} hitSlop={Spacing.two}>
+                    <ThemedText type="smallBold" themeColor="textSecondary">
+                      📈 {t('admin.audienceTitle')}
+                    </ThemedText>
+                  </Pressable>
                   <Pressable onPress={() => router.push('/admin/support')} hitSlop={Spacing.two}>
                     <ThemedText type="smallBold" themeColor="textSecondary">
                       🤲 {t('admin.supportTitle')}
