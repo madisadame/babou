@@ -1,6 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import { Platform } from 'react-native';
 
 import { supabase } from '@/data/supabase/client';
 
@@ -38,11 +39,16 @@ export async function uploadMedia(
 ): Promise<{ url: string | null; error: string | null }> {
   if (!supabase) return { url: null, error: 'unavailable' };
   try {
-    const bytes = await new File(file.uri).bytes();
+    // Lecture des octets : expo-file-system n'existe pas sur le web → on y lit
+    // le fichier via fetch (URI blob/data), et via File sur natif.
+    const body =
+      Platform.OS === 'web'
+        ? await (await fetch(file.uri)).blob()
+        : await new File(file.uri).bytes();
     const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${file.ext}`;
     const { error } = await supabase.storage
       .from('media')
-      .upload(path, bytes, { contentType: file.contentType, upsert: false });
+      .upload(path, body, { contentType: file.contentType, upsert: false });
     if (error) return { url: null, error: error.message };
     const { data } = supabase.storage.from('media').getPublicUrl(path);
     return { url: data.publicUrl, error: null };
