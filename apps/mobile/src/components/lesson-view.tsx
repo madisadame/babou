@@ -22,6 +22,31 @@ function wordsOf(segment: LessonSegment): string[] {
   return segment.arabic.split(/\s+/).filter(Boolean);
 }
 
+// Découpe le texte arabe en jetons tout en PRÉSERVANT les espaces, retours à la
+// ligne et paragraphes (les jetons d'espaces ont wordIndex = -1). Chaque mot
+// porte son index (pour le surlignage karaoké pendant l'audio).
+type ArabicToken = { text: string; wordIndex: number };
+
+function arabicTokens(segment: LessonSegment): ArabicToken[] {
+  if (segment.words && segment.words.length) {
+    const toks: ArabicToken[] = [];
+    segment.words.forEach((w, i) => {
+      if (i > 0) toks.push({ text: ' ', wordIndex: -1 });
+      toks.push({ text: w.text, wordIndex: i });
+    });
+    return toks;
+  }
+  let wi = -1;
+  return segment.arabic
+    .split(/(\s+)/)
+    .filter((p) => p !== '')
+    .map((p) => {
+      if (/^\s+$/.test(p)) return { text: p, wordIndex: -1 };
+      wi += 1;
+      return { text: p, wordIndex: wi };
+    });
+}
+
 function currentWordIndex(
   segment: LessonSegment,
   currentSec: number,
@@ -247,7 +272,7 @@ export function LessonView({ segments, title }: LessonViewProps) {
         const translation = segment.translations[locale] ?? segment.translations.fr;
         const explanation = segment.explanations?.[locale] ?? segment.explanations?.fr;
         const arabicPlaying = isPlayingTrack(segment.id, 'arabic');
-        const words = wordsOf(segment);
+        const tokens = arabicTokens(segment);
         const highlight = arabicPlaying
           ? currentWordIndex(segment, status.currentTime, status.duration)
           : -1;
@@ -282,10 +307,15 @@ export function LessonView({ segments, title }: LessonViewProps) {
                     styles.arabic,
                     { fontSize: 26 * readingScale, lineHeight: 46 * readingScale },
                   ]}>
-                  {words.map((word, index) => (
-                    <Text key={index} style={index === highlight ? styles.wordActive : undefined}>
-                      {word}
-                      {index < words.length - 1 ? ' ' : ''}
+                  {tokens.map((tok, index) => (
+                    <Text
+                      key={index}
+                      style={
+                        tok.wordIndex >= 0 && tok.wordIndex === highlight
+                          ? styles.wordActive
+                          : undefined
+                      }>
+                      {tok.text}
                     </Text>
                   ))}
                 </ThemedText>
