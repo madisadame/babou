@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Book } from '@/domain/book';
+import { useAccess } from '@/hooks/use-access';
 import { useBook, useBooks } from '@/hooks/use-content';
 import { useLastRead, type LastRead } from '@/hooks/use-last-read';
 import { usePreferences } from '@/hooks/use-preferences';
@@ -114,6 +115,32 @@ function ReviewCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
+// Carte « Découverte » : montrée au visiteur sans accès, qui ne voit que le
+// livre vitrine. Explique pourquoi le catalogue paraît court et mène au
+// paywall. Non masquable — c'est la seule explication qu'il reçoit.
+function DiscoverCard() {
+  const router = useRouter();
+  const { t } = useTranslation();
+  return (
+    <View style={styles.discoverCard}>
+      <Pressable
+        onPress={() => router.push('/paywall')}
+        accessibilityRole="button"
+        accessibilityLabel={t('library.discoverCta')}
+        style={({ pressed }) => [styles.cardMain, pressed && styles.pressed]}>
+        <ThemedText style={styles.reviewIcon}>✨</ThemedText>
+        <View style={styles.reviewTextCol}>
+          <ThemedText type="smallBold" style={styles.reviewEyebrow}>
+            {t('library.discoverEyebrow')}
+          </ThemedText>
+          <ThemedText style={styles.discoverText}>{t('library.discoverBody')}</ThemedText>
+          <ThemedText style={styles.discoverCta}>{t('library.discoverCta')} ›</ThemedText>
+        </View>
+      </Pressable>
+    </View>
+  );
+}
+
 // Carte « Reprendre la lecture » : rouvre le dernier chapitre ouvert.
 function ContinueCard({ lastRead, onDismiss }: { lastRead: LastRead; onDismiss: () => void }) {
   const router = useRouter();
@@ -154,6 +181,7 @@ export default function LibraryScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { books, loading } = useBooks();
+  const { hasAccess } = useAccess();
   const { lastRead } = useLastRead();
   const { showStudyCard, showReviewCard, showContinueCard, setShowCard } = usePreferences();
   const { hasProgress, resetAll } = useReadingProgress();
@@ -214,9 +242,18 @@ export default function LibraryScreen() {
         {t('library.subtitle')}
       </ThemedText>
 
-      {showStudyCard ? <StudyStreakCard onDismiss={() => setShowCard('study', false)} /> : null}
-      {showReviewCard ? <ReviewCard onDismiss={() => setShowCard('review', false)} /> : null}
-      {showContinueCard && lastRead ? (
+      {hasAccess ? null : <DiscoverCard />}
+
+      {/* Cartes de progression : réservées à qui a accès. Sans abonnement,
+          elles pointeraient toutes vers du contenu verrouillé et chaque tap
+          rebondirait sur le paywall. */}
+      {hasAccess && showStudyCard ? (
+        <StudyStreakCard onDismiss={() => setShowCard('study', false)} />
+      ) : null}
+      {hasAccess && showReviewCard ? (
+        <ReviewCard onDismiss={() => setShowCard('review', false)} />
+      ) : null}
+      {hasAccess && showContinueCard && lastRead ? (
         <ContinueCard lastRead={lastRead} onDismiss={() => setShowCard('continue', false)} />
       ) : null}
 
@@ -465,6 +502,25 @@ const styles = StyleSheet.create({
     color: 'rgba(245, 238, 218, 0.72)',
     fontSize: 28,
     lineHeight: 28,
+  },
+  discoverCard: {
+    borderWidth: 1,
+    borderColor: 'rgba(224, 190, 109, 0.45)',
+    backgroundColor: 'rgba(224, 190, 109, 0.12)',
+    borderRadius: 14,
+    padding: Spacing.three,
+    marginBottom: Spacing.two,
+  },
+  discoverText: {
+    color: '#F5EEDA',
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  discoverCta: {
+    color: '#E0BE6D',
+    fontSize: 15,
+    fontWeight: '700',
+    marginTop: 4,
   },
   continueCard: {
     borderWidth: 1,

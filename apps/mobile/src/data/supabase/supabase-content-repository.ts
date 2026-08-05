@@ -15,6 +15,7 @@ type BookRow = {
   cover_url: string | null;
   position: number | null;
   published: boolean | null;
+  showcase: boolean | null;
   chapters?: { count: number }[];
 };
 
@@ -54,6 +55,7 @@ function mapBook(row: BookRow): Book {
     position: row.position ?? 0,
     chapterCount: row.chapters?.[0]?.count ?? 0,
     published: row.published ?? true,
+    showcase: row.showcase ?? false,
   };
 }
 

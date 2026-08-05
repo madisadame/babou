@@ -61,6 +61,11 @@ export const fr = {
   'library.backHomeA11y': "Revenir à l'accueil",
   'library.hideCard': 'Masquer cette carte',
   'library.subtitle': 'Choisis un livre pour commencer à apprendre.',
+  // Carte montrée au visiteur sans abonnement : il ne voit que le livre vitrine.
+  'library.discoverEyebrow': 'Découverte',
+  'library.discoverBody':
+    "Tu lis Babou en accès libre : un livre t'est ouvert. L'abonnement donne accès à toute la bibliothèque.",
+  'library.discoverCta': "Voir l'abonnement",
   'library.searchPlaceholder': 'Rechercher un livre…',
   'library.categoryAll': 'Toutes',
   'library.sortAsc': 'Titre A → Z',

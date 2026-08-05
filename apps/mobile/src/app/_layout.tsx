@@ -25,6 +25,7 @@ import { StudyGoalProvider } from '@/hooks/use-study-goal';
 import { QuizResultsProvider } from '@/hooks/use-quiz-results';
 import { ReadingProgressProvider } from '@/hooks/use-reading-progress';
 import { ReviewProvider } from '@/hooks/use-review';
+import { ShowcaseProvider } from '@/hooks/use-showcase';
 
 // Conteneur racine : fond nuit explicite (sur natif il est couvert par le ciel
 // étoilé, aucun changement ; sur web il peint le fond). Sur web on force en plus
@@ -42,6 +43,7 @@ export default function RootLayout() {
     <ErrorBoundary>
     <AuthProvider>
       <AccessProvider>
+      <ShowcaseProvider>
       <PreferencesProvider>
         <ReadingProgressProvider>
           <QuizResultsProvider>
@@ -77,6 +79,7 @@ export default function RootLayout() {
           </QuizResultsProvider>
         </ReadingProgressProvider>
       </PreferencesProvider>
+      </ShowcaseProvider>
       </AccessProvider>
     </AuthProvider>
     </ErrorBoundary>

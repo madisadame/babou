@@ -19,6 +19,9 @@ export const mockBooks: MockBook[] = [
     category: 'Fiqh',
     coverUrl: 'https://picsum.photos/seed/babou-safina/480/640',
     position: 1,
+    // Vitrine du jeu de données fictif, pour que la porte d'entrée soit
+    // testable sans Supabase (cf. use-showcase).
+    showcase: true,
   },
   {
     id: 'fiqh-du-quotidien',

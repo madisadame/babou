@@ -14,4 +14,11 @@ export interface Book {
   chapterCount: number;
   /** Publié (visible du public) ou brouillon (visible des seuls admins). */
   published?: boolean;
+  /**
+   * Livre « vitrine » : lisible sans compte ni abonnement. Sert de porte
+   * d'entrée aux visiteurs. La base applique la même règle (colonne
+   * `books.showcase`, cf. backend/2026-08-06-content-access.sql) — ici c'est
+   * la navigation qui s'y conforme.
+   */
+  showcase?: boolean;
 }
