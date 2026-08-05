@@ -123,8 +123,12 @@ export default function SettingsScreen() {
     setAuthMessage(null);
   };
 
-  const renderChip = (selected: boolean, label: string, onPress: () => void) => (
+  // `key` en premier paramètre : renderChip est appelé dans des .map(), et
+  // l'élément renvoyé doit porter sa clé lui-même (une fonction d'aide ne
+  // reçoit pas de clé automatiquement, contrairement à un composant).
+  const renderChip = (key: string, selected: boolean, label: string, onPress: () => void) => (
     <Pressable
+      key={key}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
@@ -301,7 +305,9 @@ export default function SettingsScreen() {
           </ThemedText>
           <View style={styles.row}>
             {LOCALES.map((option) =>
-              renderChip(option.value === language, option.label, () => setLanguage(option.value)),
+              renderChip(option.value, option.value === language, option.label, () =>
+                setLanguage(option.value),
+              ),
             )}
           </View>
 
@@ -310,7 +316,7 @@ export default function SettingsScreen() {
           </ThemedText>
           <View style={styles.rowWrap}>
             {correctionOptions.map((option) =>
-              renderChip(option.value === correctionMode, option.label, () =>
+              renderChip(option.value, option.value === correctionMode, option.label, () =>
                 setCorrectionMode(option.value),
               ),
             )}
@@ -321,8 +327,11 @@ export default function SettingsScreen() {
           </ThemedText>
           <View style={styles.rowWrap}>
             {GOAL_OPTIONS.map((min) =>
-              renderChip(min === goalMinutes, t('study.goalMinutes', { count: min }), () =>
-                setGoalMinutes(min),
+              renderChip(
+                String(min),
+                min === goalMinutes,
+                t('study.goalMinutes', { count: min }),
+                () => setGoalMinutes(min),
               ),
             )}
           </View>
@@ -332,7 +341,9 @@ export default function SettingsScreen() {
           </ThemedText>
           <View style={styles.rowWrap}>
             {READING_SCALES.map((scale, i) =>
-              renderChip(readingScale === scale, sizeLabels[i], () => setReadingScale(scale)),
+              renderChip(String(scale), readingScale === scale, sizeLabels[i], () =>
+                setReadingScale(scale),
+              ),
             )}
           </View>
 
@@ -342,6 +353,7 @@ export default function SettingsScreen() {
           <View style={styles.rowWrap}>
             {PLAYBACK_RATES.map((rate) =>
               renderChip(
+                String(rate),
                 playbackRate === rate,
                 `${rate === 1 ? '1' : String(rate).replace('.', ',')}×`,
                 () => setPlaybackRate(rate),
@@ -356,13 +368,13 @@ export default function SettingsScreen() {
             {t('settings.progressCardsHint')}
           </ThemedText>
           <View style={styles.rowWrap}>
-            {renderChip(showStudyCard, t('settings.cardStudy'), () =>
+            {renderChip('study', showStudyCard, t('settings.cardStudy'), () =>
               setShowCard('study', !showStudyCard),
             )}
-            {renderChip(showReviewCard, t('settings.cardReview'), () =>
+            {renderChip('review', showReviewCard, t('settings.cardReview'), () =>
               setShowCard('review', !showReviewCard),
             )}
-            {renderChip(showContinueCard, t('settings.cardContinue'), () =>
+            {renderChip('continue', showContinueCard, t('settings.cardContinue'), () =>
               setShowCard('continue', !showContinueCard),
             )}
           </View>
