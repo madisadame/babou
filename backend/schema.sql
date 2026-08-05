@@ -76,6 +76,13 @@ create index if not exists question_choices_question_id_idx on public.question_c
 
 -- Sécurité : lecture publique (clé anon), écriture réservée.
 -- L'admin via Supabase Studio utilise le rôle service (bypass RLS).
+--
+-- ⚠️ LES POLITIQUES DE LECTURE CI-DESSOUS SONT PÉRIMÉES.
+-- Elles ouvrent tout le contenu (`using (true)`). Elles sont remplacées par
+-- `2026-08-06-content-access.sql`, qui exige un accès valide sauf pour le livre
+-- vitrine. Si tu rejoues ce fichier sur une base existante, REJOUE ENSUITE
+-- `2026-08-06-content-access.sql` — sinon le contenu payant redevient
+-- librement extractible via l'API REST avec la seule clé publique.
 alter table public.books enable row level security;
 alter table public.chapters enable row level security;
 alter table public.chapter_segments enable row level security;
