@@ -1,0 +1,4 @@
+# État local généré par la CLI Supabase — propre à chaque machine.
+.temp
+.branches
+.env
