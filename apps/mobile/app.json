@@ -8,7 +8,7 @@
     "scheme": "babou",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.madisadame.babou",
+      "bundleIdentifier": "com.hournews.babou",
       "supportsTablet": false,
       "infoPlist": {
         "UIBackgroundModes": ["audio"],
@@ -16,7 +16,7 @@
       }
     },
     "android": {
-      "package": "com.madisadame.babou",
+      "package": "com.hournews.babou",
       "adaptiveIcon": {
         "backgroundColor": "#0C5A44",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
