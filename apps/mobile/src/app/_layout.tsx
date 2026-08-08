@@ -1,7 +1,25 @@
 import { DefaultTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { Platform, View, type ViewStyle } from 'react-native';
+
+// Le masquage du splash est déclenché par le MONTAGE de l'arbre React, jamais
+// par la disponibilité des données. Conséquence : si Supabase, RevenueCat ou
+// tout autre service est injoignable au démarrage, l'utilisateur voit
+// l'interface (ou l'écran de l'ErrorBoundary), et non un splash figé.
+//
+// Ce n'est pas un délai d'attente : rien n'est chronométré. On prend
+// simplement la main sur le masquage pour le lier à un événement certain.
+//
+// Limite à connaître : ceci ne protège que ce qui survient APRÈS le démarrage
+// du JS. Une exception à l'évaluation du graphe de modules empêche React de
+// monter, et aucun garde-fou écrit en JS ne peut alors s'exécuter — c'était le
+// cas du blocage causé par les versions dupliquées d'expo-asset.
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // déjà masqué ou API indisponible : sans conséquence
+});
 
 // Le navigateur react-navigation (utilisé par expo-router) peint le fond de son
 // thème par défaut = gris clair `rgb(242,242,242)`. Sur le web, ce fond opaque
@@ -39,6 +57,13 @@ const rootStyle: ViewStyle = {
 };
 
 export default function RootLayout() {
+  // Premier effet après le montage : l'arbre est vivant, on rend la main.
+  useEffect(() => {
+    SplashScreen.hideAsync().catch(() => {
+      // déjà masqué : sans conséquence
+    });
+  }, []);
+
   return (
     <ErrorBoundary>
     <AuthProvider>
