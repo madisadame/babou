@@ -128,15 +128,6 @@ export default function PaywallScreen() {
             </>
           )}
 
-          <Pressable
-            onPress={() => router.push('/support')}
-            hitSlop={Spacing.two}
-            style={styles.textBtn}>
-            <ThemedText type="small" style={styles.supportLink}>
-              {t('paywall.donateInstead')}
-            </ThemedText>
-          </Pressable>
-
           <ThemedText type="small" themeColor="textSecondary" style={styles.note}>
             {t('paywall.note')}
           </ThemedText>
@@ -190,7 +181,6 @@ const styles = StyleSheet.create({
   },
   outlineLabel: { color: CREAM },
   textBtn: { alignItems: 'center', marginTop: Spacing.one },
-  supportLink: { color: '#E0BE6D' },
   note: { textAlign: 'center', marginTop: Spacing.two, lineHeight: 20 },
   legalRow: {
     flexDirection: 'row',

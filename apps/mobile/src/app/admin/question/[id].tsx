@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { confirmAction, notify } from '@/lib/dialogs';
 
+import { AdminOnly } from '@/components/admin-only';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -21,7 +22,7 @@ import { useTranslation } from '@/hooks/use-translation';
 
 const emptyChoice = (): AdminChoiceInput => ({ textFr: '', textShimaore: '' });
 
-export default function AdminQuestionScreen() {
+function AdminQuestionScreen() {
   const params = useLocalSearchParams<{ id: string; chapterId?: string }>();
   const router = useRouter();
   const theme = useTheme();
@@ -289,3 +290,13 @@ const styles = StyleSheet.create({
   deleteRow: { alignSelf: 'center', marginTop: Spacing.five },
   deleteLabel: { color: '#e5484d' },
 });
+
+// Écran réservé aux administrateurs : sans cette enveloppe, il était atteignable
+// par lien profond (babou://admin/...) par n'importe quel utilisateur connecté.
+export default function AdminQuestionScreenProtege() {
+  return (
+    <AdminOnly>
+      <AdminQuestionScreen />
+    </AdminOnly>
+  );
+}

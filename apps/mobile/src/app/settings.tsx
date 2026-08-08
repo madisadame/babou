@@ -176,15 +176,6 @@ export default function SettingsScreen() {
             </ThemedView>
           </Pressable>
 
-          <Pressable
-            onPress={() => router.push('/support')}
-            hitSlop={Spacing.two}
-            style={styles.supportLink}>
-            <ThemedText type="smallBold" style={styles.supportLinkText}>
-              🤲 {t('support.title')}
-            </ThemedText>
-          </Pressable>
-
           {recovering ? (
             <View style={styles.recoverBox}>
               <ThemedText type="smallBold">{t('auth.newPasswordSection')}</ThemedText>
@@ -432,8 +423,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginTop: Spacing.one,
   },
-  supportLink: { alignSelf: 'flex-start', marginTop: Spacing.one },
-  supportLinkText: { color: '#E0BE6D' },
   deleteAccount: { alignSelf: 'center', marginTop: Spacing.two },
   deleteAccountText: { color: '#e5484d' },
   profileRow: {

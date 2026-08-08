@@ -19,11 +19,38 @@ export interface ContentRepository {
   getQuestions(chapterId: string): Promise<Question[]>;
 }
 
-// Sélection automatique : Supabase si les identifiants sont présents (voir
-// .env), sinon le mock. Aucune interruption avant la configuration du backend.
+// Repository de dernier recours : refuse toute lecture avec une erreur
+// explicite. Sert UNIQUEMENT en production quand la configuration Supabase est
+// absente. Livrer les données fictives dans ce cas serait bien pire qu'une
+// erreur : l'app afficherait des livres inventés, des images `picsum.photos` et
+// un fichier audio de démonstration, sans que rien ne signale l'anomalie.
+function createUnconfiguredRepository(): ContentRepository {
+  const refuser = (): never => {
+    throw new Error(
+      'Configuration Supabase absente : EXPO_PUBLIC_SUPABASE_URL et ' +
+        'EXPO_PUBLIC_SUPABASE_ANON_KEY doivent être fournies au build ' +
+        '(profil EAS ou .env).',
+    );
+  };
+  return {
+    getBooks: refuser,
+    getBook: refuser,
+    getChapters: refuser,
+    getChapter: refuser,
+    getLesson: refuser,
+    getQuestions: refuser,
+  };
+}
+
+// Sélection de la source :
+//   - identifiants présents  → Supabase ;
+//   - absents en DÉVELOPPEMENT → mock, pour travailler sans backend ;
+//   - absents en PRODUCTION  → erreur explicite, jamais de données fictives.
 export const baseContentRepository: ContentRepository = isSupabaseConfigured
   ? supabaseContentRepository
-  : mockContentRepository;
+  : __DEV__
+    ? mockContentRepository
+    : createUnconfiguredRepository();
 
 // Le repository exposé aux écrans ajoute le mode hors-ligne par-dessus la
 // source : contenu frais en ligne, lecture des livres téléchargés hors-ligne.

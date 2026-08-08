@@ -152,10 +152,6 @@ L'accès au reste du catalogue passe par un abonnement auto-renouvelable
 intégrés. Les liens vers les conditions d'utilisation (EULA standard Apple) et
 la politique de confidentialité figurent sur l'écran d'abonnement.
 
-DONS
-L'écran « Soutenir » propose des dons libres via un lien externe. Ils ne
-débloquent aucun contenu et ne donnent accès à aucune fonctionnalité.
-
 Merci pour votre temps.
 ```
 

@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { notify } from '@/lib/dialogs';
 
+import { AdminOnly } from '@/components/admin-only';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -18,7 +19,7 @@ function formatTime(seconds: number): string {
   return `${Math.floor(total / 60)}:${(total % 60).toString().padStart(2, '0')}`;
 }
 
-export default function AdminTimingsScreen() {
+function AdminTimingsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
@@ -223,3 +224,13 @@ const styles = StyleSheet.create({
   saveLabel: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
   pressed: { opacity: 0.7 },
 });
+
+// Écran réservé aux administrateurs : sans cette enveloppe, il était atteignable
+// par lien profond (babou://admin/...) par n'importe quel utilisateur connecté.
+export default function AdminTimingsScreenProtege() {
+  return (
+    <AdminOnly>
+      <AdminTimingsScreen />
+    </AdminOnly>
+  );
+}

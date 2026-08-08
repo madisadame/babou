@@ -6,8 +6,10 @@ import { useShowcase } from '@/hooks/use-showcase';
 
 // Écrans accessibles même quand l'accès est bloqué, pour que l'utilisateur
 // puisse gérer son compte : le paywall lui-même, les réglages (connexion /
-// déconnexion / restauration / suppression de compte), le profil et le soutien.
-const ALLOWED_WHEN_BLOCKED = ['paywall', 'settings', 'support', 'profile'];
+// déconnexion / restauration / suppression de compte), le profil, et l'écran
+// de réinitialisation de mot de passe (atteint depuis un lien d'e-mail, donc
+// forcément hors session).
+const ALLOWED_WHEN_BLOCKED = ['paywall', 'settings', 'profile', 'reset-password'];
 
 // Écrans de découverte : l'accueil et la bibliothèque restent ouverts pour que
 // le visiteur puisse atteindre le livre vitrine. Il n'y verra que celui-ci —

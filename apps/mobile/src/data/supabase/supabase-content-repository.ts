@@ -142,6 +142,13 @@ function mapQuestion(row: QuestionRow): Question {
   };
 }
 
+// Une requête qui échoue LÈVE une erreur, au lieu de renvoyer une liste vide.
+// Sans cette distinction, une panne réseau était indiscernable d'un catalogue
+// vide et l'app affichait « Aucun livre » à l'utilisateur.
+function verifier(error: { message: string } | null): void {
+  if (error) throw new Error(error.message);
+}
+
 // Implémentation Supabase du contrat de contenu. Même interface que le mock :
 // les écrans ne voient aucune différence.
 export const supabaseContentRepository: ContentRepository = {
@@ -151,8 +158,8 @@ export const supabaseContentRepository: ContentRepository = {
       .from('books')
       .select('*, chapters(count)')
       .order('position');
-    if (error || !data) return [];
-    return (data as BookRow[]).map(mapBook);
+    verifier(error);
+    return ((data ?? []) as BookRow[]).map(mapBook);
   },
 
   async getBook(id) {
@@ -162,8 +169,8 @@ export const supabaseContentRepository: ContentRepository = {
       .select('*, chapters(count)')
       .eq('id', id)
       .maybeSingle();
-    if (error || !data) return null;
-    return mapBook(data as BookRow);
+    verifier(error);
+    return data ? mapBook(data as BookRow) : null;
   },
 
   async getChapters(bookId) {
@@ -173,8 +180,8 @@ export const supabaseContentRepository: ContentRepository = {
       .select('*')
       .eq('book_id', bookId)
       .order('position');
-    if (error || !data) return [];
-    return (data as ChapterRow[]).map(mapChapter);
+    verifier(error);
+    return ((data ?? []) as ChapterRow[]).map(mapChapter);
   },
 
   async getChapter(id) {
@@ -184,8 +191,8 @@ export const supabaseContentRepository: ContentRepository = {
       .select('*')
       .eq('id', id)
       .maybeSingle();
-    if (error || !data) return null;
-    return mapChapter(data as ChapterRow);
+    verifier(error);
+    return data ? mapChapter(data as ChapterRow) : null;
   },
 
   async getLesson(chapterId) {
@@ -195,7 +202,8 @@ export const supabaseContentRepository: ContentRepository = {
       .select('audio_url, chapter_segments(*)')
       .eq('id', chapterId)
       .maybeSingle();
-    if (error || !data) return null;
+    verifier(error);
+    if (!data) return null;
 
     const rows = ((data as { chapter_segments?: SegmentRow[] }).chapter_segments ?? [])
       .slice()
@@ -217,7 +225,7 @@ export const supabaseContentRepository: ContentRepository = {
       .select('*, question_choices(*)')
       .eq('chapter_id', chapterId)
       .order('position');
-    if (error || !data) return [];
-    return (data as QuestionRow[]).map(mapQuestion);
+    verifier(error);
+    return ((data ?? []) as QuestionRow[]).map(mapQuestion);
   },
 };

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { confirmAction, notify } from '@/lib/dialogs';
 
+import { AdminOnly } from '@/components/admin-only';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -24,7 +25,7 @@ import {
 import { useTheme } from '@/hooks/use-theme';
 import { useTranslation } from '@/hooks/use-translation';
 
-export default function AdminChapterScreen() {
+function AdminChapterScreen() {
   const params = useLocalSearchParams<{ id: string; bookId?: string }>();
   const router = useRouter();
   const theme = useTheme();
@@ -417,3 +418,12 @@ const styles = StyleSheet.create({
   deleteChapterLabel: { color: '#e5484d' },
 });
 
+// Écran réservé aux administrateurs : sans cette enveloppe, il était atteignable
+// par lien profond (babou://admin/...) par n'importe quel utilisateur connecté.
+export default function AdminChapterScreenProtege() {
+  return (
+    <AdminOnly>
+      <AdminChapterScreen />
+    </AdminOnly>
+  );
+}

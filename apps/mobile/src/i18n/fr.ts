@@ -6,6 +6,20 @@ export const fr = {
   'common.back': 'Retour',
   'common.loading': 'Chargement…',
   'common.cancel': 'Annuler',
+  'common.retry': 'Réessayer',
+
+  // Route inconnue (+not-found)
+  'notFound.title': 'Page introuvable',
+  'notFound.body': "Cette page n'existe pas ou n'est plus disponible.",
+  'notFound.cta': "Revenir à l'accueil",
+
+  // Erreurs de chargement (réseau)
+  'error.networkTitle': 'Connexion impossible',
+  'error.networkBody':
+    "Impossible de joindre le serveur. Vérifie ta connexion, puis réessaie. Les livres déjà téléchargés restent lisibles hors connexion.",
+  'error.configTitle': 'Application mal configurée',
+  'error.configBody':
+    "La connexion au serveur n'est pas configurée dans cette version. Contacte le support : admin@hournews.fr",
 
   // Langues
   'language.label': 'Langue des cours',
@@ -39,19 +53,6 @@ export const fr = {
   'profile.bookmarks': 'Marque-pages',
   'profile.toReview': 'À réviser',
 
-  // Soutien (dons & sadaqa)
-  'support.title': 'Soutenir Babou',
-  'support.intro':
-    "Babou est et restera gratuit pour tous. Si le projet t'est utile, tu peux le soutenir : c'est une sadaqa jariya qui aide à le faire vivre et grandir.",
-  'support.donateOnce': 'Faire un don',
-  'support.monthly': 'Soutien mensuel',
-  'support.yearly': 'Soutien annuel',
-  'support.soon': 'Le soutien sera bientôt disponible, in châ Allah.',
-  'support.note':
-    "Le montant est libre et se choisit sur la page de paiement. Qu'Allah récompense ta générosité.",
-  'support.cardTitle': 'Soutenir Babou',
-  'support.cardBody': "Babou t'est utile ? Tu peux soutenir le projet — il reste gratuit pour tous.",
-  'support.cardCta': 'Soutenir',
   'home.continue.eyebrow': 'Reprendre la lecture',
   'home.continue.a11y': 'Reprendre : {{title}}',
 
@@ -169,6 +170,18 @@ export const fr = {
     'E-mail de réinitialisation envoyé. Ouvre le lien pour choisir un nouveau mot de passe.',
   'auth.resetError': "Impossible d'envoyer l'e-mail. Vérifie l'adresse.",
   'auth.resetNeedEmail': "Entre d'abord ton adresse e-mail ci-dessus.",
+  // Écran /reset-password, atteint depuis le lien de l'e-mail Supabase.
+  'auth.resetTitle': 'Nouveau mot de passe',
+  'auth.resetChecking': 'Vérification du lien…',
+  'auth.resetIntro': 'Choisis un nouveau mot de passe pour ton compte.',
+  'auth.resetInvalidTitle': 'Lien expiré',
+  'auth.resetInvalidBody':
+    "Ce lien de réinitialisation n'est plus valable. Tu peux en demander un nouveau depuis les Réglages.",
+  'auth.resetGoSettings': 'Aller aux Réglages',
+  'auth.resetDoneTitle': 'Mot de passe enregistré',
+  'auth.resetDoneBody': 'Tu peux désormais te connecter avec ton nouveau mot de passe.',
+  'auth.resetTooShort': 'Le mot de passe doit faire au moins 6 caractères.',
+  'auth.resetFailed': "L'enregistrement a échoué. Réessaie.",
   'auth.newPasswordSection': 'Choisir un nouveau mot de passe',
   'auth.newPassword': 'Nouveau mot de passe',
   'auth.updatePassword': 'Enregistrer le mot de passe',
@@ -196,7 +209,6 @@ export const fr = {
   'paywall.terms': "Conditions d'utilisation",
   'paywall.privacy': 'Politique de confidentialité',
   'paywall.restoreNone': 'Aucun abonnement à restaurer sur ce compte.',
-  'paywall.donateInstead': '🤲 Ou faire un don libre',
   'paywall.note':
     'Sans engagement, résiliable à tout moment. Paiement via ton compte App Store / Google Play.',
   'paywall.comingSoon': "L'abonnement sera disponible à la sortie de l'application.",
@@ -312,7 +324,6 @@ export const fr = {
   'admin.homeAudioUpload': 'Uploader un audio',
   'admin.homeAudioSet': 'Audio en place',
   'admin.homeAudioRemove': 'Retirer',
-  'admin.supportTitle': 'Soutien',
   'admin.audienceTitle': 'Audience',
   'admin.audTotalUsers': 'Inscrits',
   'admin.audNewThisMonth': 'Nouveaux ce mois',
@@ -330,8 +341,6 @@ export const fr = {
     "Recherche un utilisateur par e-mail, puis active « accès offert » pour le débloquer gratuitement.",
   'admin.subSearchPlaceholder': "e-mail de l'utilisateur",
   'admin.subSearch': 'Chercher',
-  'admin.supportHint':
-    'Colle les liens de paiement de ta plateforme (HelloAsso, Stripe, PayPal…). Un champ vide masque le bouton. Le montant se choisit sur la page de paiement.',
 
   // Statistiques de contenu
   'admin.statsTitle': 'Statistiques',

@@ -180,7 +180,7 @@ export default function LibraryScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const { books, loading } = useBooks();
+  const { books, loading, failed, reload } = useBooks();
   const { hasAccess } = useAccess();
   const { lastRead } = useLastRead();
   const { showStudyCard, showReviewCard, showContinueCard, setShowCard } = usePreferences();
@@ -365,13 +365,34 @@ export default function LibraryScreen() {
             ) : null
           }
           ListEmptyComponent={
-            <ThemedText themeColor="textSecondary" style={styles.empty}>
-              {loading
-                ? t('common.loading')
-                : query.trim()
-                  ? t('library.emptySearch', { query: query.trim() })
-                  : t('library.emptyCategory')}
-            </ThemedText>
+            // Une panne réseau n'est PAS un catalogue vide : on le dit, et on
+            // propose de réessayer plutôt que d'afficher « aucun livre ».
+            failed ? (
+              <View style={styles.errorBox}>
+                <ThemedText type="smallBold" style={styles.errorTitle}>
+                  {t('error.networkTitle')}
+                </ThemedText>
+                <ThemedText themeColor="textSecondary" style={styles.errorBody}>
+                  {t('error.networkBody')}
+                </ThemedText>
+                <Pressable
+                  onPress={reload}
+                  accessibilityRole="button"
+                  style={({ pressed }) => [styles.retryBtn, pressed && styles.pressed]}>
+                  <ThemedText type="smallBold" style={styles.retryLabel}>
+                    {t('common.retry')}
+                  </ThemedText>
+                </Pressable>
+              </View>
+            ) : (
+              <ThemedText themeColor="textSecondary" style={styles.empty}>
+                {loading
+                  ? t('common.loading')
+                  : query.trim()
+                    ? t('library.emptySearch', { query: query.trim() })
+                    : t('library.emptyCategory')}
+              </ThemedText>
+            )
           }
         />
       </SafeAreaView>
@@ -503,6 +524,26 @@ const styles = StyleSheet.create({
     fontSize: 28,
     lineHeight: 28,
   },
+  errorBox: {
+    borderWidth: 1,
+    borderColor: 'rgba(229, 72, 77, 0.45)',
+    backgroundColor: 'rgba(229, 72, 77, 0.10)',
+    borderRadius: 14,
+    padding: Spacing.three,
+    gap: Spacing.two,
+    marginTop: Spacing.three,
+  },
+  errorTitle: { color: '#F5EEDA', fontSize: 15 },
+  errorBody: { fontSize: 14, lineHeight: 20 },
+  retryBtn: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 238, 218, 0.35)',
+    borderRadius: 999,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.four,
+  },
+  retryLabel: { color: '#F5EEDA' },
   discoverCard: {
     borderWidth: 1,
     borderColor: 'rgba(224, 190, 109, 0.45)',
