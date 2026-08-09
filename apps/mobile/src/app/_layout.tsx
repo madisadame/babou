@@ -30,6 +30,7 @@ DefaultTheme.colors.background = 'transparent';
 
 import { AccessGate } from '@/components/access-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { PageTurnProvider } from '@/components/page-turn';
 import { StarrySky } from '@/components/starry-sky';
 import { AccessProvider } from '@/hooks/use-access';
 import { AuthProvider } from '@/hooks/use-auth';
@@ -82,6 +83,7 @@ export default function RootLayout() {
               {/* Le ciel étoilé est rendu une seule fois, en fond de toute
                   l'app : il reste continu d'un écran à l'autre. Les scènes de
                   navigation sont transparentes pour le laisser apparaître. */}
+              <PageTurnProvider>
               <View style={rootStyle}>
                 <StarrySky />
                 <AccessGate />
@@ -89,10 +91,16 @@ export default function RootLayout() {
                   screenOptions={{
                     headerShown: false,
                     contentStyle: { backgroundColor: 'transparent' },
-                    animation: 'fade',
+                    // Glissement latéral plutôt que fondu : le fondu ne dit pas
+                    // si l'on avance ou si l'on recule, ce qui se lisait comme
+                    // un défaut d'affichage. En avant la page entre par la
+                    // droite, au retour elle repart vers la droite en
+                    // découvrant la précédente — comme on tourne une page.
+                    animation: 'slide_from_right',
                   }}
                 />
               </View>
+              </PageTurnProvider>
               <StatusBar style="light" />
               </ProfileProvider>
               </BookmarksProvider>

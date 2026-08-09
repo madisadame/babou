@@ -4,6 +4,7 @@ import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
+import { usePageTurn } from '@/components/page-turn';
 import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -181,6 +182,7 @@ export default function LibraryScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { books, loading, failed, reload } = useBooks();
+  const { turnHome } = usePageTurn();
   const { hasAccess } = useAccess();
   const { lastRead } = useLastRead();
   const { showStudyCard, showReviewCard, showContinueCard, setShowCard } = usePreferences();
@@ -302,7 +304,10 @@ export default function LibraryScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.topBar}>
           <Pressable
-            onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+            // Retour explicite à l'accueil : on joue la liasse de pages plutôt
+            // qu'un simple `back()`, dont la destination dépendait de la pile
+            // et n'était donc pas toujours l'accueil.
+            onPress={turnHome}
             hitSlop={Spacing.two}
             accessibilityRole="button"
             accessibilityLabel={t('library.backHomeA11y')}>
