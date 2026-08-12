@@ -8,3 +8,7 @@ build/
 .env
 .env.local
 .claude/
+
+# Sauvegardes produites par backend/export.mjs : contiennent les adresses
+# e-mail des inscrits et toutes les données utilisateurs. Le dépôt est public.
+backups/
