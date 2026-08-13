@@ -9,8 +9,8 @@ import { Spacing } from '@/constants/theme';
 import {
   getPlans,
   purchasePlan,
-  purchasesConfigured,
   restorePurchases,
+  type ResultatAchat,
   type SubscriptionPlan,
 } from '@/data/purchases';
 import { useAccess } from '@/hooks/use-access';
@@ -36,10 +36,39 @@ export default function PaywallScreen() {
   const { trialEndsAt, refresh } = useAccess();
   const [busy, setBusy] = useState(false);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  // Raison pour laquelle les prix du store manquent, le cas échéant.
+  const [probleme, setProbleme] = useState<string | null>(null);
 
   useEffect(() => {
-    getPlans().then(setPlans);
+    getPlans().then(({ plans: offres, probleme: souci }) => {
+      setPlans(offres);
+      setProbleme(souci ?? null);
+    });
   }, []);
+
+  // Traduit une issue d'achat en message. L'annulation ne dit rien : c'est un
+  // choix de l'utilisateur, pas une anomalie.
+  const signaler = (resultat: ResultatAchat) => {
+    switch (resultat.statut) {
+      case 'succes':
+      case 'annule':
+        return;
+      case 'aucun':
+        Alert.alert(t('paywall.restoreNone'));
+        return;
+      case 'non_configure':
+        Alert.alert(t('paywall.title'), t('paywall.comingSoon'));
+        return;
+      case 'indisponible':
+        Alert.alert(t('paywall.unavailableTitle'), `${t('paywall.unavailableBody')}\n\n${resultat.detail}`);
+        return;
+      case 'erreur':
+        Alert.alert(
+          t('paywall.errorTitle'),
+          resultat.code ? `${resultat.message}\n\n(${resultat.code})` : resultat.message,
+        );
+    }
+  };
 
   const trialOver = trialEndsAt ? Date.now() >= trialEndsAt.getTime() : false;
 
@@ -52,26 +81,19 @@ export default function PaywallScreen() {
     : t('paywall.monthly');
 
   const subscribe = async (planId: 'monthly' | 'yearly') => {
-    if (!purchasesConfigured) {
-      Alert.alert(t('paywall.title'), t('paywall.comingSoon'));
-      return;
-    }
     setBusy(true);
-    const ok = await purchasePlan(planId);
+    const resultat = await purchasePlan(planId);
     setBusy(false);
-    if (ok) await refresh();
+    if (resultat.statut === 'succes') await refresh();
+    signaler(resultat);
   };
 
   const restore = async () => {
-    if (!purchasesConfigured) {
-      Alert.alert(t('paywall.title'), t('paywall.comingSoon'));
-      return;
-    }
     setBusy(true);
-    const ok = await restorePurchases();
+    const resultat = await restorePurchases();
     setBusy(false);
-    await refresh();
-    if (!ok) Alert.alert(t('paywall.restoreNone'));
+    if (resultat.statut === 'succes') await refresh();
+    signaler(resultat);
   };
 
   return (
@@ -128,8 +150,23 @@ export default function PaywallScreen() {
             </>
           )}
 
+          {/* Bandeau de diagnostic : n'apparaît QUE si les prix du store n'ont
+              pas pu être chargés. Dans une configuration correcte il reste
+              invisible ; s'il s'affiche, le paywall est de toute façon
+              inutilisable et connaître la cause vaut mieux que l'ignorer. */}
+          {probleme ? (
+            <View style={styles.diagBox}>
+              <ThemedText type="smallBold" style={styles.diagTitle}>
+                {t('paywall.pricesUnavailable')}
+              </ThemedText>
+              <ThemedText type="small" style={styles.diagDetail}>
+                {probleme}
+              </ThemedText>
+            </View>
+          ) : null}
+
           <ThemedText type="small" themeColor="textSecondary" style={styles.note}>
-            {t('paywall.note')}
+            {busy ? t('paywall.working') : t('paywall.note')}
           </ThemedText>
 
           {/* Liens légaux exigés par Apple pour un abonnement (règle 3.1.2). */}
@@ -190,5 +227,15 @@ const styles = StyleSheet.create({
     marginTop: Spacing.one,
   },
   legalLink: { textDecorationLine: 'underline' },
+  diagBox: {
+    borderWidth: 1,
+    borderColor: 'rgba(229, 72, 77, 0.45)',
+    backgroundColor: 'rgba(229, 72, 77, 0.10)',
+    borderRadius: 12,
+    padding: Spacing.three,
+    gap: 4,
+  },
+  diagTitle: { color: '#F5EEDA' },
+  diagDetail: { color: 'rgba(245, 238, 218, 0.75)', lineHeight: 18 },
   pressed: { opacity: 0.8 },
 });

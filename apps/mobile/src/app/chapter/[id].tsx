@@ -142,17 +142,6 @@ export default function ChapterReadScreen() {
                 <LessonView segments={lesson.segments} title={chapter.title} />
 
                 {lesson.audioUrl ? <AudioPlayer uri={lesson.audioUrl} title={chapter.title} /> : null}
-
-                <ThemedView type="backgroundElement" style={styles.notice}>
-                  <ThemedText type="smallBold">{t('chapter.sampleNoticeTitle')}</ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {t('chapter.sampleNoticeBody')}
-                  </ThemedText>
-                </ThemedView>
-
-                <ThemedText type="small" themeColor="textSecondary" style={styles.mediaSoon}>
-                  {t('chapter.mediaSoon')}
-                </ThemedText>
               </>
             ) : loadingLesson ? (
               <ThemedText themeColor="textSecondary">{t('common.loading')}</ThemedText>
@@ -260,9 +249,6 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
     gap: Spacing.two,
     marginTop: Spacing.two,
-  },
-  mediaSoon: {
-    textAlign: 'center',
   },
   quizButton: {
     backgroundColor: '#0C5A44',

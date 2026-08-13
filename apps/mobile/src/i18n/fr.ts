@@ -105,9 +105,7 @@ export const fr = {
   // Chapitre (lecture)
   'chapter.label': 'Chapitre {{order}}',
   'chapter.meta': 'Chapitre {{order}} · {{pct}} % lu',
-  'chapter.lessonPending': 'Le contenu de ce chapitre sera bientôt disponible.',
-  'chapter.mediaSoon': 'Vidéo avec suivi des mots : bientôt disponible.',
-  'chapter.sampleNoticeTitle': "Texte d'exemple",
+  'chapter.lessonPending': "Aucune leçon n'est disponible pour ce chapitre.",
   'audio.play': "Lire l'audio",
   'audio.pause': 'Mettre en pause',
   'audio.playArabicA11y': 'Écouter la récitation',
@@ -118,8 +116,6 @@ export const fr = {
   'audio.nowExplanation': 'Explication',
   'lesson.listenAllArabic': 'Tout écouter · récitation',
   'lesson.listenAllTranslation': 'Tout écouter · traduction',
-  'chapter.sampleNoticeBody':
-    "Le contenu pédagogique complet de ce chapitre sera ajouté depuis l'espace d'administration (étape 5) puis servi par le backend (étape 7).",
   'chapter.reset': 'Réinitialiser la progression',
   'chapter.resetTitle': 'Réinitialiser la progression',
   'chapter.resetMessage': 'Ta progression de lecture pour ce chapitre sera effacée. Continuer ?',
@@ -212,6 +208,12 @@ export const fr = {
   'paywall.note':
     'Sans engagement, résiliable à tout moment. Paiement via ton compte App Store / Google Play.',
   'paywall.comingSoon': "L'abonnement sera disponible à la sortie de l'application.",
+  'paywall.working': 'Opération en cours…',
+  'paywall.unavailableTitle': 'Abonnement indisponible',
+  'paywall.unavailableBody':
+    "Les offres n'ont pas pu être récupérées auprès de l'App Store. Réessaie dans un instant.",
+  'paywall.errorTitle': "L'achat n'a pas abouti",
+  'paywall.pricesUnavailable': "Prix indisponibles",
 
   // Administration
   'admin.title': 'Administration',
