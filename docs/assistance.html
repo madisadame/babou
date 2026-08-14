@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistance Babou</title>
+<meta name="description" content="Page d'assistance de l'application Babou : compte, abonnement, problèmes techniques et suppression des données.">
+<style>
+  :root {
+    --vert: #0c5a44;
+    --nuit: #083d2c;
+    --creme: #f5eeda;
+    --or: #b98f2e;
+    --texte: #1b2b24;
+    --fond: #fbfaf5;
+    --carte: #ffffff;
+    --bordure: #e3e0d3;
+    --doux: #5c6b64;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --texte: #e7eee9;
+      --fond: #0b1512;
+      --carte: #12211b;
+      --bordure: #22352c;
+      --doux: #a9b8b0;
+      --vert: #7fd3af;
+      --or: #e0be6d;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.65;
+    color: var(--texte);
+    background: var(--fond);
+  }
+
+  /* Bandeau aux couleurs de l'app : vert nuit et crème. */
+  header {
+    background: var(--nuit);
+    color: var(--creme);
+    padding: 44px 20px 40px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 10px; font-size: clamp(26px, 5vw, 34px); letter-spacing: -0.3px; }
+  header p { margin: 0 auto; max-width: 46ch; font-size: 16px; color: rgba(245, 238, 218, .82); }
+  .lune { font-size: 34px; line-height: 1; display: block; margin-bottom: 10px; }
+
+  main { max-width: 780px; margin: 0 auto; padding: 8px 20px 64px; }
+
+  section {
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: 14px;
+    padding: 22px 22px 6px;
+    margin-top: 22px;
+  }
+  section h2 {
+    font-size: 19px;
+    margin: 0 0 12px;
+    color: var(--vert);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  h3 { font-size: 16px; margin: 18px 0 4px; }
+  p, li { font-size: 16px; }
+  ul { padding-left: 22px; }
+  a { color: var(--vert); }
+
+  .contact {
+    background: var(--nuit);
+    border: none;
+    color: var(--creme);
+    text-align: center;
+    padding: 26px 22px;
+  }
+  .contact h2 { color: var(--or); justify-content: center; }
+  .contact p { color: rgba(245, 238, 218, .82); margin: 0 0 16px; }
+  .bouton {
+    display: inline-block;
+    background: var(--creme);
+    color: #0c5a44;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 13px 26px;
+    border-radius: 10px;
+    font-size: 16px;
+  }
+  .delai { font-size: 14px; margin: 16px 0 0 !important; }
+
+  details {
+    border-top: 1px solid var(--bordure);
+    padding: 12px 0;
+  }
+  details:first-of-type { border-top: none; }
+  summary { cursor: pointer; font-weight: 600; font-size: 16px; }
+  details p { margin: 8px 0 2px; color: var(--doux); }
+
+  footer {
+    text-align: center;
+    padding: 30px 20px 44px;
+    color: var(--doux);
+    font-size: 14px;
+  }
+  footer strong { color: var(--texte); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="lune">🌙</span>
+  <h1>Assistance Babou</h1>
+  <p>Cette page réunit les réponses aux questions les plus fréquentes sur l'application Babou, et vous indique comment nous joindre si vous avez besoin d'aide.</p>
+</header>
+
+<main>
+
+  <section class="contact">
+    <h2>Nous contacter</h2>
+    <p>Une question, un problème, une suggestion ? Écrivez-nous.</p>
+    <a class="bouton" href="mailto:admin@hournews.fr">admin@hournews.fr</a>
+    <p class="delai">Nous répondons généralement sous 48 heures ouvrées, en français.</p>
+  </section>
+
+  <section>
+    <h2>👤 Compte et connexion</h2>
+
+    <h3>Créer un compte</h3>
+    <p>Ouvrez <strong>Réglages</strong> dans l'application, saisissez une adresse e-mail et un mot de passe d'au moins 6 caractères, puis touchez <strong>S'inscrire</strong>. Le compte permet de retrouver votre progression sur tous vos appareils.</p>
+
+    <h3>Mot de passe oublié</h3>
+    <p>Sur l'écran <strong>Réglages</strong>, saisissez votre adresse e-mail puis touchez <strong>Mot de passe oublié ?</strong>. Vous recevrez un lien permettant de choisir un nouveau mot de passe. Si l'e-mail n'arrive pas, vérifiez votre dossier de courriers indésirables avant de nous écrire.</p>
+
+    <h3>Je ne parviens pas à me connecter</h3>
+    <p>Vérifiez que l'adresse saisie est bien celle utilisée à l'inscription, et que votre appareil est connecté à internet. Si le problème persiste, contactez-nous en précisant l'adresse concernée — sans jamais nous communiquer votre mot de passe.</p>
+  </section>
+
+  <section>
+    <h2>💳 Abonnement et achats</h2>
+
+    <h3>Ce que comprend l'abonnement</h3>
+    <p>Un livre reste consultable librement pour découvrir l'application. L'abonnement ouvre l'accès à toute la bibliothèque et aux livres à venir. Deux formules existent : <strong>mensuelle</strong> et <strong>annuelle</strong>, avec une <strong>première semaine offerte</strong>.</p>
+
+    <h3>Paiement et renouvellement</h3>
+    <p>Le paiement est effectué par votre compte App Store, jamais par nous : nous n'avons accès à aucune donnée bancaire. L'abonnement se renouvelle automatiquement à échéance, sauf résiliation au moins 24 heures avant la fin de la période en cours.</p>
+
+    <h3>Résilier</h3>
+    <p>La résiliation se fait depuis iOS, et non depuis l'application : <strong>Réglages iOS → votre nom → Abonnements → Babou → Annuler l'abonnement</strong>. Vous conservez l'accès jusqu'à la fin de la période déjà payée.</p>
+
+    <h3>J'ai payé mais l'accès n'est pas débloqué</h3>
+    <p>Touchez <strong>Restaurer un achat</strong> sur l'écran d'abonnement, en étant connecté au même compte Apple que lors de l'achat. Si rien ne change, écrivez-nous : indiquez l'adresse e-mail de votre compte Babou et la date approximative de l'achat.</p>
+
+    <h3>Demander un remboursement</h3>
+    <p>Les remboursements sont traités par Apple, seul encaisseur. La demande se fait sur <a href="https://reportaproblem.apple.com" rel="noopener">reportaproblem.apple.com</a>.</p>
+  </section>
+
+  <section>
+    <h2>🔧 Problèmes techniques</h2>
+
+    <h3>L'application ne se lance pas ou reste figée</h3>
+    <p>Fermez-la complètement puis rouvrez-la. Si le problème persiste, vérifiez qu'une mise à jour est disponible sur l'App Store, et redémarrez l'appareil.</p>
+
+    <h3>Le contenu ne s'affiche pas</h3>
+    <p>Un message « Connexion impossible » signale que nos serveurs ne sont pas joignables : vérifiez votre connexion et réessayez. Les livres que vous avez téléchargés restent lisibles hors connexion.</p>
+
+    <h3>L'audio ne démarre pas</h3>
+    <p>Vérifiez que le mode silencieux n'est pas actif et que le volume est suffisant. La lecture se poursuit lorsque l'écran est verrouillé.</p>
+
+    <h3>Télécharger un livre pour l'écouter hors connexion</h3>
+    <p>Sur la page d'un livre, touchez <strong>Télécharger pour hors-ligne</strong>. Le texte et l'audio sont alors enregistrés sur votre appareil. Vous pouvez les supprimer à tout moment depuis la même page.</p>
+
+    <p>Si le problème persiste, écrivez-nous en précisant votre modèle d'iPhone, votre version d'iOS et l'écran concerné : ces détails nous font gagner beaucoup de temps.</p>
+  </section>
+
+  <section>
+    <h2>🗑️ Suppression du compte et des données</h2>
+    <p>Vous pouvez supprimer votre compte <strong>directement depuis l'application</strong>, sans nous écrire : <strong>Réglages → Supprimer mon compte</strong>.</p>
+    <p>La suppression est <strong>immédiate et définitive</strong>. Elle efface votre compte ainsi que toutes les données associées : progression de lecture, résultats de quiz, marque-pages, révisions et préférences. Les données enregistrées localement sur l'appareil sont également effacées. Cette action est irréversible.</p>
+    <p>Un abonnement en cours n'est pas résilié par la suppression du compte : il doit être annulé séparément dans les réglages iOS (voir plus haut).</p>
+    <p>Pour toute autre demande relative à vos données — accès, rectification, portabilité — écrivez-nous à <a href="mailto:admin@hournews.fr">admin@hournews.fr</a>.</p>
+  </section>
+
+  <section>
+    <h2>❓ Questions fréquentes</h2>
+
+    <details>
+      <summary>Faut-il un compte pour utiliser Babou ?</summary>
+      <p>Un livre est consultable sans compte, pour découvrir l'application. Un compte est nécessaire pour accéder à l'ensemble de la bibliothèque et pour retrouver votre progression sur plusieurs appareils.</p>
+    </details>
+
+    <details>
+      <summary>Ma progression est-elle conservée si je change de téléphone ?</summary>
+      <p>Oui, à condition d'être connecté au même compte Babou. Sans compte, la progression reste uniquement sur l'appareil.</p>
+    </details>
+
+    <details>
+      <summary>Babou fonctionne-t-il sans connexion internet ?</summary>
+      <p>Oui pour les livres que vous avez téléchargés au préalable. Le reste du catalogue nécessite une connexion.</p>
+    </details>
+
+    <details>
+      <summary>Quel enseignement Babou transmet-il ?</summary>
+      <p>Le contenu s'appuie principalement sur la méthodologie de l'école de l'Imam Ash-Shâfi'î. Babou est un complément d'apprentissage : il ne remplace ni les enseignants, ni les imams, ni les gens de science.</p>
+    </details>
+
+    <details>
+      <summary>L'application est-elle disponible en shimaoré ?</summary>
+      <p>Les contenus sont proposés en français et en shimaoré. Le choix de la langue des cours se fait sur l'écran d'accueil ou dans les Réglages.</p>
+    </details>
+
+    <details>
+      <summary>Y a-t-il de la publicité ?</summary>
+      <p>Non. Babou n'affiche aucune publicité et n'utilise aucun traceur publicitaire.</p>
+    </details>
+  </section>
+
+  <section>
+    <h2>🔒 Confidentialité</h2>
+    <p>Le détail des données traitées, de leurs finalités et de vos droits figure dans notre <a href="confidentialite.html">politique de confidentialité</a>.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p><strong>Babou</strong> — Apprendre le fiqh, pas à pas</p>
+  <p>© 2026 hournews. Tous droits réservés.</p>
+</footer>
+
+</body>
+</html>
