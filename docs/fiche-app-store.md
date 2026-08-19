@@ -102,11 +102,36 @@ consolider et à garder le fil entre deux cours.
 
 ABONNEMENT
 
-Un livre est en accès libre pour découvrir l'application. L'abonnement ouvre
-toute la bibliothèque et les livres à venir. La première semaine est offerte.
+Un livre est en accès libre pour découvrir l'application. L'abonnement Babou
+Premium ouvre toute la bibliothèque et les livres à venir.
+
+• Babou Premium Mensuel — 9,99 €, renouvelé chaque mois
+• Babou Premium Annuel — 79,99 €, renouvelé chaque année (soit 6,67 € par mois)
+
+La première semaine est offerte à tout nouvel abonné. Le paiement est débité
+sur ton compte App Store à la confirmation de l'achat. L'abonnement se
+renouvelle automatiquement, sauf résiliation au moins 24 heures avant la fin de
+la période en cours. Tu peux le gérer ou le résilier à tout moment depuis les
+réglages de ton compte App Store.
+
+Conditions d'utilisation (EULA) :
+https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+
+Politique de confidentialité :
+https://madisadame.github.io/babou/confidentialite.html
+
+Assistance :
+https://madisadame.github.io/babou/assistance.html
 ```
 
-*Environ 1 750 caractères.*
+*Environ 2 450 caractères.*
+
+> ⚠️ **Ce bloc est obligatoire, pas décoratif.** La règle 3.1.2 impose que la
+> description d'une app à abonnement auto-renouvelable contienne le titre, la
+> durée et le prix de chaque abonnement, ainsi que des liens **fonctionnels**
+> vers les conditions d'utilisation et la politique de confidentialité.
+> Sa seule présence dans l'app ne suffit pas : Apple a refusé la soumission du
+> 17 août 2026 pour cette raison précise.
 
 ---
 
