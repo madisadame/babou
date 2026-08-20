@@ -1,5 +1,9 @@
-# Types partagés
+# packages/shared-types — dossier non utilisé
 
-Ce dossier contiendra les définitions de données communes entre l'application mobile et l'interface d'administration (ex : Livre, Chapitre, Question, Choix de réponse, Explication, Progression...).
+Ce paquet devait porter les types partagés entre l'application et une interface
+d'administration séparée. Cette interface n'existant pas (voir
+`apps/admin/README.md`), il n'y a rien à partager : les types métier vivent dans
+`apps/mobile/src/domain/`.
 
-Sera rempli progressivement à partir de l'étape 4.
+À supprimer, ou à remplir le jour où un second programme aura besoin des mêmes
+définitions.
