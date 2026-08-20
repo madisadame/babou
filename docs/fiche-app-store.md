@@ -211,13 +211,10 @@ suppression de compte est dans Réglages → « Supprimer mon compte ».
 
 </details>
 
-> ⚠️ **Le compte de démonstration n'a que l'essai de 7 jours, qui expire le
-> 2026-08-27.** Décision du 2026-08-20 : on s'en contente, la revue devant être
-> terminée d'ici là. **Si elle dépasse cette date, ou si un second dépôt est
-> nécessaire**, offrir l'accès au compte avant de renvoyer le build : dans
-> l'app, avec un compte administrateur, Admin → Abonnement → chercher
-> `apple.review@hournews.fr` → offrir l'accès. Sans cela le relecteur ne verrait
-> plus que le livre vitrine. Vérification en une commande dans
+> ✅ **Accès offert au compte de démonstration le 2026-08-20**, avant la
+> soumission. Vérifié : `user_access.manual_override = true`, trois livres
+> visibles. Son accès ne dépend donc plus de l'essai de 7 jours et survivra à
+> une revue longue ou à un second dépôt. Commande de vérification dans
 > `docs/compte-demo.local.md`.
 
 ---
