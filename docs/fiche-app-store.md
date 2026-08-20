@@ -20,13 +20,12 @@ marchés — une seule langue suffit pour publier.
 | Catégorie secondaire | Références (facultatif) |
 | Classe d'âge | 4+ |
 | Droits d'auteur | `2026 hournews` |
-| Assistance | https://madisadame.github.io/babou/confidentialite.html |
+| Assistance | https://madisadame.github.io/babou/assistance.html |
 | Confidentialité | https://madisadame.github.io/babou/confidentialite.html |
 | Contact | admin@hournews.fr |
 
-> ⚠️ **À vérifier avant tout** : le nom « Babou » est-il disponible ? Les noms
-> sont uniques au niveau mondial sur l'App Store. S'il est pris, il faut trancher
-> tôt — ça touche la fiche, les captures et l'icône.
+> Le nom était libre : la fiche existe dans App Store Connect et une première
+> soumission y a été déposée le 2026-08-17, ce qui réserve « Babou ».
 
 ---
 
@@ -184,18 +183,27 @@ Merci pour votre temps.
 
 ## Captures d'écran
 
-iPhone uniquement (`supportsTablet: false`), donc **une seule taille obligatoire** :
-6,9 pouces. Apple redimensionne pour les tailles inférieures.
+iPhone uniquement (`supportsTablet: false`), donc **un seul emplacement à
+remplir**. Les cinq captures **acceptées par Apple** sont dans
+`~/Desktop/babou-fiche-6.5/`, en **1242 × 2688** (6,5 pouces) :
 
-Ordre suggéré — la première est celle qu'on voit dans les résultats de recherche :
+1. `1-livre` — la fiche d'un livre
+2. `2-bibliotheque` — la bibliothèque, ciel étoilé et cartes de livres
+3. `3-chapitre` — un chapitre ouvert, texte arabe et traduction
+4. `4-quiz` — un quiz en cours
+5. `5-resultats` — les résultats d'un quiz
 
-1. Un chapitre ouvert, texte arabe et traduction visibles
-2. La bibliothèque, ciel étoilé et cartes de livres
-3. Le lecteur audio avec la récitation en cours
-4. Un quiz en cours
-5. La carte de régularité (série de jours + objectif)
+La première est celle qu'on voit dans les résultats de recherche.
 
-À produire depuis un simulateur iPhone, pas depuis le web : le rendu diffère.
+> ⚠️ **Deux refus ont déjà été essuyés sur ces images.** À ne pas rejouer :
+> - **Dimensions.** Le 1320 × 2868 d'un iPhone 6,9 pouces est refusé dans
+>   l'emplacement 6,5 pouces : chaque emplacement veut exactement sa taille.
+> - **Canal alpha.** Une capture prise **sur le Mac** en garde un (les coins
+>   arrondis de la fenêtre) et se fait rejeter ; une capture prise **sur
+>   l'iPhone** non. Celles retenues ont été aplaties sur `#083D2C`.
+
+À produire depuis un iPhone ou un simulateur, jamais depuis le web : le rendu
+diffère.
 
 ---
 
