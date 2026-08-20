@@ -171,21 +171,21 @@ Babou is a fiqh (Islamic jurisprudence) learning app for French speakers,
 following the Shafi'i school, with translations into Shimaore, a language of
 Mayotte. The interface and the content are in French.
 
-DEMO ACCOUNT
+DEMO ACCOUNT - full access to the catalogue
 Login: apple.review@hournews.fr
 Password: <voir docs/compte-demo.local.md>
-This account has full access to the catalogue.
+
+SECOND ACCOUNT - to review the in-app purchases
+Login: <voir docs/compte-demo.local.md>
+Password: <voir docs/compte-demo.local.md>
+The demo account above has full access, so it never sees the subscription
+screen. This second account's free trial has ended: signing in with it leads
+straight to the subscription screen, where both products are listed and can be
+purchased using a sandbox account.
 
 BROWSING WITHOUT AN ACCOUNT
 One book ("Avant-propos") can be read without signing in and without a
-subscription, so the app can be evaluated without using the demo account.
-
-HOW TO REACH THE SUBSCRIPTION SCREEN
-The demo account has full access, so it never sees the paywall. To review the
-in-app purchases, stay signed out — or sign out from "Réglages" (Settings) —
-then open "Bibliothèque" (Library) and tap the "Découverte" card, then
-"Voir l'abonnement" (See the subscription). That screen lists both products and
-links to the Terms of Use (Apple standard EULA) and to the Privacy Policy.
+subscription, so the app can be evaluated without using either account.
 
 SUBSCRIPTIONS
 Babou Premium Monthly (EUR 9.99) and Babou Premium Annual (EUR 79.99), both
@@ -193,7 +193,7 @@ auto-renewable, with a one-week free trial. A subscription unlocks the whole
 catalogue.
 
 ACCOUNT DELETION
-"Réglages" (Settings) → "Supprimer mon compte" (Delete my account). It deletes
+"Réglages" (Settings) -> "Supprimer mon compte" (Delete my account). It deletes
 the account and the data attached to it.
 
 Thank you for your time.
@@ -211,14 +211,42 @@ suppression de compte est dans Réglages → « Supprimer mon compte ».
 
 </details>
 
-> ⚠️ **Avant de soumettre : offrir l'accès au compte de démonstration.**
-> À sa création il ne dispose que de l'essai de 7 jours — il se bloquerait en
-> pleine revue. Dans l'app, avec un compte administrateur : Admin → Abonnement →
-> chercher `apple.review@hournews.fr` → offrir l'accès. Ça inscrit
-> `manual_override` dans `user_access`, que la base relit à chaque requête.
-> Vérification en une commande dans `docs/compte-demo.local.md`.
+> ⚠️ **Le compte de démonstration n'a que l'essai de 7 jours, qui expire le
+> 2026-08-27.** Décision du 2026-08-20 : on s'en contente, la revue devant être
+> terminée d'ici là. **Si elle dépasse cette date, ou si un second dépôt est
+> nécessaire**, offrir l'accès au compte avant de renvoyer le build : dans
+> l'app, avec un compte administrateur, Admin → Abonnement → chercher
+> `apple.review@hournews.fr` → offrir l'accès. Sans cela le relecteur ne verrait
+> plus que le livre vitrine. Vérification en une commande dans
+> `docs/compte-demo.local.md`.
 
 ---
+
+## Vérifier le paywall avant de soumettre
+
+L'écran d'abonnement doit afficher les prix venus du store, et non les libellés
+de repli. La différence tient au suffixe :
+
+| Affiché | Signification |
+|---|---|
+| `Annuel — 79,99 €` / `Mensuel — 9,99 €` | prix du store, StoreKit répond |
+| `Annuel — 79,99 €/an` / `Mensuel — 9,99 €/mois` | libellé statique de repli, aucune offre chargée |
+
+En cas d'échec, un bandeau « Prix indisponibles » s'affiche avec le détail de
+l'erreur.
+
+> 💡 **Une devise inattendue n'est pas un bug.** Les prix affichés viennent du
+> *storefront* du compte Apple de l'appareil, alors que la feuille de paiement
+> en sandbox suit le **compte sandbox**. Un iPhone dont le compte App Store est
+> américain affiche donc 69,99 $ / 8,99 $ puis facture 79,99 € / 9,99 € — mêmes
+> produits, deux territoires. Constaté le 2026-08-20, après avoir cherché en
+> vain du côté d'un cache de prix.
+
+> ⚠️ Pour atteindre le paywall, il faut être **connecté avec un compte sans
+> accès** : la garde `access-gate.tsx` éjecte vers l'accueil tout compte qui a
+> déjà l'accès (dont les administrateurs), et déconnecté l'écran ne propose que
+> « Se connecter pour démarrer la semaine offerte », sans prix ni bouton
+> d'achat.
 
 ## Captures d'écran
 
