@@ -152,32 +152,71 @@ Notes :
 
 ## Notes pour l'équipe de revue
 
-À remplir dans « Informations de la revue ». **Indispensable** : sans compte de
-démonstration, une app dont le contenu est derrière un abonnement est rejetée.
+À coller dans « Informations de la revue » d'App Store Connect. **Indispensable** :
+une app dont le contenu est derrière un abonnement est rejetée sans compte de
+démonstration.
+
+Rédigées **en anglais** : l'équipe de revue d'Apple travaille en anglais, alors
+que l'app et sa fiche sont en français. Les libellés de l'app sont cités tels
+qu'ils s'affichent, pour que le chemin reste suivable.
+
+> 🔒 **Le mot de passe ne s'écrit pas ici** — ce dépôt est public. Les
+> identifiants du compte de démonstration sont dans `docs/compte-demo.local.md`,
+> non versionné.
 
 ```
-Bonjour,
+Hello,
 
-Babou est une application d'apprentissage du fiqh (jurisprudence islamique)
-destinée au public francophone, avec une traduction en shimaoré.
+Babou is a fiqh (Islamic jurisprudence) learning app for French speakers,
+following the Shafi'i school, with translations into Shimaore, a language of
+Mayotte. The interface and the content are in French.
 
-COMPTE DE DÉMONSTRATION
-Identifiant : <e-mail du compte de test>
-Mot de passe : <mot de passe>
-Ce compte dispose d'un accès complet au catalogue.
+DEMO ACCOUNT
+Login: apple.review@hournews.fr
+Password: <voir docs/compte-demo.local.md>
+This account has full access to the catalogue.
 
-ACCÈS SANS COMPTE
-Un livre (« Avant-propos ») est consultable sans inscription ni abonnement, afin
-que l'application soit évaluable même sans se connecter.
+BROWSING WITHOUT AN ACCOUNT
+One book ("Avant-propos") can be read without signing in and without a
+subscription, so the app can be evaluated without using the demo account.
 
-ABONNEMENT
-L'accès au reste du catalogue passe par un abonnement auto-renouvelable
-(mensuel ou annuel) avec une semaine d'essai gratuite, géré par les achats
-intégrés. Les liens vers les conditions d'utilisation (EULA standard Apple) et
-la politique de confidentialité figurent sur l'écran d'abonnement.
+HOW TO REACH THE SUBSCRIPTION SCREEN
+The demo account has full access, so it never sees the paywall. To review the
+in-app purchases, stay signed out — or sign out from "Réglages" (Settings) —
+then open "Bibliothèque" (Library) and tap the "Découverte" card, then
+"Voir l'abonnement" (See the subscription). That screen lists both products and
+links to the Terms of Use (Apple standard EULA) and to the Privacy Policy.
 
-Merci pour votre temps.
+SUBSCRIPTIONS
+Babou Premium Monthly (EUR 9.99) and Babou Premium Annual (EUR 79.99), both
+auto-renewable, with a one-week free trial. A subscription unlocks the whole
+catalogue.
+
+ACCOUNT DELETION
+"Réglages" (Settings) → "Supprimer mon compte" (Delete my account). It deletes
+the account and the data attached to it.
+
+Thank you for your time.
 ```
+
+<details>
+<summary>La même chose en français, pour référence</summary>
+
+Babou enseigne le fiqh selon l'école shâfi'ite, en français, avec une traduction
+en shimaoré. Le compte de démonstration a un accès complet au catalogue. Le
+livre « Avant-propos » est lisible sans compte ni abonnement. Comme le compte de
+démonstration ne voit jamais le paywall, l'écran d'abonnement s'atteint
+déconnecté : Bibliothèque → carte « Découverte » → « Voir l'abonnement ». La
+suppression de compte est dans Réglages → « Supprimer mon compte ».
+
+</details>
+
+> ⚠️ **Avant de soumettre : offrir l'accès au compte de démonstration.**
+> À sa création il ne dispose que de l'essai de 7 jours — il se bloquerait en
+> pleine revue. Dans l'app, avec un compte administrateur : Admin → Abonnement →
+> chercher `apple.review@hournews.fr` → offrir l'accès. Ça inscrit
+> `manual_override` dans `user_access`, que la base relit à chaque requête.
+> Vérification en une commande dans `docs/compte-demo.local.md`.
 
 ---
 

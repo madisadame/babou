@@ -12,3 +12,6 @@ build/
 # Sauvegardes produites par backend/export.mjs : contiennent les adresses
 # e-mail des inscrits et toutes les données utilisateurs. Le dépôt est public.
 backups/
+
+# Identifiants du compte de démonstration remis à Apple (dépôt public).
+docs/compte-demo.local.md
