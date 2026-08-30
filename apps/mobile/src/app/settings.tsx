@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { confirmAction } from '@/lib/dialogs';
+import { confirmAction, notify } from '@/lib/dialogs';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -80,7 +80,19 @@ export default function SettingsScreen() {
       destructive: true,
       onConfirm: async () => {
         const { error } = await deleteAccount();
-        if (error) setAuthMessage(t('auth.deleteError'));
+        if (error) {
+          // Rien n'a été supprimé, la session reste ouverte : l'utilisateur
+          // peut réessayer. Message en ligne, à côté du formulaire.
+          setAuthMessage(t('auth.deleteError'));
+          return;
+        }
+        // Succès : une boîte de dialogue, pas un texte en ligne. La suppression
+        // fait disparaître la section « Compte » au profit du formulaire de
+        // connexion, plus court : un message inséré dans ce formulaire se
+        // retrouve au-dessus de l'endroit que l'utilisateur regardait, et passe
+        // inaperçu. Une action irréversible mérite une confirmation qui ne
+        // dépend pas de la position de défilement.
+        notify(t('auth.deleteDone'));
       },
     });
   };

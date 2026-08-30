@@ -186,7 +186,9 @@ export const fr = {
   'auth.deleteMessage':
     'Ton compte et toutes tes données (progression, quiz, marque-pages…) seront définitivement supprimés. Cette action est irréversible.',
   'auth.deleteConfirm': 'Supprimer définitivement',
-  'auth.deleteError': 'La suppression a échoué. Réessaie.',
+  'auth.deleteError':
+    "La suppression du compte n'a pas pu aboutir. Réessaie dans quelques minutes.",
+  'auth.deleteDone': 'Ton compte et tes données ont été supprimés.',
 
   // Paywall (abonnement)
   'paywall.title': 'Babou en illimité',

@@ -22,7 +22,8 @@ type AuthContextValue = {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<AuthResult>;
   updatePassword: (password: string) => Promise<AuthResult>;
-  // Supprime définitivement le compte et toutes ses données (exigence Apple).
+  // Supprime définitivement le compte, ses données et le profil détenu par le
+  // prestataire d'abonnement (exigences Apple et Google Play).
   deleteAccount: () => Promise<AuthResult>;
 };
 
@@ -120,9 +121,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       deleteAccount: async () => {
         if (!supabase) return { error: 'unavailable' };
-        const { error } = await supabase.rpc('delete_own_account');
-        if (error) return { error: error.message };
-        await supabase.auth.signOut();
+
+        // Passe par l'Edge Function `delete-account` et non plus par la RPC
+        // directe : elle supprime aussi le profil détenu par le prestataire de
+        // gestion des abonnements avant d'effacer le compte, comme l'exigent
+        // Google Play et le RGPD. La RPC seule laissait ce profil orphelin.
+        //
+        // Aucun identifiant n'est transmis : la fonction déduit l'utilisateur
+        // du seul JWT. Le client Supabase attache celui de la session courante.
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData.session) return { error: 'no_session' };
+
+        const { error } = await supabase.functions.invoke('delete-account');
+        if (error) {
+          // Rien n'a été supprimé côté serveur : on laisse la session et les
+          // données locales strictement intactes pour que l'utilisateur puisse
+          // réessayer. Le détail technique ne remonte jamais à l'interface.
+          return { error: 'delete_failed' };
+        }
+
+        // À partir d'ici le compte serveur est supprimé pour de bon. Plus rien
+        // ne doit pouvoir transformer ce succès en message d'échec : le
+        // nettoyage local est donc entièrement silencieux.
+        try {
+          // `scope: 'local'` : la session serveur a disparu avec l'utilisateur,
+          // il n'y a plus rien à révoquer à distance. On se contente de vider
+          // le stockage local.
+          await supabase.auth.signOut({ scope: 'local' });
+        } catch {
+          // session déjà absente : sans conséquence
+        }
         // Efface les données locales pour repartir d'un état propre.
         try {
           const keys = await AsyncStorage.getAllKeys();
@@ -131,6 +159,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch {
           // stockage indisponible : rien de plus à faire
         }
+        // La déconnexion fait repasser `user` à null, ce qui relance
+        // `configurePurchases(null)` dans use-access : le SDK d'abonnement
+        // quitte de lui-même l'identité supprimée. Ne pas ajouter d'appel ici,
+        // ce serait un second changement d'identité inutile.
         return { error: null };
       },
     }),

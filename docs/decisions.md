@@ -117,3 +117,12 @@ Ce fichier garde une trace des décisions techniques importantes prises pour le 
 
 **Décision :** publier avec le compte développeur inscrit en personne physique, puis le **convertir** en organisation une fois l'app en ligne.
 **Pourquoi :** attendre la création du dossier société retardait la sortie. Une conversion du même compte conserve l'équipe, les applications et les abonnés — à ne pas confondre avec un transfert d'app entre deux comptes, très délicat quand des abonnements sont actifs. À savoir : le vendeur affiché est le nom civil, et le statut de professionnel dans l'Union européenne rend publiques des coordonnées — renseigner celles du siège de hournews, pas les coordonnées privées.
+
+## 2026-08-30 — Suppression de compte : passage par une Edge Function, RPC laissée ouverte
+
+**Décision :** le client appelle désormais l'Edge Function authentifiée `delete-account`, qui supprime le Customer RevenueCat **avant** le compte Supabase. La RPC `delete_own_account` reste appelable directement par un utilisateur authentifié — sa révocation est **volontairement différée**.
+**Pourquoi :** Google Play exige que la suppression d'un compte efface aussi les données détenues par les sous-traitants ; `delete_own_account` seule laissait le profil RevenueCat orphelin. L'ordre RevenueCat-puis-Supabase est ce qui empêche une suppression partielle silencieuse : un échec laisse tout intact et réessayable, alors que l'ordre inverse aurait détruit le compte sans plus aucun moyen de retenter. La clé secrète RevenueCat ne vit que dans les secrets Supabase, jamais dans le bundle.
+
+**Dette de transition — à lever plus tard.** La version iOS publiée appelle encore la RPC en direct : elle ne supprime donc pas le profil RevenueCat. Révoquer `execute on delete_own_account to authenticated` fermerait ce contournement, mais casserait la suppression de compte pour toute version ancienne encore installée — ce qu'Apple sanctionne. La révocation attendra que le parc soit majoritairement à jour. À décider en relisant les statistiques d'adoption des versions.
+
+**Comportement RevenueCat observé le 2026-08-30** (API v1, comptes jetables), qui fonde l'idempotence : `DELETE` renvoie `200` sur un Customer existant, `404` sur un identifiant sans Customer, et `200` pendant une brève fenêtre juste après suppression avant de se stabiliser sur `404`. Les deux codes attestent l'absence de Customer et sont traités comme un succès ; tout autre code reste fail-closed, `401` compris — une clé révoquée ne doit jamais passer pour une suppression réussie.
