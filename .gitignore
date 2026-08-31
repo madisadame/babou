@@ -22,3 +22,9 @@ docs/compte-demo.local.md
 *.keystore
 *.jks
 credentials.json
+
+# Comptes de service Google (Play Developer API pour RevenueCat). Le dépôt est
+# public : une clé privée poussée ici serait compromise en quelques minutes.
+# Ces fichiers vivent hors du dépôt, sur le disque externe.
+*-service-account*.json
+revenuecat-*.json
