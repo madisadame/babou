@@ -15,3 +15,10 @@ backups/
 
 # Identifiants du compte de démonstration remis à Apple (dépôt public).
 docs/compte-demo.local.md
+
+# Signature Android. Perdre la clé d'upload n'est pas fatal (Play App Signing
+# permet de la réinitialiser), mais la publier le serait : quiconque la détient
+# peut signer un paquet à notre nom. Sauvegarde hors dépôt, sur disque externe.
+*.keystore
+*.jks
+credentials.json

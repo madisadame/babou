@@ -20,6 +20,7 @@
     },
     "android": {
       "package": "com.hournews.babou",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#0C5A44",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -57,7 +58,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Babou accède à tes photos pour choisir une image de couverture."
+          "photosPermission": "Babou accède à tes photos pour choisir une image de couverture.",
+          "microphonePermission": false
         }
       ]
     ],
