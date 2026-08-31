@@ -27,7 +27,8 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://xjmjdwxmszfqnhdtnnru.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_QhkXfMR5xIYwNG7NRLvzZw__ED2AUVJ",
         "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_TmAPbeznLhHPavUYdwGGtmeMICY"
-      }
+      },
+      "environment": "preview"
     },
     "preview-simulator": {
       "extends": "preview",
@@ -41,15 +42,8 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://xjmjdwxmszfqnhdtnnru.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_QhkXfMR5xIYwNG7NRLvzZw__ED2AUVJ",
         "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_TmAPbeznLhHPavUYdwGGtmeMICY"
-      }
-    },
-    "play-bootstrap": {
-      "extends": "production",
-      "autoIncrement": false,
-      "distribution": "store",
-      "android": {
-        "buildType": "app-bundle"
-      }
+      },
+      "environment": "production"
     }
   },
   "submit": {

@@ -126,3 +126,78 @@ Ce fichier garde une trace des décisions techniques importantes prises pour le 
 **Dette de transition — à lever plus tard.** La version iOS publiée appelle encore la RPC en direct : elle ne supprime donc pas le profil RevenueCat. Révoquer `execute on delete_own_account to authenticated` fermerait ce contournement, mais casserait la suppression de compte pour toute version ancienne encore installée — ce qu'Apple sanctionne. La révocation attendra que le parc soit majoritairement à jour. À décider en relisant les statistiques d'adoption des versions.
 
 **Comportement RevenueCat observé le 2026-08-30** (API v1, comptes jetables), qui fonde l'idempotence : `DELETE` renvoie `200` sur un Customer existant, `404` sur un identifiant sans Customer, et `200` pendant une brève fenêtre juste après suppression avant de se stabiliser sur `404`. Les deux codes attestent l'absence de Customer et sont traités comme un succès ; tout autre code reste fail-closed, `401` compris — une clé révoquée ne doit jamais passer pour une suppression réussie.
+
+## 2026-08-31 — Premier AAB Android : bootstrap assumé, corrections différées
+
+**Décision :** déposer le tout premier AAB (`play-bootstrap`, versionCode 1) en **test interne uniquement**, sans la clé RevenueCat Google, dans le seul but d'enregistrer le package `com.hournews.babou` et de débloquer la section Monétisation de Play Console.
+**Pourquoi :** Play n'ouvre la configuration des abonnements qu'après avoir reçu un premier paquet signé. Sans clé `goog_`, `purchasesConfigured` vaut `false` et le paywall Android n'affiche aucune offre : ce build ne doit donc jamais servir de diffusion publique. Le profil est nommé explicitement pour ne pas détourner `production`.
+
+**Vérifié sur l'AAB lui-même** (manifeste protobuf décodé, faute de `bundletool` sur le poste) : `com.android.vending.BILLING` présente — Play reconnaîtra les achats intégrés ; `RECORD_AUDIO` absente ; `versionCode 1`, `compileSdkVersion 36`. Ni `debuggable`, ni `usesCleartextTraffic`, ni activité de client de développement : c'est bien un build release.
+
+### Suite — bootstrap terminé, versionCode 2 préparé (2026-08-31)
+
+Le bootstrap a rempli son office. L'AAB versionCode 1 est publié en **test
+interne** sur Google Play, ce qui a enregistré définitivement le package et
+ouvert la section Monétisation.
+
+Le profil `play-bootstrap` a été **retiré** d'`eas.json`. Il n'avait qu'une
+raison d'être — bâtir sans clé RevenueCat Android — et le déclarer héritier de
+l'environnement `production` l'aurait rendu mensonger : il aurait reçu la clé
+qu'il prétendait exclure. Les builds passent désormais par `production`.
+
+**RevenueCat Google Play est configuré**, credentials **VALID**. Les deux
+produits Google sont importés et actifs :
+`com.hournews.babou.premium.monthly:monthly` et
+`com.hournews.babou.premium.annual:annual`. Tous deux rattachés à l'entitlement
+`premium`. L'offering `default` porte `$rc_monthly` et `$rc_annual`, chacun
+couvrant Test Store, App Store et Play Store.
+
+**La clé publique Android `goog_…` ne vit pas dans le dépôt.** `eas.json` étant
+versionné et le dépôt public, elle est stockée en variable d'environnement EAS
+(`EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`, visibilité `sensitive`) sur les
+environnements `production` et `preview`. Les profils correspondants déclarent
+désormais `environment` — sans ce champ, aucune variable EAS n'atteint le build.
+La clé `test_…` du Test Store reste dans `apps/mobile/.env`, gitignoré et jamais
+transmis aux builds EAS : elle ne sert qu'au développement local.
+
+**versionCode 2** prépare le premier build destiné aux achats réels. Trois
+points de la dette ci-dessous y sont soldés :
+
+- `cameraPermission: false` — `CAMERA` disparaît. L'app n'appelle jamais
+  `launchCameraAsync`. Effet collatéral utile : `NSCameraUsageDescription`,
+  qui portait encore le texte anglais par défaut d'`expo-image-picker`,
+  disparaît aussi côté iOS.
+- `WRITE_EXTERNAL_STORAGE` bloquée via `android.blockedPermissions`. Réaudité :
+  l'app n'écrit que dans `Paths.document`, et n'utilise ni `MediaLibrary`, ni
+  `expo-sharing`, ni `getContentUriAsync`.
+- `READ_EXTERNAL_STORAGE` **conservée** avec son `maxSdkVersion=32` : déjà
+  neutralisée sur Android 13+, mais nécessaire à la galerie sur Android 12 et
+  antérieur.
+
+Les permissions audio sont intactes — `MODIFY_AUDIO_SETTINGS`,
+`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` — sans quoi la lecture
+en arrière-plan et les contrôles sur écran verrouillé cesseraient.
+
+**Reste ouvert :** `SYSTEM_ALERT_WINDOW`, et la présence du menu de
+développement dans le build store (point 3 ci-dessous). `expo-dev-client` n'a
+pas été déplacé : le bootstrap a confirmé qu'il s'agissait bien d'un build
+release (`developmentClient=false`, ni `debuggable`, ni activité de client de
+développement dans le manifeste), donc le problème est ailleurs que dans
+`package.json`.
+
+**Prochaine étape :** build Android `production` en versionCode 2, puis achat de
+test réel via Google Play depuis la piste de test interne, avec un compte
+testeur de licence.
+
+### Dette à solder AVANT le vrai build Android de production
+
+Le prochain AAB — celui qui portera la clé `goog_` et sera diffusé — doit être propre sur ces quatre points :
+
+1. **`cameraPermission: false`** sur `expo-image-picker`. L'app n'appelle jamais `launchCameraAsync` : le seul usage est `launchImageLibraryAsync` dans `src/data/media.ts:15`, côté admin. `CAMERA` s'affiche pourtant sur la fiche Play.
+2. **Bloquer `WRITE_EXTERNAL_STORAGE`** via `android.blockedPermissions`, après avoir reconfirmé qu'aucune fonctionnalité n'en dépend. Elle est déclarée sans `maxSdkVersion` donc visible, mais inerte depuis API 30 (Scoped Storage) : l'app n'écrit que dans son répertoire privé (`Paths.document` dans `offline-store.ts`).
+3. **Résoudre `SYSTEM_ALERT_WINDOW`.** Elle vient de `react-native/ReactAndroid/src/debug/AndroidManifest.xml`, un manifeste **debug**, et n'a rien à faire dans un build store. Cause identifiée : `expo-dev-client` est en `dependencies`, et l'AAB contient effectivement les ressources du menu de développement (`base/res/drawable-*/dev_menu_fab_icon.png`) et les classes `expo/modules/devmenu` / `devlauncher` dans les dex. À corriger **sans casser les builds `development`** : déplacer le paquet en `devDependencies` n'est pas à soi seul une garantie d'exclusion côté EAS, c'est `developmentClient` qui détermine le type de build.
+4. **Recontrôler le prochain AAB** : absence réelle du dev menu et du dev launcher dans le manifeste *et* dans les composants actifs.
+
+**À laisser tel quel :** `READ_EXTERNAL_STORAGE` porte déjà `maxSdkVersion=32`, donc neutralisée sur Android 13+. La retirer casserait la galerie sur Android 12 et antérieur pour un gain nul. `MODIFY_AUDIO_SETTINGS`, `FOREGROUND_SERVICE` et `FOREGROUND_SERVICE_MEDIA_PLAYBACK` sont indispensables à la lecture en arrière-plan (`shouldPlayInBackground` dans `lesson-view.tsx` et `audio-player.tsx`).
+
+**Signature :** keystore d'upload généré par EAS le 2026-08-31, sauvegardé hors dépôt sur le disque externe. Avec Play App Signing, cette clé d'upload est réinitialisable en cas de perte ; la clé de signature d'application, elle, est détenue par Google.
