@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "com.hournews.babou",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#0C5A44",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -32,7 +32,8 @@
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "blockedPermissions": [
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW"
       ]
     },
     "web": {

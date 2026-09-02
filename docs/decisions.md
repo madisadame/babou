@@ -201,3 +201,60 @@ Le prochain AAB — celui qui portera la clé `goog_` et sera diffusé — doit 
 **À laisser tel quel :** `READ_EXTERNAL_STORAGE` porte déjà `maxSdkVersion=32`, donc neutralisée sur Android 13+. La retirer casserait la galerie sur Android 12 et antérieur pour un gain nul. `MODIFY_AUDIO_SETTINGS`, `FOREGROUND_SERVICE` et `FOREGROUND_SERVICE_MEDIA_PLAYBACK` sont indispensables à la lecture en arrière-plan (`shouldPlayInBackground` dans `lesson-view.tsx` et `audio-player.tsx`).
 
 **Signature :** keystore d'upload généré par EAS le 2026-08-31, sauvegardé hors dépôt sur le disque externe. Avec Play App Signing, cette clé d'upload est réinitialisable en cas de perte ; la clé de signature d'application, elle, est détenue par Google.
+
+## 2026-09-02 — versionCode 2 validé en test réel, versionCode 3 candidat pré-production
+
+**Le versionCode 2 a été éprouvé de bout en bout depuis Google Play**, en test
+interne, et pas seulement construit. Ce qui est désormais démontré :
+
+- **Achats Google Play Billing** fonctionnels en conditions réelles.
+- **Abonnements mensuel et annuel** validés en sandbox
+  (`com.hournews.babou.premium.monthly` et `…annual`).
+- **RevenueCat Google Play** opérationnel : la clé publique `goog_`, injectée par
+  variable d'environnement EAS, atteint bien le bundle et configure le SDK.
+- **Entitlement `premium` et offering `default`** corrects sur les trois
+  boutiques.
+- **RTDN / Pub/Sub → RevenueCat** validé par réception d'une notification test.
+
+La chaîne d'achat Android est donc complète. C'était le dernier inconnu
+fonctionnel.
+
+### SYSTEM_ALERT_WINDOW bloquée
+
+Dernière permission superflue du manifeste release. Elle provient du manifeste
+**debug** de React Native (`ReactAndroid/src/debug/AndroidManifest.xml`), tiré
+dans le graphe par `expo-dev-client`, et n'a aucune raison d'être dans un build
+de diffusion : c'est la permission de superposition d'écran, que Play affiche
+sur la fiche et qui inquiète légitimement les utilisateurs.
+
+Vérifié avant de la retirer : aucun code Babou n'appelle `canDrawOverlays`,
+`TYPE_APPLICATION_OVERLAY` ni `ACTION_MANAGE_OVERLAY_PERMISSION`, et aucune
+dépendance de type overlay, bulle ou picture-in-picture n'est installée. Elle
+est donc bloquée via `android.blockedPermissions`, aux côtés de
+`WRITE_EXTERNAL_STORAGE`.
+
+**`expo-dev-client` reste en `dependencies`** et les profils `development` ne
+sont pas touchés. Le versionCode 2 avait déjà prouvé qu'il s'agissait d'un vrai
+build release — `developmentClient=false`, ni `android:debuggable`, ni activité
+`DevLauncher`/`DevMenu` exposée dans le manifeste. Le déplacer aurait cassé les
+builds de développement pour corriger un symptôme dont la cause est ailleurs.
+
+### Profil `production` rendu explicite
+
+`developmentClient: false`, `distribution: store` et
+`android.buildType: app-bundle` étaient jusqu'ici implicites, laissés aux
+défauts d'EAS. Ils sont désormais écrits. Un profil de diffusion ne doit pas
+dépendre de valeurs par défaut susceptibles de changer d'une version du CLI à
+l'autre.
+
+### versionCode 3 — candidat pré-production
+
+Seule évolution fonctionnelle par rapport au 2 : la disparition de
+`SYSTEM_ALERT_WINDOW`. Permissions attendues dans l'AAB : `INTERNET`,
+`MODIFY_AUDIO_SETTINGS`, `READ_EXTERNAL_STORAGE` (`maxSdkVersion=32`),
+`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`,
+`ACCESS_NETWORK_STATE`, `VIBRATE` et `com.android.vending.BILLING`.
+
+Reste ouvert, sans caractère bloquant : le menu de développement est toujours
+compilé dans l'AAB (ressources `dev_menu_*`, classes `expo/modules/devmenu`),
+ce qui pèse sur les 77 Mo du paquet sans être activable.
