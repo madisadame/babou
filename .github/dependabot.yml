@@ -1,0 +1,42 @@
+# Surveillance des dépendances. Aucune fusion automatique : chaque PR doit
+# passer `npm run check` (types + export iOS/Android/Web) avant d'être fusionnée.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 5
+    versioning-strategy: increase-if-necessary
+    labels: [dependances]
+    commit-message:
+      prefix: "chore(deps)"
+      include: scope
+    groups:
+      # Correctifs et mineures regroupés : moins de bruit, une seule
+      # vérification à faire.
+      mineures-et-correctifs:
+        applies-to: version-updates
+        update-types: [minor, patch]
+      # Les correctifs de sécurité arrivent séparément pour être traités vite.
+      securite:
+        applies-to: security-updates
+        patterns: ["*"]
+    ignore:
+      # L'écosystème Expo doit monter d'un bloc, par SDK, jamais paquet par
+      # paquet : une version majeure isolée casse le natif des trois
+      # plateformes. Voir docs/security/update-policy.md.
+      - dependency-name: expo
+        update-types: [version-update:semver-major]
+      - dependency-name: react-native
+        update-types: [version-update:semver-major]
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      # Épinglés volontairement par `overrides` à la racine : un doublon de
+      # version avait figé l'app sur l'écran de démarrage (decisions.md,
+      # 2026-08-09).
+      - dependency-name: expo-asset
+      - dependency-name: expo-constants
